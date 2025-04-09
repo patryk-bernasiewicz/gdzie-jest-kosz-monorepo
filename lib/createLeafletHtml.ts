@@ -1,0 +1,152 @@
+import { Image } from "react-native";
+
+const userImageMarker = require("@/assets/images/person-marker.png");
+const userImageSource = Image.resolveAssetSource(userImageMarker);
+const userImageUrl = userImageSource.uri || userImageSource.uri;
+
+const binImageMarker = require("@/assets/images/bin-marker.png");
+const binImageSource = Image.resolveAssetSource(binImageMarker);
+const binImageUrl = binImageSource.uri || binImageSource.uri;
+
+const MIN_ZOOM = 18;
+const MAX_ZOOM = 19;
+
+export default function createLeafletHtml(
+  latitude: number | undefined,
+  longitude: number | undefined
+): string {
+  console.log(userImageUrl);
+
+  const html = /*html*/ `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <style>
+        html, body, #map {
+          margin: 0;
+          padding: 0;
+          height: 100vh;
+          width: 100vw;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+      <script>
+        var logger = function () {
+          function log(message) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'log',
+              message: message,
+            }));
+          }
+
+          return { log: log };
+        };
+        var loggerInstance = logger();
+
+        loggerInstance.log('Script started', { obj: 'foo', bar: 'zoo' });
+
+        var map = L
+          .map('map', {
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            tap: false,
+            zoomControl: false,
+          });
+
+        map.on('load', function(event) {
+          loggerInstance.log('Map loaded', event);
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'maploaded',
+          }));
+        });
+
+        map.on('dblclick', function(event) {
+          var latlng = event.latlng.lat + ', ' + event.latlng.lng;
+          var screenPos = event.containerPoint.x + ', ' + event.containerPoint.y;
+
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'contextmenu',
+            latlng: { lat: event.latlng.lat, lng: event.latlng.lng },
+            screenPos: {  x: event.containerPoint.x, y: event.containerPoint.y },
+          }));
+        });
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          maxZoom: ${MAX_ZOOM},
+          minZoom: ${MIN_ZOOM},
+        }).addTo(map);
+
+        var userMarkerIcon = L.icon({
+          iconUrl: '${userImageUrl}',
+          iconSize: [40, 40],
+          className: 'user-marker',
+        });
+
+        var userMarker = L.marker(
+          [${latitude}, ${longitude}],
+          {
+            icon: userMarkerIcon,
+          }
+        )
+          .addTo(map);
+
+        loggerInstance.log('User marker added at: ' + ${latitude} + ', ' + ${longitude});
+
+          
+        var binMarkerIcon = L.icon({
+          iconUrl: '${binImageUrl}',
+          iconSize: [35, 35],
+          className: 'bin-marker',
+        });
+        var binMarkers = [];
+
+        // -- Update position
+        window.updateMapPosition = function(lat, lng) {
+          loggerInstance.log('Map position updated to: ' + lat + ', ' + lng);
+          map.setView([lat, lng], map.getZoom());
+          userMarker.setLatLng([lat, lng]);
+        };
+        
+
+        // -- Update zoom
+        window.updateMapZoom = function(zoom) {
+          loggerInstance.log('Zoom level changed to: ' + zoom);
+          map.setZoom(zoom);
+        };
+        
+        window.updateBins = function(bins) {
+          loggerInstance.log('Bins updated: ' + JSON.stringify(bins, null, 2));
+
+          bins.forEach((bin) => {
+            var exists = binMarkers.find((marker) => marker.id === bin.id);
+            if (!exists) {
+              var marker = L.marker([bin.latitude, bin.longitude], {
+                icon: binMarkerIcon,
+              }).addTo(map);
+              marker.id = bin.id;
+              binMarkers.push(marker);
+            }
+          });
+        }
+
+        map.setView(
+          [${latitude},${longitude}],
+          ${MIN_ZOOM}
+        );
+
+        loggerInstance.log('Script successfully parsed');
+      </script>
+    </body>
+  </html>`;
+
+  return html;
+}

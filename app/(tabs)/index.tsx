@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 
 import LeafletMap from "@/components/LeafletMap";
 
-import useHeading from "@/hooks/useHeading";
 import useLocation from "@/hooks/useLocation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -10,25 +9,18 @@ const queryClient = new QueryClient();
 
 export default function HomeScreen() {
   const location = useLocation();
-  const heading = useHeading();
 
   return (
     <QueryClientProvider client={queryClient}>
       <View style={styles.container}>
         <View style={styles.map}>
-          <LeafletMap
-            latitude={location?.[0]}
-            longitude={location?.[1]}
-            rotation={heading}
-          />
+          <LeafletMap latitude={location?.[0]} longitude={location?.[1]} />
         </View>
         <View style={styles.position}>
           <Text>
             Current position:{"\n"}
             {location ? `${location[0]}\n${location[1]}` : "none"}
             {"\n"}
-            Heading:{"\n"}
-            {heading !== null ? `${heading.toFixed(2)}°` : "none"}
           </Text>
         </View>
       </View>

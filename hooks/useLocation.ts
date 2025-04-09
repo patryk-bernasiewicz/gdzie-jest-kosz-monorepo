@@ -17,7 +17,7 @@ export default function useLocation(): [number, number] | null {
       const location = await LocationService.getCurrentPositionAsync({});
 
       subscription = await LocationService.watchPositionAsync(
-        { accuracy: LocationService.Accuracy.High, timeInterval: 3000 },
+        { accuracy: LocationService.Accuracy.Highest, timeInterval: 2000 },
         (newLocation) => {
           const { latitude, longitude } = newLocation.coords;
           setLocation([latitude, longitude]);

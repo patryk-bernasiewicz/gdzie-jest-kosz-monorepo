@@ -1,10 +1,23 @@
 import { Magnetometer } from "expo-sensors";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const MANGETOMETER_INTERVAL = 2000;
+const MANGETOMETER_INTERVAL = 500;
 
 export default function useHeading() {
   const [heading, setHeading] = useState<number | null>(null);
+  const headingHistoryRef = useRef<number[]>([]);
+
+  // Handle normalized heading from the last 5 entries
+  const handleSetHeading = useCallback((newHeading: number) => {
+    headingHistoryRef.current = [
+      ...headingHistoryRef.current.slice(-4),
+      newHeading,
+    ];
+    const averageHeading =
+      headingHistoryRef.current.reduce((a, b) => a + b, 0) /
+      headingHistoryRef.current.length;
+    setHeading(averageHeading);
+  }, []);
 
   useEffect(() => {
     Magnetometer.setUpdateInterval(MANGETOMETER_INTERVAL);
@@ -22,7 +35,7 @@ export default function useHeading() {
       let angleDeg = angleRad * (180 / Math.PI);
       angleDeg = (angleDeg + 360) % 360;
 
-      setHeading(angleDeg);
+      handleSetHeading(angleDeg);
     });
 
     return () => {
