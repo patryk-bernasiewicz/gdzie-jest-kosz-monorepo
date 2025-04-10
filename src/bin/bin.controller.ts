@@ -10,9 +10,13 @@ export class BinController {
 
   @Get()
   getNearbyBins(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
+    @Query('latitude') latitude?: number,
+    @Query('longitude') longitude?: number,
   ): Promise<Bin[]> {
+    if (!latitude || !longitude) {
+      return Promise.resolve([]);
+    }
+
     return this.binService.getNearbyBins(Number(latitude), Number(longitude));
   }
 }
