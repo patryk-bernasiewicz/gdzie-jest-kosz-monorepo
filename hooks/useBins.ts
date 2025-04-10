@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import useLocation from "./useLocation";
+import { Bin } from "@/types/Bin";
 
 export default function useBins() {
   const location = useLocation();
@@ -8,7 +9,7 @@ export default function useBins() {
       ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/bin/?latitude=${location[0]}&longitude=${location[1]}`
       : null;
 
-  const bins = useQuery({
+  const bins = useQuery<Bin[]>({
     queryKey: ["bins"],
     queryFn: async () => {
       if (!binsUrl) return null;

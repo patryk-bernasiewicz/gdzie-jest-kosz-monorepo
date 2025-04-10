@@ -1,4 +1,5 @@
 import useBins from "@/hooks/useBins";
+import useBinsWithDistance from "@/hooks/useBinsWithDistance";
 import createLeafletHtml from "@/lib/createLeafletHtml";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import BinsList from "./debug/BinsList";
 
 type LeafletMapProps = {
   latitude?: number;
@@ -20,6 +22,7 @@ type LeafletMapProps = {
 function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const mapViewRef = useRef<WebView>(null);
   const bins = useBins();
+  const binsWithDistance = useBinsWithDistance(bins.data);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const leafletHtml = useRef<string>();
@@ -52,13 +55,13 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     if (mapLoaded && mapViewRef.current) {
       const injectedJs = /*js*/ `
         if (window.updateBins) {
-          window.updateBins(${JSON.stringify(bins.data)});
+          window.updateBins(${JSON.stringify(binsWithDistance)});
         }
       `;
 
       mapViewRef.current.injectJavaScript(injectedJs);
     }
-  }, [mapLoaded, bins.data]);
+  }, [mapLoaded, binsWithDistance]);
 
   return (
     <Pressable onPress={() => setContextMenuPos(null)} style={styles.container}>
@@ -122,14 +125,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
             </TouchableWithoutFeedback>
           </>
         )}
-        <View style={styles.binList}>
-          <Text>Total bins in area: {bins.data?.length ?? 0}</Text>
-          {bins.data?.map((bin: { id: number }) => (
-            <View key={bin.id}>
-              <Text>Bin ID: {bin.id}</Text>
-            </View>
-          ))}
-        </View>
+        <BinsList bins={binsWithDistance} />
       </View>
     </Pressable>
   );
@@ -146,18 +142,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#f00",
     borderStyle: "solid",
-  },
-  binList: {
-    position: "absolute",
-    top: 50,
-    left: 10,
-    backgroundColor: "white",
-    fontSize: 9,
-    padding: 4,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "black",
-    zIndex: 2,
   },
   contextMenu: {
     position: "absolute",
