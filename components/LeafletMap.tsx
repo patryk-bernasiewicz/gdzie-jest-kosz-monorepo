@@ -19,6 +19,8 @@ type LeafletMapProps = {
   zoom?: number;
 };
 
+const logsDisabled = true;
+
 function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const mapViewRef = useRef<WebView>(null);
   const bins = useBins();
@@ -31,6 +33,12 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     x: number;
     y: number;
   } | null>(null);
+
+  const logWebViewMessage = (...messages: any[]) => {
+    if (!logsDisabled) {
+      console.log("WebView message: ", ...messages);
+    }
+  };
 
   // TODO: it's a mess, need to REFACTOR THE HELL OUT OF IT
 
@@ -80,11 +88,11 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
                 if (data.type === "maploaded") {
                   setMapLoaded(true);
                 } else if (data.type === "log") {
-                  console.log("event in WebView: ", data.message);
+                  logWebViewMessage("event in WebView: ", data.message);
                 } else if (data.type === "contextmenu") {
                   setContextMenuPos(data.screenPos);
                 }
-                console.log("event in WebView: ", data);
+                logWebViewMessage("event in WebView: ", data);
               } catch (error) {
                 console.error("Failed to parse WebView message:", error);
               }

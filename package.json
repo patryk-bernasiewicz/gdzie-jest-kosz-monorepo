@@ -16,6 +16,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@clerk/clerk-expo": "^2.9.11",
+    "@clerk/localizations": "^3.13.9",
     "@expo/vector-icons": "^14.1.0",
     "@react-native-community/geolocation": "^3.4.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
@@ -29,6 +31,7 @@
     "expo-linking": "~7.0.5",
     "expo-location": "~18.0.10",
     "expo-router": "~4.0.20",
+    "expo-secure-store": "^14.0.1",
     "expo-sensors": "~14.0.2",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
