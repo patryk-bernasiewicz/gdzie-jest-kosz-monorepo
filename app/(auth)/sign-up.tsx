@@ -94,7 +94,7 @@ export default function SignUpScreen() {
         );
         const legalErrorText =
           errorTranslations[legalError?.code || ""] ||
-          passwordError?.message ||
+          legalError?.message ||
           null;
 
         setErrors({
