@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/SignOutButton";
+import useUserProfile from "@/hooks/useUserProfile";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Href, Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
@@ -23,12 +24,18 @@ const styles = StyleSheet.create({
 
 export default function ProfileScreen() {
   const { user } = useUser();
+  const userProfile = useUserProfile();
 
   return (
     <View style={styles.container}>
       <SignedIn>
         <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
         <SignOutButton />
+        {userProfile.data && (
+          <Text>
+            User profile data: {userProfile.data.id}/{userProfile.data.clerkId}
+          </Text>
+        )}
       </SignedIn>
       <SignedOut>
         <Link style={styles.link} href={`/(auth)/sign-in` as Href}>
@@ -38,6 +45,9 @@ export default function ProfileScreen() {
           <Text>Sign up</Text>
         </Link>
       </SignedOut>
+      <Link href="/(auth)/privacy-policy">
+        <Text>Polityka prywatności</Text>
+      </Link>
     </View>
   );
 }

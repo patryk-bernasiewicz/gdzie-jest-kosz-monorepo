@@ -1,23 +1,29 @@
 import { useState } from "react";
-import { Appearance, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSignUp, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import TextInput from "@/components/ui/input/TextInput";
 import TouchableOpacityButton from "@/components/ui/TouchableOpacityButton";
 import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
-
-const colorScheme = Appearance.getColorScheme();
+import useUpsertUser from "@/hooks/useUpsertUser";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { getColor } from "@/lib/getColor";
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: colorScheme === "dark" ? "#0f0f0f" : "#ffffff",
+    backgroundColor: getColor("background"),
     flex: 1,
     padding: 20,
+  },
+  link: {
+    color: getColor("primary"),
+    fontWeight: 600,
   },
 });
 
 const errorTranslations: Record<string, string> = {
+  form_param_nil: "Pole musi być wypełnione.",
   form_password_pwned:
     "Twoje hasło znajduje się na liście haseł, które wyciekły na innych stronach w Internecie. Proszę użyć innego hasła.",
   invalid_email_address: "Niepoprawny adres e-mail.",
@@ -35,12 +41,15 @@ export default function SignUpScreen() {
 
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [legalAccepted, setLegalAccepted] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const [errors, setErrors] = useState<{
     email_address: string | null;
     password: string | null;
+    consent_given: string | null;
   }>();
+  const upsertUser = useUpsertUser();
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -51,6 +60,7 @@ export default function SignUpScreen() {
       await signUp.create({
         emailAddress,
         password,
+        legalAccepted,
       });
 
       // Send user an email with verification code
@@ -79,10 +89,18 @@ export default function SignUpScreen() {
           errorTranslations[passwordError?.code || ""] ||
           passwordError?.message ||
           null;
+        const legalError = err.errors.find(
+          ({ meta }) => meta?.paramName === "legal_accepted"
+        );
+        const legalErrorText =
+          errorTranslations[legalError?.code || ""] ||
+          passwordError?.message ||
+          null;
 
         setErrors({
           email_address: emailErrorText,
           password: passwordErrorText,
+          consent_given: legalErrorText,
         });
       }
     }
@@ -102,6 +120,9 @@ export default function SignUpScreen() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
+        if (signUpAttempt.id) {
+          await upsertUser.mutateAsync(signUpAttempt.id);
+        }
         router.replace("/");
       } else {
         // If the status is not complete, check why. User may need to
@@ -119,12 +140,24 @@ export default function SignUpScreen() {
     return (
       <>
         <Heading text="Zweryfikuj adres e-mail" />
+        <Text style={{ marginBottom: 10 }}>
+          Wprowadź kod potwierdzający, który został wysłany na podany adres
+          e-mail.
+        </Text>
         <TextInput
           value={code}
           placeholder="Wprowadź kod potwierdzający"
           onChangeText={(code) => setCode(code)}
         />
-        <TouchableOpacityButton text="Zweryfikuj" onPress={onVerifyPress} />
+        <Text>Akceptuję regulamin i politykę prywatności</Text>
+        <TouchableOpacityButton
+          variant="primary"
+          text="Zweryfikuj"
+          onPress={onVerifyPress}
+        />
+        <View style={{ marginTop: 10 }}>
+          <Text>Bezpieczne logowanie i rejestracja z systemem Clerk.</Text>
+        </View>
       </>
     );
   }
@@ -148,6 +181,19 @@ export default function SignUpScreen() {
         label="Hasło"
         error={errors?.password}
       />
+      <BouncyCheckbox
+        isChecked={legalAccepted}
+        onPress={(checked) => setLegalAccepted(checked)}
+        text="Akceptuję regulamin i politykę prywatności"
+        fillColor={getColor("primary")}
+        style={{ marginTop: 10, marginBottom: 15 }}
+        textStyle={{
+          textDecorationLine: "none",
+          fontSize: 12,
+          color: getColor("text"),
+        }}
+      />
+
       <TouchableOpacityButton
         variant="primary"
         onPress={onSignUpPress}
@@ -158,10 +204,16 @@ export default function SignUpScreen() {
       >
         <Text>Czy masz już konto?</Text>
         <Link href="/sign-in">
-          <Text style={{ color: "#007bff", fontWeight: "bold" }}>
-            Zaloguj się
-          </Text>
+          <Text style={styles.link}>Zaloguj się</Text>
         </Link>
+      </View>
+      <View style={{ marginTop: 10 }}>
+        <Link href="/privacy-policy">
+          <Text style={styles.link}>Polityka prywatności</Text>
+        </Link>
+      </View>
+      <View style={{ marginTop: 10 }}>
+        <Text>Bezpieczne logowanie i rejestracja z systemem Clerk.</Text>
       </View>
     </View>
   );

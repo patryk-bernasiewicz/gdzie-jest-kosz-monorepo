@@ -3,19 +3,18 @@ import { StyleSheet, Text, View } from "react-native";
 import LeafletMap from "@/components/LeafletMap";
 
 import useLocation from "@/hooks/useLocation";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
+import useUserProfile from "@/hooks/useUserProfile";
 
 export default function HomeScreen() {
   const location = useLocation();
+  const userProfile = useUserProfile();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <View style={styles.container}>
-        <View style={styles.map}>
-          <LeafletMap latitude={location?.[0]} longitude={location?.[1]} />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.map}>
+        <LeafletMap latitude={location?.[0]} longitude={location?.[1]} />
+      </View>
+      {userProfile.data && userProfile.data.role === "admin" ? (
         <View style={styles.position}>
           <Text>
             Current position:{"\n"}
@@ -23,8 +22,8 @@ export default function HomeScreen() {
             {"\n"}
           </Text>
         </View>
-      </View>
-    </QueryClientProvider>
+      ) : null}
+    </View>
   );
 }
 

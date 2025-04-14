@@ -1,4 +1,5 @@
 import useNearestBin from "@/hooks/useNearestBin";
+import useUserProfile from "@/hooks/useUserProfile";
 import { BinWithDistance } from "@/types/BinWithDistance";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -8,6 +9,11 @@ type BinsListProps = {
 
 function BinsList({ bins }: BinsListProps) {
   const nearestBin = useNearestBin(bins);
+  const userProfile = useUserProfile();
+
+  if (!userProfile.data?.role || userProfile.data?.role !== "admin") {
+    return null;
+  }
 
   if (!bins) {
     return <Text>No bins in the nearest area.</Text>;

@@ -1,17 +1,10 @@
-import {
-  Appearance,
-  TextInput as RNTextInput,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { getColor } from "@/lib/getColor";
+import { TextInput as RNTextInput, StyleSheet, Text, View } from "react-native";
 
 type TextInputProps = React.ComponentProps<typeof RNTextInput> & {
   error?: string | null;
   label?: string;
 };
-
-const colorScheme = Appearance.getColorScheme();
 
 const styles = StyleSheet.create({
   outerWrapper: {
@@ -19,18 +12,18 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderWidth: 1,
-    borderColor: colorScheme === "dark" ? "#333" : "#ccc",
+    borderColor: getColor("border"),
     borderRadius: 4,
     padding: 10,
   },
   label: {
     fontSize: 11,
-    color: colorScheme === "dark" ? "#f0f0f0" : "#666",
+    color: getColor("textDim"),
     marginBottom: 2,
   },
   input: {
     height: 30,
-    color: colorScheme === "dark" ? "#fafafa" : "#999",
+    color: getColor("text"),
     fontSize: 16,
   },
   error: {
@@ -40,7 +33,7 @@ const styles = StyleSheet.create({
   errorText: {
     marginLeft: 10,
     marginRight: 10,
-    color: "red",
+    color: getColor("error"),
     fontSize: 12,
   },
 });

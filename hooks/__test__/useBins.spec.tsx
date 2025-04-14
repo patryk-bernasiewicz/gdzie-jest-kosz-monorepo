@@ -57,7 +57,7 @@ describe("useBins", () => {
       { id: 1, latitude: 52.1, longitude: 21.0 },
     ]);
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`/bin/?latitude=52.1&longitude=21`)
+      expect.stringContaining(`/bins/?latitude=52.1&longitude=21`)
     );
   });
 

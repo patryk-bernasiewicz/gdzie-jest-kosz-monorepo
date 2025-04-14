@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import BinsList from "./debug/BinsList";
+import useCreateBin from "@/hooks/useCreateBin";
 
 type LeafletMapProps = {
   latitude?: number;
@@ -26,6 +27,12 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const bins = useBins();
   const binsWithDistance = useBinsWithDistance(bins.data);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [selectedPos, setSelectedPos] = useState<[number, number] | null>(null);
+  const {
+    mutate: mutateCreateBin,
+    isPending: isCreatingBin,
+    isSuccess: isBinCreated,
+  } = useCreateBin();
 
   const leafletHtml = useRef<string>();
   const [htmlReady, setHtmlReady] = useState(false);
@@ -41,6 +48,28 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   };
 
   // TODO: it's a mess, need to REFACTOR THE HELL OUT OF IT
+
+  const handleCreateBin = () => {
+    if (isCreatingBin || !selectedPos) return;
+    mutateCreateBin(selectedPos);
+  };
+
+  useEffect(() => {
+    if (isBinCreated) {
+      setContextMenuPos(null);
+      setSelectedPos(null);
+
+      if (mapViewRef.current) {
+        const injectedJs = /*js*/ `
+          if (window.clearSelectedPos) {
+            window.clearSelectedPos();
+          }
+        `;
+
+        mapViewRef.current.injectJavaScript(injectedJs);
+      }
+    }
+  }, [isBinCreated]);
 
   useEffect(() => {
     if (mapViewRef.current) {
@@ -91,6 +120,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
                   logWebViewMessage("event in WebView: ", data.message);
                 } else if (data.type === "contextmenu") {
                   setContextMenuPos(data.screenPos);
+                  setSelectedPos([data.latlng.lat, data.latlng.lng]);
                 }
                 logWebViewMessage("event in WebView: ", data);
               } catch (error) {
@@ -101,37 +131,26 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
           />
         )}
         {contextMenuPos && (
-          <>
+          <TouchableWithoutFeedback
+            onPress={(event) => {
+              event.persist();
+            }}
+          >
             <View
               style={{
-                position: "absolute",
-                top: contextMenuPos.y,
-                left: contextMenuPos.x,
-                borderRadius: 100,
-                width: 15,
-                height: 15,
-                backgroundColor: "rgba(255, 0, 0, 0.5)",
-              }}
-            />
-            <TouchableWithoutFeedback
-              onPress={(event) => {
-                event.persist();
+                ...styles.contextMenu,
+                top: contextMenuPos.y + 30,
+                left: Math.min(
+                  Dimensions.get("window").width - 150 - 30,
+                  contextMenuPos.x
+                ),
               }}
             >
-              <View
-                style={{
-                  ...styles.contextMenu,
-                  top: contextMenuPos.y + 30,
-                  left: Math.min(
-                    Dimensions.get("window").width - 150 - 30,
-                    contextMenuPos.x
-                  ),
-                }}
-              >
-                <Text>Context menu</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </>
+              <Text onPress={handleCreateBin} disabled={isCreatingBin}>
+                Tu jest kosz!
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         )}
         <BinsList bins={binsWithDistance} />
       </View>

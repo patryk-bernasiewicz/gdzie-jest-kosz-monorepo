@@ -15,8 +15,6 @@ export default function createLeafletHtml(
   latitude: number | undefined,
   longitude: number | undefined
 ): string {
-  console.log(userImageUrl);
-
   const html = /*html*/ `<!DOCTYPE html>
   <html>
     <head>
@@ -32,6 +30,13 @@ export default function createLeafletHtml(
           width: 100vw;
           -webkit-user-select: none;
           user-select: none;
+        }
+
+        .context-menu-marker {
+          background-color: rgba(255, 0, 0, 0.5);
+          border-radius: 50%;
+          width: 15px;
+          height: 15px;
         }
       </style>
     </head>
@@ -49,6 +54,8 @@ export default function createLeafletHtml(
           return { log: log };
         };
         var loggerInstance = logger();
+
+        var contextMenuMarker = null;
 
         loggerInstance.log('Script started', { obj: 'foo', bar: 'zoo' });
 
@@ -70,8 +77,18 @@ export default function createLeafletHtml(
         });
 
         map.on('dblclick', function(event) {
+          if (contextMenuMarker) {
+            map.removeLayer(contextMenuMarker);
+            contextMenuMarker = null;
+          }
           var latlng = event.latlng.lat + ', ' + event.latlng.lng;
           var screenPos = event.containerPoint.x + ', ' + event.containerPoint.y;
+
+          contextMenuMarker = L.marker(event.latlng, {
+            icon: L.divIcon({
+              className: 'context-menu-marker',
+            }),
+          }).addTo(map);
 
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'contextmenu',
@@ -109,6 +126,8 @@ export default function createLeafletHtml(
         });
         var binMarkers = [];
 
+        // # External handlers
+
         // -- Update position
         window.updateMapPosition = function(lat, lng) {
           loggerInstance.log('Map position updated to: ' + lat + ', ' + lng);
@@ -123,6 +142,7 @@ export default function createLeafletHtml(
           map.setZoom(zoom);
         };
         
+        // -- Update bins
         window.updateBins = function(bins) {
           loggerInstance.log('Bins updated: ' + JSON.stringify(bins, null, 2));
 
@@ -136,6 +156,15 @@ export default function createLeafletHtml(
               binMarkers.push(marker);
             }
           });
+        }
+
+        // -- Clear selected position
+        window.clearSelectedPos = function() {
+          loggerInstance.log('Clearing selected position');
+          if (contextMenuMarker) {
+            map.removeLayer(contextMenuMarker);
+            contextMenuMarker = null;
+          }
         }
 
         map.setView(

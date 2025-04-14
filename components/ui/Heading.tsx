@@ -1,3 +1,4 @@
+import { getColor } from "@/lib/getColor";
 import { Appearance, Text } from "react-native";
 
 type HeadingProps = React.ComponentProps<typeof Text> & {
@@ -11,7 +12,7 @@ export default function Heading({ text, ...textProps }: HeadingProps) {
     <Text
       {...textProps}
       style={{
-        color: colorScheme === "dark" ? "#f0f0f0" : "#000000",
+        color: getColor("heading"),
         fontWeight: "900",
         textAlign: "center",
         fontSize: 30,

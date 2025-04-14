@@ -2,11 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import useLocation from "./useLocation";
 import { Bin } from "@/types/Bin";
 
+const disableFetchingBins = false;
+
 export default function useBins() {
   const location = useLocation();
   const binsUrl =
     location && location[0] && location[1]
-      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/bin/?latitude=${location[0]}&longitude=${location[1]}`
+      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/bins/?latitude=${location[0]}&longitude=${location[1]}`
       : null;
 
   return useQuery<Bin[]>({
@@ -25,7 +27,7 @@ export default function useBins() {
         throw error;
       }
     },
-    enabled: !!binsUrl,
+    enabled: !!binsUrl && !disableFetchingBins,
     refetchInterval: 15000,
     refetchIntervalInBackground: true,
   });
