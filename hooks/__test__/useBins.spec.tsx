@@ -10,6 +10,35 @@ jest.mock("../useLocation", () => ({
 
 import useLocation from "../useLocation";
 
+// Helper to mock useLocation's new return type
+function mockUseLocation({
+  location = null,
+  isLoading = false,
+  moveOffsetNorth = jest.fn(),
+  moveOffsetSouth = jest.fn(),
+  moveOffsetEast = jest.fn(),
+  moveOffsetWest = jest.fn(),
+  resetOffset = jest.fn(),
+}: {
+  location?: [number, number] | null;
+  isLoading?: boolean;
+  moveOffsetNorth?: () => void;
+  moveOffsetSouth?: () => void;
+  moveOffsetEast?: () => void;
+  moveOffsetWest?: () => void;
+  resetOffset?: () => void;
+} = {}) {
+  (useLocation as jest.Mock).mockReturnValue({
+    location,
+    isLoading,
+    moveOffsetNorth,
+    moveOffsetSouth,
+    moveOffsetEast,
+    moveOffsetWest,
+    resetOffset,
+  });
+}
+
 describe("useBins", () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -34,7 +63,7 @@ describe("useBins", () => {
   });
 
   it("does not fetch bins if location is not available", async () => {
-    (useLocation as jest.Mock).mockReturnValue(null);
+    mockUseLocation({ location: null });
 
     const { result } = renderHook(() => useBins(), { wrapper });
 
@@ -43,7 +72,7 @@ describe("useBins", () => {
   });
 
   it("fetches bins if location is available", async () => {
-    (useLocation as jest.Mock).mockReturnValue([52.1, 21.0]);
+    mockUseLocation({ location: [52.1, 21.0] });
 
     global.fetch = jest.fn().mockResolvedValueOnce({
       ok: true,
@@ -62,7 +91,7 @@ describe("useBins", () => {
   });
 
   it("handles fetch errors gracefully", async () => {
-    (useLocation as jest.Mock).mockReturnValue([52.1, 21.0]);
+    mockUseLocation({ location: [52.1, 21.0] });
 
     const fetchTemp = global.fetch;
     global.fetch = jest.fn().mockResolvedValue({
@@ -74,7 +103,6 @@ describe("useBins", () => {
 
     await waitFor(
       () => {
-        console.log(result.current.isError);
         expect(result.current.isError).toBe(true);
       },
       { timeout: 5000 }
@@ -86,11 +114,51 @@ describe("useBins", () => {
   });
 
   it("does not fetch if binsUrl is null", async () => {
-    (useLocation as jest.Mock).mockReturnValue([null, null]);
+    mockUseLocation({ location: null });
 
     const { result } = renderHook(() => useBins(), { wrapper });
 
     expect(result.current.data).toBeUndefined();
     expect(result.current.isFetching).toBe(false);
+  });
+
+  it("returns isLoading from useLocation", () => {
+    mockUseLocation({ location: [52.1, 21.0], isLoading: true });
+    const { location, isLoading } = useLocation();
+    expect(location).toEqual([52.1, 21.0]);
+    expect(isLoading).toBe(true);
+  });
+
+  it("calls offset control functions", () => {
+    const moveOffsetNorth = jest.fn();
+    const moveOffsetSouth = jest.fn();
+    const moveOffsetEast = jest.fn();
+    const moveOffsetWest = jest.fn();
+    const resetOffset = jest.fn();
+    mockUseLocation({
+      location: [52.1, 21.0],
+      moveOffsetNorth,
+      moveOffsetSouth,
+      moveOffsetEast,
+      moveOffsetWest,
+      resetOffset,
+    });
+    const {
+      moveOffsetNorth: north,
+      moveOffsetSouth: south,
+      moveOffsetEast: east,
+      moveOffsetWest: west,
+      resetOffset: reset,
+    } = useLocation();
+    north();
+    south();
+    east();
+    west();
+    reset();
+    expect(moveOffsetNorth).toHaveBeenCalled();
+    expect(moveOffsetSouth).toHaveBeenCalled();
+    expect(moveOffsetEast).toHaveBeenCalled();
+    expect(moveOffsetWest).toHaveBeenCalled();
+    expect(resetOffset).toHaveBeenCalled();
   });
 });
