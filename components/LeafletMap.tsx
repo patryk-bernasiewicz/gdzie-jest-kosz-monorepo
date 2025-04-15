@@ -13,6 +13,8 @@ import {
 import { WebView } from "react-native-webview";
 import BinsList from "./debug/BinsList";
 import useCreateBin from "@/hooks/useCreateBin";
+import OffsetControls from "./debug/OffsetControls";
+import useNearestBin from "@/hooks/useNearestBin";
 
 type LeafletMapProps = {
   latitude?: number;
@@ -25,7 +27,9 @@ const logsDisabled = true;
 function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const mapViewRef = useRef<WebView>(null);
   const bins = useBins();
+
   const binsWithDistance = useBinsWithDistance(bins.data);
+  const { nearestBin } = useNearestBin(binsWithDistance);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedPos, setSelectedPos] = useState<[number, number] | null>(null);
   const {
@@ -100,6 +104,17 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     }
   }, [mapLoaded, binsWithDistance]);
 
+  useEffect(() => {
+    if (mapLoaded && nearestBin && mapViewRef.current) {
+      const injectedJs = /*js*/ `
+        if (window.markClosestBin) {
+          window.markClosestBin(${nearestBin.id});
+        }
+      `;
+      mapViewRef.current.injectJavaScript(injectedJs);
+    }
+  }, [mapLoaded, nearestBin]);
+
   return (
     <Pressable onPress={() => setContextMenuPos(null)} style={styles.container}>
       <View style={styles.container}>
@@ -153,6 +168,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
           </TouchableWithoutFeedback>
         )}
         <BinsList bins={binsWithDistance} />
+        <OffsetControls />
       </View>
     </Pressable>
   );

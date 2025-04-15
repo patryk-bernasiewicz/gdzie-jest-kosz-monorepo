@@ -6,7 +6,7 @@ import useLocation from "@/hooks/useLocation";
 import useUserProfile from "@/hooks/useUserProfile";
 
 export default function HomeScreen() {
-  const location = useLocation();
+  const { location } = useLocation();
   const userProfile = useUserProfile();
 
   return (

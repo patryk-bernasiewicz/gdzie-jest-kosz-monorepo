@@ -8,7 +8,7 @@ type BinsListProps = {
 };
 
 function BinsList({ bins }: BinsListProps) {
-  const nearestBin = useNearestBin(bins);
+  const { nearestBin, nearestBinDirection } = useNearestBin(bins);
   const userProfile = useUserProfile();
 
   if (!userProfile.data?.role || userProfile.data?.role !== "admin") {
@@ -28,7 +28,8 @@ function BinsList({ bins }: BinsListProps) {
         return (
           <View key={bin.id}>
             <Text style={isNearest ? styles.nearestBin : undefined}>
-              Bin ID: {bin.id} ({bin.distance} meters)
+              Bin ID: {bin.id} ({bin.distance} meters
+              {isNearest && nearestBinDirection && `, ${nearestBinDirection}`})
             </Text>
           </View>
         );

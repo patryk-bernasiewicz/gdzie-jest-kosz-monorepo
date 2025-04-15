@@ -38,6 +38,15 @@ export default function createLeafletHtml(
           width: 15px;
           height: 15px;
         }
+
+        .bin-marker {
+          width: 35px;
+          height: 35px;
+        }
+
+        .closest-bin-marker {
+          filter: hue-rotate(120deg) drop-shadow(0 0 8px rgba(0, 255, 0, 0.5));
+        }
       </style>
     </head>
     <body>
@@ -56,6 +65,7 @@ export default function createLeafletHtml(
         var loggerInstance = logger();
 
         var contextMenuMarker = null;
+        var closestBinBarker = null;
 
         loggerInstance.log('Script started', { obj: 'foo', bar: 'zoo' });
 
@@ -69,12 +79,45 @@ export default function createLeafletHtml(
             zoomControl: false,
           });
 
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          maxZoom: ${MAX_ZOOM},
+          minZoom: ${MIN_ZOOM},
+        }).addTo(map);
+
+        var userMarkerIcon = L.icon({
+          iconUrl: '${userImageUrl}',
+          iconSize: [40, 40],
+          className: 'user-marker',
+        });
+
+        var userMarker = L.marker(
+          [${latitude}, ${longitude}],
+          {
+            icon: userMarkerIcon,
+          }
+        ).addTo(map);
+
+        loggerInstance.log('User marker added at: ' + ${latitude} + ', ' + ${longitude});
+
+        var binMarkerIcon = L.icon({
+          iconUrl: '${binImageUrl}',
+          iconSize: [35, 35],
+          className: 'bin-marker',
+        });
+        var binMarkers = [];
+
+        // # Internal handlers
+
+        // -- handle map onload event
+
         map.on('load', function(event) {
           loggerInstance.log('Map loaded', event);
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'maploaded',
           }));
         });
+
+        // -- handle doubleclick - context menu
 
         map.on('dblclick', function(event) {
           if (contextMenuMarker) {
@@ -96,35 +139,6 @@ export default function createLeafletHtml(
             screenPos: {  x: event.containerPoint.x, y: event.containerPoint.y },
           }));
         });
-
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          maxZoom: ${MAX_ZOOM},
-          minZoom: ${MIN_ZOOM},
-        }).addTo(map);
-
-        var userMarkerIcon = L.icon({
-          iconUrl: '${userImageUrl}',
-          iconSize: [40, 40],
-          className: 'user-marker',
-        });
-
-        var userMarker = L.marker(
-          [${latitude}, ${longitude}],
-          {
-            icon: userMarkerIcon,
-          }
-        )
-          .addTo(map);
-
-        loggerInstance.log('User marker added at: ' + ${latitude} + ', ' + ${longitude});
-
-          
-        var binMarkerIcon = L.icon({
-          iconUrl: '${binImageUrl}',
-          iconSize: [35, 35],
-          className: 'bin-marker',
-        });
-        var binMarkers = [];
 
         // # External handlers
 
@@ -164,6 +178,18 @@ export default function createLeafletHtml(
           if (contextMenuMarker) {
             map.removeLayer(contextMenuMarker);
             contextMenuMarker = null;
+          }
+        }
+
+        // -- Mark bin marker as the closest
+        window.markClosestBin = function(binId) {
+          loggerInstance.log('Marking bin ' + binId + ' as closest');
+          if (closestBinBarker) {
+            closestBinBarker._icon.classList.remove('closest-bin-marker');
+          }
+          closestBinBarker = binMarkers.find((marker) => marker.id === binId);
+          if (closestBinBarker) {
+            closestBinBarker._icon.classList.add('closest-bin-marker');
           }
         }
 

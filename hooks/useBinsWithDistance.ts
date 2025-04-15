@@ -5,7 +5,7 @@ import { BinWithDistance } from "@/types/BinWithDistance";
 import calculateDistance from "@/lib/calculateDistance";
 
 export default function useBinsWithDistance(bins?: Bin[]) {
-  const location = useLocation();
+  const { location } = useLocation();
 
   const binsWithDistance = useMemo(() => {
     if (!location || !location[0] || !location[1]) return null;

@@ -16,7 +16,7 @@ export default function getNearestBin(
       [bin.latitude, bin.longitude]
     );
 
-    if (!nearest || currentDistance < bin.distance) {
+    if (!nearest || !nearest.distance || currentDistance < nearest.distance) {
       return bin;
     }
 
