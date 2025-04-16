@@ -41,7 +41,7 @@ function BinsList({ bins }: BinsListProps) {
 const styles = StyleSheet.create({
   binList: {
     position: "absolute",
-    top: 50,
+    top: 110,
     left: 10,
     backgroundColor: "white",
     fontSize: 9,
@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     zIndex: 2,
+    opacity: 0.5,
+    pointerEvents: "none",
   },
   nearestBin: {
     color: "green",

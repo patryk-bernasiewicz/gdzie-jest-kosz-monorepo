@@ -15,6 +15,7 @@ import BinsList from "./debug/BinsList";
 import useCreateBin from "@/hooks/useCreateBin";
 import OffsetControls from "./debug/OffsetControls";
 import useNearestBin from "@/hooks/useNearestBin";
+import NearestBinInformation from "./NearestBinInformation";
 
 type LeafletMapProps = {
   latitude?: number;
@@ -29,7 +30,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const bins = useBins();
 
   const binsWithDistance = useBinsWithDistance(bins.data);
-  const { nearestBin } = useNearestBin(binsWithDistance);
+  const { nearestBin, nearestBinDirection } = useNearestBin(binsWithDistance);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedPos, setSelectedPos] = useState<[number, number] | null>(null);
   const {
@@ -169,6 +170,10 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
         )}
         <BinsList bins={binsWithDistance} />
         <OffsetControls />
+        <NearestBinInformation
+          nearestBin={nearestBin}
+          direction={nearestBinDirection}
+        />
       </View>
     </Pressable>
   );
@@ -182,9 +187,6 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#f00",
-    borderStyle: "solid",
   },
   contextMenu: {
     position: "absolute",

@@ -43,9 +43,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 0,
     backgroundColor: "lightblue",
-    borderWidth: 1,
-    borderColor: "#f00",
-    borderStyle: "solid",
     width: "100%",
   },
   position: {
