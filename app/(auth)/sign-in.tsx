@@ -1,13 +1,13 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Heading from "@/components/ui/Heading";
 import TextInput from "@/components/ui/input/TextInput";
 import TouchableOpacityButton from "@/components/ui/TouchableOpacityButton";
 import Text from "@/components/ui/Text";
 import { getColor } from "@/lib/getColor";
-import useUpsertUser from "@/hooks/useUpsertUser";
+import Toast from "react-native-toast-message";
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const [isPending, setPending] = useState(false);
   const router = useRouter();
-  const upsertUser = useUpsertUser();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -32,6 +32,8 @@ export default function Page() {
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
+
+    setPending(true);
 
     // Start the sign-in process using the email and password provided
     try {
@@ -43,22 +45,21 @@ export default function Page() {
       // If sign-in process is complete, set the created session as active
       // and redirect the user
       if (signInAttempt.status === "complete") {
-        if (signInAttempt.id) {
-          await upsertUser.mutateAsync(signInAttempt.id);
-        }
-
         await setActive({ session: signInAttempt.createdSessionId });
 
         router.replace("/");
       } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+      Toast.show({
+        type: "error",
+        text1: "Nie można zalogować",
+        text2: (err as Error).message ?? "Sprawdź poprawność danych logowania",
+      });
+    } finally {
+      setPending(false);
     }
   };
 
@@ -71,6 +72,7 @@ export default function Page() {
         placeholder="Adres e-mail"
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
         label="Adres e-mail"
+        disabled={isPending}
       />
       <TextInput
         value={password}
@@ -78,11 +80,13 @@ export default function Page() {
         secureTextEntry={true}
         onChangeText={(password) => setPassword(password)}
         label="Hasło"
+        disabled={isPending}
       />
       <TouchableOpacityButton
         onPress={onSignInPress}
         text="Kontynuuj"
         variant="primary"
+        disabled={isPending}
       />
       <View
         style={{ display: "flex", flexDirection: "row", gap: 3, marginTop: 10 }}

@@ -1,17 +1,67 @@
 import { SignOutButton } from "@/components/SignOutButton";
+import Heading from "@/components/ui/Heading";
+import Text from "@/components/ui/Text";
 import useUserProfile from "@/hooks/useUserProfile";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { getColor } from "@/lib/getColor";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { Href, Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+export default function ProfileScreen() {
+  const userProfile = useUserProfile();
+
+  return (
+    <View style={styles.container}>
+      <Heading text="Gdzie jest kosz" />
+      <Link href="/(auth)/privacy-policy">
+        <Text style={styles.link}>Polityka prywatności</Text>
+      </Link>
+      <SignedIn>
+        {userProfile.data && (
+          <>
+            <Text style={styles.identifier}>
+              Twój identyfikator Clerk:{"\n"}
+              <View style={styles.code}>
+                <Text>{userProfile.data.clerkId}</Text>
+              </View>
+            </Text>
+            <Text style={styles.identifier}>
+              Twój identyfikator w aplikacji Gdzie Jest Kosz:{"\n"}
+              <View style={styles.code}>
+                <Text>{userProfile.data.id}</Text>
+              </View>
+            </Text>
+          </>
+        )}
+        <View style={{ marginTop: "auto" }}>
+          <SignOutButton />
+        </View>
+      </SignedIn>
+      <SignedOut>
+        <View style={{ marginTop: 12, marginBottom: 8 }}>
+          <Link href={`/(auth)/sign-in` as Href}>
+            <Text style={styles.link}>Zaloguj się</Text>
+          </Link>
+        </View>
+        <View style={{ marginBottom: 8 }}>
+          <Link href={`/(auth)/sign-up` as Href}>
+            <Text style={styles.link}>Utwórz konto</Text>
+          </Link>
+        </View>
+        <SignOutButton />
+      </SignedOut>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: getColor("background"),
     position: "relative",
     flex: 1,
     width: "100%",
-    paddingTop: 150,
-    paddingBottom: 50,
+    paddingTop: 80,
+    paddingBottom: 110,
     paddingLeft: 20,
     paddingRight: 20,
     margin: 0,
@@ -19,35 +69,19 @@ const styles = StyleSheet.create({
   link: {
     fontSize: 20,
     fontWeight: "bold",
+    color: getColor("primary"),
+    textDecorationLine: "underline",
+  },
+  identifier: {
+    fontSize: 12,
+  },
+  code: {
+    backgroundColor: getColor("backgroundDim"),
+    fontFamily: "monospace",
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
+    borderRadius: 2,
   },
 });
-
-export default function ProfileScreen() {
-  const { user } = useUser();
-  const userProfile = useUserProfile();
-
-  return (
-    <View style={styles.container}>
-      <SignedIn>
-        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-        <SignOutButton />
-        {userProfile.data && (
-          <Text>
-            User profile data: {userProfile.data.id}/{userProfile.data.clerkId}
-          </Text>
-        )}
-      </SignedIn>
-      <SignedOut>
-        <Link style={styles.link} href={`/(auth)/sign-in` as Href}>
-          <Text>Sign in</Text>
-        </Link>
-        <Link style={styles.link} href={`/(auth)/sign-up` as Href}>
-          <Text>Sign up</Text>
-        </Link>
-      </SignedOut>
-      <Link href="/(auth)/privacy-policy">
-        <Text>Polityka prywatności</Text>
-      </Link>
-    </View>
-  );
-}

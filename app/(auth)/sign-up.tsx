@@ -37,6 +37,7 @@ const errorTranslations: Record<string, string> = {
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const [isPending, setPending] = useState(false);
   const router = useRouter();
 
   const [emailAddress, setEmailAddress] = useState("");
@@ -54,6 +55,8 @@ export default function SignUpScreen() {
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
     if (!isLoaded) return;
+
+    setPending(true);
 
     // Start sign-up process using email and password provided
     try {
@@ -103,12 +106,16 @@ export default function SignUpScreen() {
           consent_given: legalErrorText,
         });
       }
+    } finally {
+      setPending(false);
     }
   };
 
   // Handle submission of verification form
   const onVerifyPress = async () => {
     if (!isLoaded) return;
+
+    setPending(true);
 
     try {
       // Use the code the user provided to attempt verification
@@ -120,8 +127,8 @@ export default function SignUpScreen() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        if (signUpAttempt.id) {
-          await upsertUser.mutateAsync(signUpAttempt.id);
+        if (signUpAttempt.createdSessionId) {
+          await upsertUser.mutateAsync(signUpAttempt.createdSessionId);
         }
         router.replace("/");
       } else {
@@ -133,6 +140,8 @@ export default function SignUpScreen() {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setPending(false);
     }
   };
 
@@ -148,12 +157,14 @@ export default function SignUpScreen() {
           value={code}
           placeholder="Wprowadź kod potwierdzający"
           onChangeText={(code) => setCode(code)}
+          disabled={isPending}
         />
         <Text>Akceptuję regulamin i politykę prywatności</Text>
         <TouchableOpacityButton
           variant="primary"
           text="Zweryfikuj"
           onPress={onVerifyPress}
+          disabled={isPending}
         />
         <View style={{ marginTop: 10 }}>
           <Text>Bezpieczne logowanie i rejestracja z systemem Clerk.</Text>
@@ -172,6 +183,7 @@ export default function SignUpScreen() {
         onChangeText={(email) => setEmailAddress(email)}
         label="Adres e-mail"
         error={errors?.email_address}
+        disabled={isPending}
       />
       <TextInput
         value={password}
@@ -180,6 +192,7 @@ export default function SignUpScreen() {
         onChangeText={(password) => setPassword(password)}
         label="Hasło"
         error={errors?.password}
+        disabled={isPending}
       />
       <BouncyCheckbox
         isChecked={legalAccepted}
@@ -192,12 +205,14 @@ export default function SignUpScreen() {
           fontSize: 12,
           color: getColor("text"),
         }}
+        disabled={isPending}
       />
 
       <TouchableOpacityButton
         variant="primary"
         onPress={onSignUpPress}
         text="Kontynuuj"
+        disabled={isPending}
       />
       <View
         style={{ display: "flex", flexDirection: "row", gap: 3, marginTop: 10 }}

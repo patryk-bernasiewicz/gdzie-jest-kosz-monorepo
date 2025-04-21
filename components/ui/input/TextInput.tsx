@@ -4,6 +4,7 @@ import { TextInput as RNTextInput, StyleSheet, Text, View } from "react-native";
 type TextInputProps = React.ComponentProps<typeof RNTextInput> & {
   error?: string | null;
   label?: string;
+  disabled?: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -26,6 +27,10 @@ const styles = StyleSheet.create({
     color: getColor("text"),
     fontSize: 16,
   },
+  inputDisabled: {
+    opacity: 0.5,
+    pointerEvents: "none",
+  },
   error: {
     marginTop: 1,
     marginBottom: 1,
@@ -41,6 +46,7 @@ const styles = StyleSheet.create({
 export default function TextInput({
   error,
   label,
+  disabled,
   ...inputProps
 }: TextInputProps) {
   return (
@@ -49,7 +55,11 @@ export default function TextInput({
         {label && <Text style={styles.label}>{label}</Text>}
         <RNTextInput
           {...inputProps}
-          style={[styles.input, error ? styles.error : null]}
+          style={[
+            styles.input,
+            error ? styles.error : null,
+            disabled && styles.inputDisabled,
+          ]}
         />
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}

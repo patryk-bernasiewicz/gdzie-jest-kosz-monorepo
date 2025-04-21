@@ -1,7 +1,7 @@
 import useNearestBin from "@/hooks/useNearestBin";
 import useUserProfile from "@/hooks/useUserProfile";
 import { BinWithDistance } from "@/types/BinWithDistance";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 
 type BinsListProps = {
   bins: BinWithDistance[] | null;
@@ -22,18 +22,28 @@ function BinsList({ bins }: BinsListProps) {
   return (
     <View style={styles.binList}>
       <Text>Total bins in area: {bins?.length ?? 0}</Text>
-      {bins.map((bin) => {
-        const isNearest = nearestBin === bin;
+      <View style={styles.scrollWrapper} pointerEvents="box-none">
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          style={{ flexGrow: 0, flex: 0 }}
+        >
+          {bins.map((bin) => {
+            const isNearest = nearestBin === bin;
 
-        return (
-          <View key={bin.id}>
-            <Text style={isNearest ? styles.nearestBin : undefined}>
-              Bin ID: {bin.id} ({bin.distance} meters
-              {isNearest && nearestBinDirection && `, ${nearestBinDirection}`})
-            </Text>
-          </View>
-        );
-      })}
+            return (
+              <View key={bin.id}>
+                <Text style={isNearest ? styles.nearestBin : undefined}>
+                  Bin ID: {bin.id} ({bin.distance} meters
+                  {isNearest &&
+                    nearestBinDirection &&
+                    `, ${nearestBinDirection}`}
+                  )
+                </Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -51,7 +61,10 @@ const styles = StyleSheet.create({
     borderColor: "black",
     zIndex: 2,
     opacity: 0.5,
-    pointerEvents: "none",
+  },
+  scrollWrapper: {
+    maxHeight: 110,
+    overflow: "scroll",
   },
   nearestBin: {
     color: "green",

@@ -3,17 +3,17 @@ import { useMutation } from "@tanstack/react-query";
 
 export default function useUpsertUser() {
   const upsertUser = useMutation<User, Error, string>({
-    mutationFn: async (clerkId: string) => {
+    mutationFn: async (sessionId: string) => {
       try {
         const res = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/user/upsert`,
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/user/validate-session`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              clerkId,
+              sessionId,
             }),
           }
         );

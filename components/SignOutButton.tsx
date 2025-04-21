@@ -1,26 +1,61 @@
+import { getColor } from "@/lib/getColor";
 import { useClerk } from "@clerk/clerk-expo";
 import * as Linking from "expo-linking";
-import { Text, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export const SignOutButton = () => {
-  // Use `useClerk()` to access the `signOut()` function
+  const [isPending, setPending] = useState(false);
   const { signOut } = useClerk();
 
   const handleSignOut = async () => {
+    if (isPending) return;
+
+    setPending(true);
+
     try {
       await signOut();
-      // Redirect to your desired page
-      Linking.openURL(Linking.createURL("/"));
+      Linking.openURL(Linking.createURL("/(tabs)/profile"));
     } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setPending(false);
     }
   };
 
   return (
-    <TouchableOpacity onPress={handleSignOut}>
-      <Text>Sign out</Text>
-    </TouchableOpacity>
+    <View style={styles.wrapper}>
+      <TouchableOpacity
+        disabled={isPending}
+        onPress={handleSignOut}
+        style={{
+          ...styles.button,
+          ...(isPending ? styles.buttonDisabled : {}),
+        }}
+      >
+        <Text style={styles.buttonText}>Wyloguj się</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flexDirection: "row",
+  },
+  button: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 8,
+    borderRadius: 4,
+    backgroundColor: getColor("primary"),
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+    pointerEvents: "none",
+  },
+  buttonText: {
+    color: getColor("textInvert"),
+  },
+});
