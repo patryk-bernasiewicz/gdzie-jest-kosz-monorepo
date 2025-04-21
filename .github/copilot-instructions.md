@@ -1,0 +1,98 @@
+# Copilot Instructions
+
+This document provides guidelines for GitHub Copilot to assist effectively in this mobile app repository. Please adhere to the following instructions and preferences.
+
+---
+
+## 1. Project Overview
+
+- **Purpose**: This repository contains the codebase for a mobile app that helps users, particularly dog owners, locate nearby trash bins for pet waste disposal.
+- **Target Audience**: Dog owners.
+- **Problem Solved**: Helps users locate nearby trash bins for convenience.
+
+---
+
+## 2. Technology Stack
+
+### Technologies Used:
+
+- **Mobile App Framework**: React Native with Expo.
+- **Maps**: Leaflet (using Open Street Map tiles).
+- **Authentication**: Clerk for user authentication.
+- **Language**: TypeScript.
+- **Geolocation**: Uses native APIs to fetch geolocation data.
+
+### CI/CD and Hosting:
+
+- No CI/CD pipelines or hosting platforms are in place yet.
+
+---
+
+## 3. Codebase Preferences
+
+- **Language**: TypeScript.
+- **Style Preferences**:
+  - **Semicolons**: Mandatory wherever applicable.
+  - **Quote Marks**: Single quotes are preferred unless backticks are more appropriate. Double quotes for JSX attributes.
+- **Structure**: Organize the codebase into feature-based subcategories/domains.
+- **Modifiable Areas**: The entire codebase is fresh and can be modified by Copilot.
+
+---
+
+## 4. Collaboration and Workflow
+
+- **Version Control**: Git.
+- **Branching Strategy**: Use feature-based branches.
+- **Commit Messages**: Copilot should summarize changes and suggest commit messages for user review and editing. Do not auto-generate commit messages.
+- **Terminal commands**: Always use either Git Bash on Windows or any Unix-based terminal; therefore, Copilot should default to Unix terminal commands and programs.
+
+---
+
+## 5. Testing and Quality Assurance
+
+- **Testing Framework**: Testing Library for React Native.
+- **Priority**: Focus on integration tests. Unit tests are required only for complex components.
+- **Coverage**: No specific testing coverage requirements.
+
+---
+
+## 6. Documentation
+
+- **Inline Comments/Docstrings**: Avoid unless necessary for complex code. Favor external documentation.
+- **Documentation Updates**: Copilot should summarize major changes and suggest these summaries for inclusion in the changelog and README.
+- **Tools**: No documentation generation tools are in use.
+- **Formats**: Markdown is the standard format for all documentation.
+
+---
+
+## 7. Standards and Accessibility
+
+- **Domain-Specific Standards**: None currently defined (examples are welcome for evaluation).
+- **Accessibility**: Ensure all components adhere to accessibility best practices.
+- **Internationalization**: Not required at this stage.
+
+---
+
+## 8. User Experience and Design
+
+- **Mobile App**: Strong focus on UI/UX design.
+- **Branding Guidelines**: None defined at this time.
+
+---
+
+## 9. Performance and Scalability
+
+- Copilot should prioritize performance and scalability in code generation and architectural suggestions.
+- Recommend optimizations for rendering large datasets on maps or in lists.
+
+---
+
+## Suggestions for Copilot
+
+- Suggest domain-specific standards for mobile development and integration with mapping/geolocation APIs.
+- Recommend performance optimizations for large data rendering.
+- Propose accessibility improvements for UI components.
+
+---
+
+By following these instructions, GitHub Copilot can align with this mobile app project's goals and standards, effectively enhancing development productivity.
