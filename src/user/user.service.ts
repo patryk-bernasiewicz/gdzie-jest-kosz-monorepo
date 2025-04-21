@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -6,19 +6,21 @@ import { DatabaseService } from 'src/database/database.service';
 export class UserService {
   constructor(private db: DatabaseService) {}
 
-  async upsertUser(clerkId: string): Promise<User> {
-    const user = await this.db.user.upsert({
-      where: { clerkId },
-      update: {},
-      create: { clerkId },
-    });
-    return user;
-  }
+  logger = new Logger(UserService.name);
 
-  async getByClerkId(clerkId: string): Promise<User | null> {
-    const user = await this.db.user.findUnique({
-      where: { clerkId },
-    });
-    return user;
+  async upsertUser(clerkId: string): Promise<User> {
+    this.logger.debug(`Upserting user with clerkId: ${clerkId}`);
+
+    try {
+      const user = await this.db.user.upsert({
+        where: { clerkId },
+        update: {},
+        create: { clerkId },
+      });
+      return user;
+    } catch (error) {
+      console.error('Error upserting user:', error);
+      throw new Error('Failed to upsert user');
+    }
   }
 }

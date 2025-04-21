@@ -36,7 +36,7 @@ export class BinsService {
         latitude,
         longitude,
         type: 'bin',
-        acceptedAt: isAdmin ? new Date() : null,
+        acceptedAt: isAdmin ? new Date() : null, // if user is an admin, the bin is accepted immediately
         createdById: userId,
       },
     });

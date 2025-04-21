@@ -6,10 +6,14 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { BinsService } from './bins.service';
-import { Bin } from '@prisma/client';
+import { Bin, User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
+import { CurrentUser } from 'src/user/current-user.decorator';
+import { ClerkAuthGuard } from 'src/user/clerk-auth.guard';
 
 @Controller('bins')
 export class BinsController {
@@ -33,19 +37,13 @@ export class BinsController {
   }
 
   @Post()
+  @UseGuards(ClerkAuthGuard)
   async createBin(
-    @Query('clerkId') clerkId: string,
     @Body('latitude') latitude: number,
     @Body('longitude') longitude: number,
+    @CurrentUser() user: User,
   ): Promise<Bin> {
-    const user = await this.userService.getByClerkId(clerkId);
-    if (!user) {
-      this.logger.error(`User with clerkId ${clerkId} not found`);
-      throw new Error('User not found');
-    }
-
     const isAdmin = user.role === 'admin';
-
     return this.binsService.createBin(latitude, longitude, user.id, isAdmin);
   }
 }
