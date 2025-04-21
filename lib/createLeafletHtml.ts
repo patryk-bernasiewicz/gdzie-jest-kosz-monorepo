@@ -37,11 +37,20 @@ export default function createLeafletHtml(
           border-radius: 50%;
           width: 15px;
           height: 15px;
+          position: fixed;
+          z-index: 1000;
+        }
+
+        .user-marker {
+          transform-origin: bottom center;
+          position: fixed;
+          bottom: 0;
         }
 
         .bin-marker {
-          width: 35px;
-          height: 35px;
+          position: fixed;
+          z-index: 0;
+          top: -20px;
         }
 
         .closest-bin-marker {
@@ -52,8 +61,11 @@ export default function createLeafletHtml(
     <body>
       <div id="map"></div>
       <script>
+        var selectionRangeTreshold = 0.000054; // ~6 meters
+
         var logger = function () {
           function log(message) {
+            console.log('[WEBVIEW Log] ', message);
             window.ReactNativeWebView.postMessage(JSON.stringify({
               type: 'log',
               message: message,
@@ -67,7 +79,7 @@ export default function createLeafletHtml(
         var contextMenuMarker = null;
         var closestBinBarker = null;
 
-        loggerInstance.log('Script started', { obj: 'foo', bar: 'zoo' });
+        //loggerInstance.log('Script started', { obj: 'foo', bar: 'zoo' });
 
         var map = L
           .map('map', {
@@ -97,7 +109,7 @@ export default function createLeafletHtml(
           }
         ).addTo(map);
 
-        loggerInstance.log('User marker added at: ' + ${latitude} + ', ' + ${longitude});
+        //loggerInstance.log('User marker added at: ' + ${latitude} + ', ' + ${longitude});
 
         var binMarkerIcon = L.icon({
           iconUrl: '${binImageUrl}',
@@ -131,12 +143,35 @@ export default function createLeafletHtml(
             icon: L.divIcon({
               className: 'context-menu-marker',
             }),
-          }).addTo(map);
+          }).setZIndexOffset(1000).addTo(map);
+
+          var foundMarkers = [];
+          try {
+            for (var i = 0; i < binMarkers.length; i++) {
+              var currentMarker = binMarkers[i];
+
+              var markerId = currentMarker.id;
+              var markerLatLng = currentMarker.getLatLng();
+              var markerLat = markerLatLng.lat;
+              var markerLng = markerLatLng.lng;
+
+              if (
+                Math.abs(markerLatLng.lat - event.latlng.lat) < selectionRangeTreshold &&
+                Math.abs(markerLatLng.lng - event.latlng.lng) < selectionRangeTreshold
+              ) {
+                foundMarkers.push(markerId);
+              }
+            }
+            loggerInstance.log('Found markers around selected point: ' + JSON.stringify(foundMarkers, null, 2));
+          } catch (e) {
+            loggerInstance.log('Error while searching for markers: ' + e.message, e);
+          }
 
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'contextmenu',
             latlng: { lat: event.latlng.lat, lng: event.latlng.lng },
             screenPos: {  x: event.containerPoint.x, y: event.containerPoint.y },
+            selectedBins: foundMarkers,
           }));
         });
 
@@ -144,7 +179,7 @@ export default function createLeafletHtml(
 
         // -- Update position
         window.updateMapPosition = function(lat, lng) {
-          loggerInstance.log('Map position updated to: ' + lat + ', ' + lng);
+          //loggerInstance.log('Map position updated to: ' + lat + ', ' + lng);
           map.setView([lat, lng], map.getZoom());
           userMarker.setLatLng([lat, lng]);
         };
@@ -152,20 +187,20 @@ export default function createLeafletHtml(
 
         // -- Update zoom
         window.updateMapZoom = function(zoom) {
-          loggerInstance.log('Zoom level changed to: ' + zoom);
+          //loggerInstance.log('Zoom level changed to: ' + zoom);
           map.setZoom(zoom);
         };
         
         // -- Update bins
         window.updateBins = function(bins) {
-          loggerInstance.log('Bins updated: ' + JSON.stringify(bins, null, 2));
+          //loggerInstance.log('Bins updated: ' + JSON.stringify(bins, null, 2));
 
           bins.forEach((bin) => {
             var exists = binMarkers.find((marker) => marker.id === bin.id);
             if (!exists) {
               var marker = L.marker([bin.latitude, bin.longitude], {
                 icon: binMarkerIcon,
-              }).addTo(map);
+              }).setZIndexOffset(100).addTo(map);
               marker.id = bin.id;
               binMarkers.push(marker);
             }
@@ -174,7 +209,7 @@ export default function createLeafletHtml(
 
         // -- Clear selected position
         window.clearSelectedPos = function() {
-          loggerInstance.log('Clearing selected position');
+          //loggerInstance.log('Clearing selected position');
           if (contextMenuMarker) {
             map.removeLayer(contextMenuMarker);
             contextMenuMarker = null;
@@ -183,7 +218,7 @@ export default function createLeafletHtml(
 
         // -- Mark bin marker as the closest
         window.markClosestBin = function(binId) {
-          loggerInstance.log('Marking bin ' + binId + ' as closest');
+          //loggerInstance.log('Marking bin ' + binId + ' as closest');
           if (closestBinBarker) {
             closestBinBarker._icon.classList.remove('closest-bin-marker');
           }
@@ -198,7 +233,7 @@ export default function createLeafletHtml(
           ${MIN_ZOOM}
         );
 
-        loggerInstance.log('Script successfully parsed');
+        //loggerInstance.log('Script successfully parsed');
       </script>
     </body>
   </html>`;

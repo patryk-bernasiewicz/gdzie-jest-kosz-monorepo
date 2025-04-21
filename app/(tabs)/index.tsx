@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import LeafletMap from "@/components/LeafletMap";
+import LeafletMap from "@/components/map/LeafletMap";
 
 import useLocation from "@/hooks/useLocation";
 import useUserProfile from "@/hooks/useUserProfile";

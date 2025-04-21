@@ -1,7 +1,7 @@
 import useLocation from "@/hooks/useLocation";
 import { getColor } from "@/lib/getColor";
 import { View } from "react-native";
-import TouchableOpacityButton from "../ui/TouchableOpacityButton";
+import TouchableOpacityButton from "@/components/ui/TouchableOpacityButton";
 
 export default function OffsetControls() {
   const {

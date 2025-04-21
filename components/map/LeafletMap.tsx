@@ -2,20 +2,16 @@ import useBins from "@/hooks/useBins";
 import useBinsWithDistance from "@/hooks/useBinsWithDistance";
 import createLeafletHtml from "@/lib/createLeafletHtml";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Dimensions,
-  Pressable,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, Text, Pressable, Alert } from "react-native";
 import { WebView } from "react-native-webview";
 import BinsList from "./debug/BinsList";
 import useCreateBin from "@/hooks/useCreateBin";
 import OffsetControls from "./debug/OffsetControls";
 import useNearestBin from "@/hooks/useNearestBin";
 import NearestBinInformation from "./NearestBinInformation";
+import { Bin } from "@/types/Bin";
+import MapContextMenu from "./MapContextMenu";
+import useMarkInvalidBin from "@/hooks/useMarkInvalidBin";
 
 type LeafletMapProps = {
   latitude?: number;
@@ -23,7 +19,7 @@ type LeafletMapProps = {
   zoom?: number;
 };
 
-const logsDisabled = true;
+const logsDisabled = false;
 
 function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
   const mapViewRef = useRef<WebView>(null);
@@ -38,6 +34,11 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     isPending: isCreatingBin,
     isSuccess: isBinCreated,
   } = useCreateBin();
+  const {
+    mutate: markInvalidBin,
+    isPending: isMarkingBinInvalid,
+    isSuccess: isBinMarkedInvalid,
+  } = useMarkInvalidBin();
 
   const leafletHtml = useRef<string>();
   const [htmlReady, setHtmlReady] = useState(false);
@@ -45,6 +46,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     x: number;
     y: number;
   } | null>(null);
+  const [mapSelectedBins, setMapSelectedBins] = useState<Bin["id"][]>([]);
 
   const logWebViewMessage = (...messages: any[]) => {
     if (!logsDisabled) {
@@ -52,17 +54,39 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     }
   };
 
-  // TODO: it's a mess, need to REFACTOR THE HELL OUT OF IT
-
   const handleCreateBin = () => {
     if (isCreatingBin || !selectedPos) return;
     mutateCreateBin(selectedPos);
+  };
+
+  const handleConfirmInvalidBin = (binId: number) => {
+    if (isMarkingBinInvalid) return;
+    markInvalidBin(binId);
+  };
+
+  const handleMarkInvalidBin = (binId: number) => {
+    console.log(`bin id ${binId} marked as invalid`);
+    Alert.alert(
+      "Potwierdź akcję",
+      `Czy chcesz oznaczyć kosz ID: ${binId} jako nieaktualny?`,
+      [
+        {
+          text: "Tak",
+          onPress: () => handleConfirmInvalidBin(binId),
+        },
+        {
+          text: "Nie",
+          style: "cancel",
+        },
+      ]
+    );
   };
 
   useEffect(() => {
     if (isBinCreated) {
       setContextMenuPos(null);
       setSelectedPos(null);
+      setMapSelectedBins([]);
 
       if (mapViewRef.current) {
         const injectedJs = /*js*/ `
@@ -75,6 +99,24 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
       }
     }
   }, [isBinCreated]);
+
+  useEffect(() => {
+    if (isBinMarkedInvalid) {
+      setContextMenuPos(null);
+      setSelectedPos(null);
+      setMapSelectedBins([]);
+
+      if (mapViewRef.current) {
+        const injectedJs = /*js*/ `
+          if (window.clearSelectedPos) {
+            window.clearSelectedPos();
+          }
+        `;
+
+        mapViewRef.current.injectJavaScript(injectedJs);
+      }
+    }
+  }, [isBinMarkedInvalid]);
 
   useEffect(() => {
     if (mapViewRef.current) {
@@ -137,6 +179,9 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
                 } else if (data.type === "contextmenu") {
                   setContextMenuPos(data.screenPos);
                   setSelectedPos([data.latlng.lat, data.latlng.lng]);
+                  if (data.selectedBins) {
+                    setMapSelectedBins(data.selectedBins);
+                  }
                 }
                 logWebViewMessage("event in WebView: ", data);
               } catch (error) {
@@ -146,28 +191,15 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
             webviewDebuggingEnabled
           />
         )}
-        {contextMenuPos && (
-          <TouchableWithoutFeedback
-            onPress={(event) => {
-              event.persist();
-            }}
-          >
-            <View
-              style={{
-                ...styles.contextMenu,
-                top: contextMenuPos.y + 30,
-                left: Math.min(
-                  Dimensions.get("window").width - 150 - 30,
-                  contextMenuPos.x
-                ),
-              }}
-            >
-              <Text onPress={handleCreateBin} disabled={isCreatingBin}>
-                Tu jest kosz!
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
+        <MapContextMenu
+          screenX={contextMenuPos?.x}
+          screenY={contextMenuPos?.y}
+          isOpen={!!contextMenuPos}
+          onCreateBin={handleCreateBin}
+          disabled={isCreatingBin || !selectedPos}
+          selectedBinIds={mapSelectedBins}
+          onMarkInvalidBin={handleMarkInvalidBin}
+        />
         <BinsList bins={binsWithDistance} />
         <OffsetControls />
         <NearestBinInformation

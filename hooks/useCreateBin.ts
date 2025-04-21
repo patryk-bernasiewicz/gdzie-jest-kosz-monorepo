@@ -1,11 +1,10 @@
 import { Bin } from "@/types/Bin";
-import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import useClerkToken from "./useClerkToken";
 
 export default function useCreateBin() {
-  const user = useUser();
-  const clerkId = user?.user?.id;
+  const { token } = useClerkToken();
   const queryClient = useQueryClient();
 
   const createBin = useMutation<Bin, Error, [number, number]>({
@@ -14,19 +13,17 @@ export default function useCreateBin() {
       try {
         const [latitude, longitude] = location;
 
-        const res = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/bins?clerkId=${clerkId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              latitude,
-              longitude,
-            }),
-          }
-        );
+        const res = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/bins`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            latitude,
+            longitude,
+          }),
+        });
 
         if (!res.ok) {
           throw new Error("Network response was not ok");

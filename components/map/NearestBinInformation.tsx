@@ -1,6 +1,6 @@
 import { BinWithDistance } from "@/types/BinWithDistance";
 import { View, StyleSheet } from "react-native";
-import Text from "./ui/Text";
+import Text from "../ui/Text";
 import { WorldDirection } from "@/types/WorldDirection";
 import { getColor } from "@/lib/getColor";
 import { useMemo } from "react";
