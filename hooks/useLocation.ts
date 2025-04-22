@@ -8,7 +8,7 @@ const offsetMove = 20 / 111_111; // 20 meters in degrees for debug movement
 
 type UseLocationReturnType = {
   isLoading: boolean;
-  location: [number, number] | null;
+  location: [number, number];
   moveOffsetSouth: () => void;
   moveOffsetNorth: () => void;
   moveOffsetEast: () => void;
@@ -94,7 +94,7 @@ export default function useLocation(): UseLocationReturnType {
     location && offset
       ? ([location[0] + offset[0], location[1] + offset[1]] as [number, number])
       : location
-  ) as [number, number] | null;
+  ) as [number, number];
 
   return {
     isLoading,

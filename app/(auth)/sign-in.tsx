@@ -1,13 +1,15 @@
-import { useSignIn } from "@clerk/clerk-expo";
+import { useSession, useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Heading from "@/components/ui/Heading";
 import TextInput from "@/components/ui/input/TextInput";
 import TouchableOpacityButton from "@/components/ui/TouchableOpacityButton";
 import Text from "@/components/ui/Text";
 import { getColor } from "@/lib/getColor";
 import Toast from "react-native-toast-message";
+import { useSetAtom } from "jotai";
+import { authTokenAtom } from "@/store/authToken.atom";
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -23,11 +25,29 @@ const styles = StyleSheet.create({
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { session } = useSession();
+  const setAuthToken = useSetAtom(authTokenAtom);
+
   const [isPending, setPending] = useState(false);
   const router = useRouter();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+  useEffect(() => {
+    if (!isLoaded || !session) return;
+
+    (async () => {
+      const token = await session.getToken();
+      if (token) {
+        setAuthToken(token);
+      } else {
+        setAuthToken(null);
+      }
+
+      router.replace("/profile");
+    })();
+  }, [isLoaded, session]);
 
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
@@ -46,8 +66,6 @@ export default function Page() {
       // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-
-        router.replace("/");
       } else {
         console.error(JSON.stringify(signInAttempt, null, 2));
       }

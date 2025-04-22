@@ -1,10 +1,9 @@
-import { Bin } from "@/types/Bin";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import useClerkToken from "./useClerkToken";
+import type { Bin } from "@/types/Bin";
+import api from "@/lib/api";
 
 export default function useCreateBin() {
-  const { token } = useClerkToken();
   const queryClient = useQueryClient();
 
   const createBin = useMutation<Bin, Error, [number, number]>({
@@ -13,21 +12,10 @@ export default function useCreateBin() {
       try {
         const [latitude, longitude] = location;
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/bins`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            latitude,
-            longitude,
-          }),
+        const res = await api.post("/bins", {
+          latitude,
+          longitude,
         });
-
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
 
         queryClient.invalidateQueries({ queryKey: ["bins"] });
         Toast.show({
@@ -36,7 +24,7 @@ export default function useCreateBin() {
           text2: "Twój kosz pokaże się po zaakceptowaniu przed administratora.",
         });
 
-        return res.json();
+        return res.data;
       } catch (error) {
         console.error("Error creating bin:", error);
         throw error;

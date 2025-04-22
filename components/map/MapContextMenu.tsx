@@ -48,11 +48,14 @@ export default function MapContextMenu({
       }}
     >
       <View
-        style={{
-          ...styles.contextMenu,
-          top: menuPosY,
-          left: menuPosX,
-        }}
+        style={[
+          {
+            ...styles.contextMenu,
+            top: menuPosY,
+            left: menuPosX,
+          },
+          disabled && styles.contextMenuDisabled,
+        ]}
       >
         <Text onPress={onCreateBin} disabled={disabled}>
           Tu jest kosz!
@@ -81,6 +84,10 @@ const styles = StyleSheet.create({
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     borderRadius: 5,
     width: 150,
+  },
+  contextMenuDisabled: {
+    backgroundColor: getColor("backgroundDim"),
+    pointerEvents: "none",
   },
   text: {
     color: getColor("text"),

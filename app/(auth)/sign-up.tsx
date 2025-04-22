@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSignUp, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
@@ -9,6 +9,9 @@ import Text from "@/components/ui/Text";
 import useUpsertUser from "@/hooks/useUpsertUser";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { getColor } from "@/lib/getColor";
+import { useSession } from "@clerk/clerk-expo";
+import { useSetAtom } from "jotai";
+import { authTokenAtom } from "@/store/authToken.atom";
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -37,6 +40,8 @@ const errorTranslations: Record<string, string> = {
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { session } = useSession();
+  const setAuthToken = useSetAtom(authTokenAtom);
   const [isPending, setPending] = useState(false);
   const router = useRouter();
 
@@ -50,7 +55,21 @@ export default function SignUpScreen() {
     password: string | null;
     consent_given: string | null;
   }>();
-  const upsertUser = useUpsertUser();
+
+  useEffect(() => {
+    if (!isLoaded || !session) return;
+
+    (async () => {
+      const token = await session.getToken();
+      if (token) {
+        setAuthToken(token);
+      } else {
+        setAuthToken(null);
+      }
+
+      router.replace("/profile");
+    })();
+  }, [isLoaded, session]);
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -127,10 +146,6 @@ export default function SignUpScreen() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        if (signUpAttempt.createdSessionId) {
-          await upsertUser.mutateAsync(signUpAttempt.createdSessionId);
-        }
-        router.replace("/");
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.

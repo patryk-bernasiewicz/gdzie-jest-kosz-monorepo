@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import useClerkToken from "./useClerkToken";
 
 export default function useMarkInvalidBin() {
-  const { token } = useClerkToken();
-
   const markInvalidBin = useMutation<void, Error, number>({
     mutationKey: ["markInvalidBin"],
     mutationFn: async (binId) => {

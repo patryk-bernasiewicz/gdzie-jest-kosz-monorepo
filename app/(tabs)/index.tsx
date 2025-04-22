@@ -4,6 +4,7 @@ import LeafletMap from "@/components/map/LeafletMap";
 
 import useLocation from "@/hooks/useLocation";
 import useUserProfile from "@/hooks/useUserProfile";
+import TokenDebug from "@/components/debug/TokenDebug";
 
 export default function HomeScreen() {
   const { location } = useLocation();
@@ -18,11 +19,12 @@ export default function HomeScreen() {
         <View style={styles.position}>
           <Text>
             Current position:{"\n"}
-            {location ? `${location[0]}\n${location[1]}` : "none"}
+            {location ? `${location?.[0]}\n${location?.[1]}` : "none"}
             {"\n"}
           </Text>
         </View>
       ) : null}
+      <TokenDebug />
     </View>
   );
 }

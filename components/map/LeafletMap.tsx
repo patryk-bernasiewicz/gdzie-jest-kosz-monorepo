@@ -14,8 +14,8 @@ import MapContextMenu from "./MapContextMenu";
 import useMarkInvalidBin from "@/hooks/useMarkInvalidBin";
 
 type LeafletMapProps = {
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   zoom?: number;
 };
 
@@ -158,6 +158,10 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     }
   }, [mapLoaded, nearestBin]);
 
+  if (!latitude || !longitude) {
+    return <Text>Map is not available</Text>;
+  }
+
   return (
     <Pressable onPress={() => setContextMenuPos(null)} style={styles.container}>
       <View style={styles.container}>
@@ -196,7 +200,7 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
           screenY={contextMenuPos?.y}
           isOpen={!!contextMenuPos}
           onCreateBin={handleCreateBin}
-          disabled={isCreatingBin || !selectedPos}
+          disabled={isCreatingBin || isMarkingBinInvalid || !selectedPos}
           selectedBinIds={mapSelectedBins}
           onMarkInvalidBin={handleMarkInvalidBin}
         />
