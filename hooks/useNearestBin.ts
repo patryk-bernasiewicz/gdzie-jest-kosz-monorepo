@@ -18,22 +18,32 @@ export default function useNearestBin(bins?: BinWithDistance[] | null): {
   }, [bins, location]);
 
   const nearestBinDirection = useMemo<WorldDirection | null>(() => {
-    let direction = "";
+    if (!nearestBin || !location) return null;
+    const [latitude, longitude] = location;
+    const { latitude: binLat, longitude: binLng } = nearestBin;
 
-    if (nearestBin && location) {
-      const [latitude, longitude] = location;
-      const { latitude: binLat, longitude: binLng } = nearestBin;
+    const deltaLng = binLng - longitude;
+    const deltaLat = binLat - latitude;
+    const angleRadians = Math.atan2(deltaLat, deltaLng);
 
-      if (binLat > latitude) direction += "north";
-      else if (binLat < latitude) direction += "south";
+    let angleDegrees = angleRadians * (180 / Math.PI);
+    if (angleDegrees < 0) angleDegrees += 360;
 
-      if (binLng > longitude) direction += direction ? "east" : "east";
-      else if (binLng < longitude) direction += direction ? "west" : "west";
+    const directions: WorldDirection[] = [
+      "east",
+      "northeast",
+      "north",
+      "northwest",
+      "west",
+      "southwest",
+      "south",
+      "southeast",
+    ];
 
-      if (!direction) direction = "here";
-    }
+    const index = Math.round(((angleDegrees + 22.5) % 360) / 45) % 8;
+    const direction = directions[index];
 
-    return direction.length ? (direction as WorldDirection) : null;
+    return direction as WorldDirection;
   }, [nearestBin, location]);
 
   return { nearestBin, nearestBinDirection };

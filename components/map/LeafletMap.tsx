@@ -130,7 +130,8 @@ function LeafletMap({ latitude, longitude, zoom = 13 }: LeafletMapProps) {
     }
 
     if (latitude && longitude && !leafletHtml.current) {
-      leafletHtml.current = createLeafletHtml(latitude, longitude);
+      const html = createLeafletHtml(latitude, longitude);
+      leafletHtml.current = html;
       setHtmlReady(true);
     }
   }, [setHtmlReady, latitude, longitude]);

@@ -42,15 +42,9 @@ export default function createLeafletHtml(
         }
 
         .user-marker {
-          transform-origin: bottom center;
-          position: fixed;
-          bottom: 0;
         }
 
         .bin-marker {
-          position: fixed;
-          z-index: 0;
-          top: -20px;
         }
 
         .closest-bin-marker {
