@@ -3,31 +3,31 @@ import { BinsController } from './bins.controller';
 import { BinsService } from './bins.service';
 import { UserService } from 'src/user/user.service';
 import { Bin, User, Prisma } from '@prisma/client';
+import { ClerkService } from '../clerk/clerk.service';
 
 describe('BinsController', () => {
   let controller: BinsController;
-  let binsService: BinsService;
-  let userService: UserService;
-
-  const mockBinsService = {
-    getNearbyBins: jest.fn(),
-    createBin: jest.fn(),
-  };
-
-  const mockUserService = {};
+  let binsService: any;
+  let userService: Partial<UserService>;
+  let clerkService: Partial<ClerkService>;
 
   beforeEach(async () => {
+    binsService = {
+      getNearbyBins: jest.fn(),
+      createBin: jest.fn(),
+    };
+    userService = {};
+    clerkService = {};
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BinsController],
       providers: [
-        { provide: BinsService, useValue: mockBinsService },
-        { provide: UserService, useValue: mockUserService },
+        { provide: BinsService, useValue: binsService },
+        { provide: UserService, useValue: userService },
+        { provide: ClerkService, useValue: clerkService },
       ],
     }).compile();
 
     controller = module.get<BinsController>(BinsController);
-    binsService = module.get<BinsService>(BinsService);
-    userService = module.get<UserService>(UserService);
     jest.clearAllMocks();
   });
 
@@ -50,13 +50,13 @@ describe('BinsController', () => {
           createdById: 1,
         },
       ];
-      mockBinsService.getNearbyBins.mockResolvedValue(bins);
+      binsService.getNearbyBins.mockResolvedValue(bins);
       const result = await controller.getNearbyBins(
         1.12345678901234,
         2.98765432109876,
       );
       expect(result).toEqual(bins);
-      expect(mockBinsService.getNearbyBins).toHaveBeenCalledWith(
+      expect(binsService.getNearbyBins).toHaveBeenCalledWith(
         1.12345678901234,
         2.98765432109876,
       );
@@ -81,14 +81,14 @@ describe('BinsController', () => {
         createdById: 1,
       };
       const user: User = { id: 1, clerkId: 'clerk1', role: 'user' };
-      mockBinsService.createBin.mockResolvedValue(bin);
+      binsService.createBin.mockResolvedValue(bin);
       const result = await controller.createBin(
         1.12345678901234,
         2.98765432109876,
         user,
       );
       expect(result).toEqual(bin);
-      expect(mockBinsService.createBin).toHaveBeenCalledWith(
+      expect(binsService.createBin).toHaveBeenCalledWith(
         1.12345678901234,
         2.98765432109876,
         1,
@@ -108,14 +108,14 @@ describe('BinsController', () => {
         createdById: 2,
       };
       const user: User = { id: 2, clerkId: 'clerk2', role: 'admin' };
-      mockBinsService.createBin.mockResolvedValue(bin);
+      binsService.createBin.mockResolvedValue(bin);
       const result = await controller.createBin(
         3.00000000000001,
         4.00000000000002,
         user,
       );
       expect(result).toEqual(bin);
-      expect(mockBinsService.createBin).toHaveBeenCalledWith(
+      expect(binsService.createBin).toHaveBeenCalledWith(
         3.00000000000001,
         4.00000000000002,
         2,
