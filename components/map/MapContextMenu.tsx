@@ -60,15 +60,12 @@ export default function MapContextMenu({
         <Text onPress={onCreateBin} disabled={disabled}>
           Tu jest kosz!
         </Text>
-        <View style={styles.separator} />
         {selectedBinIds?.map((binId, index) => (
           <Fragment key={binId}>
+            <View style={styles.separator} />
             <Text onPress={() => onMarkInvalidBin(binId)}>
               Kosz ID: {binId} - nieaktualny?
             </Text>
-            {index !== selectedBinIds.length - 1 && (
-              <View style={styles.separator} />
-            )}
           </Fragment>
         ))}
       </View>
