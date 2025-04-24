@@ -8,11 +8,16 @@ describe('DatabaseService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [DatabaseService],
     }).compile();
-
-    service = module.get<DatabaseService>(DatabaseService);
+    service = module.get(DatabaseService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should call $connect on onModuleInit', async () => {
+    service.$connect = jest.fn();
+    await service.onModuleInit();
+    expect(service.$connect).toHaveBeenCalled();
   });
 });
