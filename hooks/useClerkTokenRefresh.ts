@@ -3,7 +3,7 @@ import { useSession } from "@clerk/clerk-expo";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 
-const refreshTokenInterval = 1000 * 60 * 3; // 5 minutes
+const refreshTokenInterval = 1000 * 60 * 3; // 3 minutes
 
 export default function useClerkTokenRefresh() {
   const { session } = useSession();
