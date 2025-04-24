@@ -7,7 +7,7 @@ import {
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
-import clerkClient from '@clerk/clerk-sdk-node';
+import { ClerkService } from '../clerk/clerk.service';
 
 declare module 'express' {
   interface Request {
@@ -17,7 +17,10 @@ declare module 'express' {
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly clerkService: ClerkService,
+  ) {}
 
   logger = new Logger(ClerkAuthGuard.name);
 
@@ -35,14 +38,12 @@ export class ClerkAuthGuard implements CanActivate {
     }
 
     try {
-      const { sid } = await clerkClient.verifyToken(token);
-      this.logger.debug(`Token verified, SID: ${sid}`);
-      const { userId } = await clerkClient.sessions.getSession(sid);
-      this.logger.debug(`Session retrieved, User ID: ${userId}`);
+      const { sid } = await this.clerkService.verifyToken(token);
+      const { userId } = await this.clerkService.getSession(sid);
       const user = await this.userService.upsertUser(userId);
-      this.logger.debug(`User upserted, User ID: ${user.id}`);
       request.user = user;
     } catch (err) {
+      console.log('Error in ClerkAuthGuard:', err);
       return false;
     }
 

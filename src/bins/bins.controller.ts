@@ -11,9 +11,9 @@ import {
 } from '@nestjs/common';
 import { BinsService } from './bins.service';
 import { Bin, User } from '@prisma/client';
-import { UserService } from 'src/user/user.service';
-import { CurrentUser } from 'src/user/current-user.decorator';
-import { ClerkAuthGuard } from 'src/user/clerk-auth.guard';
+import { UserService } from '../user/user.service';
+import { CurrentUser } from '../user/current-user.decorator';
+import { ClerkAuthGuard } from '../user/clerk-auth.guard';
 
 @Controller('bins')
 export class BinsController {
