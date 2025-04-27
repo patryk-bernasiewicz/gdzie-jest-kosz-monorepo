@@ -78,8 +78,15 @@ npm run test:e2e
 
 ## API
 
-- **/user/me** – Upsert and return the current user (requires Clerk token)
+- **/user/me** – Upserts and returns the current user (requires Clerk token)
 - **/bins** – Get nearby bins (GET), report a new bin (POST, requires authentication)
+- **/bins/admin** – Get nearby bins as admin (GET, requires admin role), create a new bin as admin (POST, requires admin role)
+- **/bins/admin/:binId/location** – Update bin location as admin (PUT, requires admin role)
+
+### Notes
+
+- Endpoints under `/admin` require the user to have the `admin` role (authorization enforced by AdminGuard).
+- CORS support: allowed origins can be configured via the `ALLOWED_ORIGINS` environment variable.
 
 ## Project Structure
 

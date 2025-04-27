@@ -123,4 +123,72 @@ describe('BinsController', () => {
       );
     });
   });
+
+  describe('getAllBinsAsAdmin', () => {
+    it('should return bins for admin with valid coordinates', async () => {
+      const bins: Bin[] = [
+        {
+          id: 10,
+          type: 'bin',
+          latitude: new Prisma.Decimal('10.1'),
+          longitude: new Prisma.Decimal('20.2'),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          acceptedAt: new Date(),
+          createdById: 3,
+        },
+      ];
+      binsService.getAllNearbyBins = jest.fn().mockResolvedValue(bins);
+      const user: User = { id: 3, clerkId: 'clerk3', role: 'admin' };
+      const result = await controller.getAllBinsAsAdmin(10.1, 20.2, user);
+      expect(result).toEqual(bins);
+      expect(binsService.getAllNearbyBins).toHaveBeenCalledWith(10.1, 20.2);
+    });
+  });
+
+  describe('createBinAsAdmin', () => {
+    it('should create a bin as admin', async () => {
+      const bin: Bin = {
+        id: 11,
+        type: 'bin',
+        latitude: new Prisma.Decimal('11.1'),
+        longitude: new Prisma.Decimal('22.2'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        acceptedAt: new Date(),
+        createdById: 4,
+      };
+      binsService.createBin = jest.fn().mockResolvedValue(bin);
+      const user: User = { id: 4, clerkId: 'clerk4', role: 'admin' };
+      const result = await controller.createBinAsAdmin(11.1, 22.2, user);
+      expect(result).toEqual(bin);
+      expect(binsService.createBin).toHaveBeenCalledWith(11.1, 22.2, 4, true);
+    });
+  });
+
+  describe('updateBinLocationAsAdmin', () => {
+    it('should update bin location as admin', async () => {
+      const bin: Bin = {
+        id: 12,
+        type: 'bin',
+        latitude: new Prisma.Decimal('33.3'),
+        longitude: new Prisma.Decimal('44.4'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        acceptedAt: new Date(),
+        createdById: 5,
+      };
+      binsService.updateBinLocation = jest.fn().mockResolvedValue(bin);
+      const result = await controller.updateBinLocationAsAdmin(12, 33.3, 44.4);
+      expect(result).toEqual(bin);
+      expect(binsService.updateBinLocation).toHaveBeenCalledWith(
+        12,
+        33.3,
+        44.4,
+      );
+    });
+  });
 });

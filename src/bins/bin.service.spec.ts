@@ -103,4 +103,27 @@ describe('BinsService', () => {
       expect(result).toEqual(bin);
     });
   });
+
+  describe('updateBinLocation', () => {
+    it('should update bin location and return updated bin', async () => {
+      const updatedBin: Bin = {
+        id: 10,
+        type: 'bin',
+        latitude: new Prisma.Decimal(12.34),
+        longitude: new Prisma.Decimal(56.78),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        acceptedAt: null,
+        createdById: 2,
+      };
+      db.bin.update = jest.fn().mockResolvedValue(updatedBin);
+      const result = await service.updateBinLocation(10, 12.34, 56.78);
+      expect(db.bin.update).toHaveBeenCalledWith({
+        where: { id: 10 },
+        data: { latitude: 12.34, longitude: 56.78 },
+      });
+      expect(result).toEqual(updatedBin);
+    });
+  });
 });
