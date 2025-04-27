@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { cn } from "../utils/cn";
-import { SignedOut, SignIn, SignedIn, UserButton } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 import { useClerkAccessToken } from "../hooks/useClerkAccessToken";
 import { useAtomValue } from "jotai";
@@ -27,13 +27,13 @@ const EXPANDED_WIDTH = "w-56";
 
 const SideMenu = ({ collapsed }: { collapsed: boolean }) => {
   return (
-    <nav className="flex-1 flex flex-col gap-2 p-2">
+    <nav className="flex flex-1 flex-col gap-2 p-2">
       {menuItemsBase.map((item) => (
         <Link
           key={item.label}
           to={item.path}
           className={cn(
-            "rounded overflow-hidden px-2 py-1 hover:bg-gray-100 flex items-center gap-2 cursor-pointer"
+            "flex cursor-pointer items-center gap-2 overflow-hidden rounded px-2 py-1 hover:bg-gray-100",
           )}
         >
           <span className={cn(ICON_SIZE, "flex items-center justify-center")}>
@@ -41,8 +41,8 @@ const SideMenu = ({ collapsed }: { collapsed: boolean }) => {
           </span>
           <span
             className={cn(
-              "inline-block min-w-32 w-32 transition-opacity duration-200",
-              collapsed && "opacity-0 pointer-events-none"
+              "inline-block w-32 min-w-32 transition-opacity duration-200",
+              collapsed && "pointer-events-none opacity-0",
             )}
           >
             {item.label}
@@ -60,25 +60,25 @@ const Layout = ({ children }: LayoutProps) => {
 
   if (!accessToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         awaiting for access token from clerk...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50">
       <aside
         className={cn(
-          "transition-all duration-200 bg-white border-r border-gray-200 h-screen flex flex-col",
-          collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH
+          "flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-200",
+          collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
         )}
       >
         <button
           className={cn(
-            "cursor-pointer truncate flex items-center justify-center p-2 focus:outline-none hover:bg-gray-100 border-b border-gray-200",
+            "flex cursor-pointer items-center justify-center truncate border-b border-gray-200 p-2 hover:bg-gray-100 focus:outline-none",
             EXPANDED_WIDTH,
-            collapsed && COLLAPSED_WIDTH
+            collapsed && COLLAPSED_WIDTH,
           )}
           onClick={() => setCollapsed((c) => !c)}
           aria-label={collapsed ? "Expand menu" : "Collapse menu"}
@@ -86,22 +86,19 @@ const Layout = ({ children }: LayoutProps) => {
         >
           <span>{collapsed ? <>&#9654;</> : <>&#9664; Collapse</>}</span>
         </button>
-        {!collapsed && (
-          <div className="w-full max-h-[50px] truncate">{accessToken}</div>
-        )}
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-1 flex-col">
           <SideMenu collapsed={collapsed} />
           <div className="mt-auto p-2">
-            <SignedOut>
-              <SignIn signUpUrl={undefined} />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            {!collapsed && (
+              <div className="mb-2 max-h-[50px] w-full truncate border border-slate-500 px-4 py-2">
+                {accessToken}
+              </div>
+            )}
+            <UserButton />
           </div>
         </div>
       </aside>
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 max-h-screen overflow-y-auto">
+      <main className="mx-auto flex max-h-screen w-full max-w-7xl flex-1 flex-col overflow-y-auto px-4 py-6">
         {children}
       </main>
     </div>

@@ -16,8 +16,6 @@ export const useBins = (latitude: number, longitude: number) => {
   const roundedLat = roundCoord(latitude);
   const roundedLng = roundCoord(longitude);
 
-  console.log("useBins", { latitude, longitude, roundedLat, roundedLng });
-
   const { data } = useQuery({
     queryKey: ["bins", roundedLat, roundedLng],
     queryFn: () => fetchBins(latitude, longitude),

@@ -19,7 +19,7 @@ export const useUpdateBinLocation = () => {
         try {
           const { data } = await api.put<UpdateBinLocationResponse>(
             `/bins/admin/${binId}/location`,
-            { latitude, longitude }
+            { latitude, longitude },
           );
 
           return data;
@@ -34,6 +34,6 @@ export const useUpdateBinLocation = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["bins"] });
       },
-    }
+    },
   );
 };

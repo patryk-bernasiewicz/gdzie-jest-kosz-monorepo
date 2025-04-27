@@ -30,7 +30,7 @@ export function useGeolocation(): GeolocationData {
         setError(err.message);
         setLoading(false);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true },
     );
   }, []);
 

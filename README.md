@@ -17,6 +17,10 @@ This dashboard supports the Gdzie Jest Kosz React Native app, which helps dog ow
 - Map view for managing bin locations
 - Admin/moderator access controls
 
+## Update DEV-0.0.1: Drag and Drop Bin Editing
+
+You can now edit bin locations directly on the map by dragging markers. When editing a bin, simply drag the marker to a new position and release it to update the location. This feature improves the map editing experience and allows for more precise bin placement.
+
 ## Setup Instructions
 
 1. Clone the repository

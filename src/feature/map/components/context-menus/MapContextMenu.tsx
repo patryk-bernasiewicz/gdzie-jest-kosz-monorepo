@@ -1,7 +1,8 @@
 import { Menu, Item, MenuProps } from "react-contexify";
+import { Position } from "../../types/Position";
 
 type MapContextMenuProps = {
-  contextMenuMarker: [number, number] | null;
+  contextMenuMarker: Position | null;
   onAddBin: (lat: number, lng: number) => void;
   menuId: string;
   onVisibilityChange?: MenuProps["onVisibilityChange"];

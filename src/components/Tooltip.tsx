@@ -26,7 +26,7 @@ const Tooltip = ({
           align={align}
           className={cn(
             "z-50 rounded bg-gray-900 px-3 py-1.5 text-xs text-white shadow-lg",
-            "data-[state=delayed-open]:animate-fade-in"
+            "data-[state=delayed-open]:animate-fade-in",
           )}
         >
           {content}

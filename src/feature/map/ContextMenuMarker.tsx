@@ -1,8 +1,9 @@
 import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
+import { Position } from "./types/Position";
 
 type ContextMenuMarkerProps = {
-  position: [number, number];
+  position: Position;
   onClick: () => void;
 };
 

@@ -19,7 +19,7 @@ export const useClerkAccessToken = () => {
         setAccessToken(token ?? null);
         console.log(
           "[useClerkAccessToken] Refreshed and updated access token in store:",
-          token
+          token,
         );
       }
     };

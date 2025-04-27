@@ -33,7 +33,7 @@ storedPositionAtom.onMount = (setAtom) => {
 
 function useStoredPosition(
   latitude: number | string | null,
-  longitude: number | string | null
+  longitude: number | string | null,
 ) {
   const [mapLatLng, setMapLatLng] = useAtom(storedPositionAtom);
 
@@ -52,7 +52,7 @@ function useStoredPosition(
       try {
         localStorage.setItem(
           STORAGE_KEY,
-          JSON.stringify({ latitude: latNum, longitude: lngNum })
+          JSON.stringify({ latitude: latNum, longitude: lngNum }),
         );
       } catch (err) {
         console.error("Failed to save map lat/lng to storage:", err);

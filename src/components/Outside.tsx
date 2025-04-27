@@ -1,7 +1,7 @@
 import { SignIn } from "@clerk/clerk-react";
 
 const Outside = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-50">
+  <div className="flex min-h-screen items-center justify-center bg-gray-50">
     <SignIn signUpUrl={undefined} />
   </div>
 );

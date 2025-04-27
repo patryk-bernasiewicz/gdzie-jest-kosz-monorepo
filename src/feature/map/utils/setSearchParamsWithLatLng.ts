@@ -3,7 +3,7 @@ export const setSearchParamsWithLatLng = (
     typeof import("react-router-dom").useSearchParams
   >[1],
   latitude: number | string,
-  longitude: number | string
+  longitude: number | string,
 ) => {
   const latNum = typeof latitude === "string" ? parseFloat(latitude) : latitude;
   const lngNum =

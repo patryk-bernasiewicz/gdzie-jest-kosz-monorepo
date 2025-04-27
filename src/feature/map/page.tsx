@@ -7,13 +7,16 @@ import { useContextMenu } from "react-contexify";
 import "react-contexify/dist/ReactContexify.css";
 import { setSearchParamsWithLatLng } from "./utils/setSearchParamsWithLatLng";
 import ContextMenuMarker from "./ContextMenuMarker";
-import BinsMarkers from "./components/BinsMarkers/BinsMarkers";
+import BinsMarkers from "./components/map-markers/BinMarkers";
 import { useCreateBin } from "./hooks/useCreateBin";
-import MapContextMenu from "./MapContextMenu";
-import BinContextMenu from "./BinContextMenu";
-import EditedBinMarker from "./components/EditedBinMarker/EditedBinMarker";
-import { useUpdateBinLocation } from "./hooks/useUpdateBinLocation";
+import MapContextMenu from "./components/context-menus/MapContextMenu";
+import BinContextMenu from "./components/context-menus/BinContextMenu";
+import EditedBinMarker from "./components/map-markers/EditedBinMarker";
 import { cn } from "../../utils/cn";
+import EditedBinInfoBox from "./components/EditedBinInfoBox";
+import useEditBin from "./hooks/useEditBin";
+import { Bin } from "./Bin";
+import { Position } from "./types/Position";
 
 // ‼️ TODO: refactor heavily!!! this is a mess now
 
@@ -23,22 +26,28 @@ const BIN_CONTEXT_MENU_ID = "bin-context-menu";
 const MapPage = () => {
   const { latitude, longitude } = useLatLngSearchParamsInitializer();
   const bins = useBins(latitude, longitude);
-  const [contextMenuMarker, setContextMenuMarker] = useState<
-    [number, number] | null
-  >(null);
+  const [contextMenuMarker, setContextMenuMarker] = useState<Position | null>(
+    null,
+  );
   const [, setSearchParams] = useSearchParams();
   const createBin = useCreateBin();
-  const [selectedBinId, setSelectedBinId] = useState<number | null>(null);
-  const [editedBinId, setEditedBinId] = useState<number | null>(null);
+  const [selectedBin, setSelectedBin] = useState<Bin | null>(null);
   const { show } = useContextMenu({ id: MAP_CONTEXT_MENU_ID });
-  const { mutate: updateBinLocation, isPending: isBinLocationUpdating } =
-    useUpdateBinLocation();
+  const {
+    editedBin,
+    handleEditBin,
+    handleConfirmEditBin,
+    handleCancelEditBin,
+    isBinLocationUpdating,
+    updatedBinPosition,
+    handleUpdateBinPosition,
+  } = useEditBin();
 
   const handleCenterChange = useCallback(
     (lat: number, lng: number) => {
       setSearchParamsWithLatLng(setSearchParams, lat, lng);
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   const handleContextMenu = useCallback(
@@ -46,28 +55,30 @@ const MapPage = () => {
       setContextMenuMarker([lat, lng]);
       show({ id: MAP_CONTEXT_MENU_ID, event });
     },
-    [show]
+    [show],
   );
 
   const handleBinContextMenu = (binId: number, event: MouseEvent) => {
     console.log("event", event);
-    setSelectedBinId(binId);
+    const bin = bins.find((bin) => bin.id === binId);
+
+    if (!bin) {
+      console.error(`Bin with id ${binId} not found`);
+      return;
+    }
+
+    setSelectedBin(bin);
   };
 
-  const handleDeleteBin = (binId: number) => {
+  const handleDeleteBin = (bin: Bin) => {
     // TODO: Implement delete logic
 
-    console.log("Delete bin", binId);
-  };
-
-  const handleEditBin = (binId: number) => {
-    setEditedBinId(binId);
-    setSelectedBinId(null);
+    console.log("Delete bin", bin.id);
   };
 
   const handleBinContextMenuChange = (visible: boolean) => {
     if (!visible) {
-      setSelectedBinId(null);
+      setSelectedBin(null);
     }
   };
 
@@ -77,48 +88,25 @@ const MapPage = () => {
     }
   };
 
-  const handleConfirmEditBin = (updatedLatLng: [number, number]) => {
-    if (editedBinId) {
-      updateBinLocation({
-        binId: editedBinId,
-        latitude: updatedLatLng[0],
-        longitude: updatedLatLng[1],
-      });
-      setEditedBinId(null);
-    }
-  };
-
-  const handleCancelEditBin = () => {
-    if (editedBinId) {
-      const foundBin = bins.find((b) => b.id === editedBinId);
-      console.log("Cancel edit bin", {
-        editedBinId,
-        originalPos: [foundBin?.latitude, foundBin?.longitude],
-      });
-      setEditedBinId(null);
-    }
-  };
-
   if (!latitude || !longitude) {
     return <div>Latitude and longitude are required.</div>;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex grow flex-col gap-y-2">
       <div className="font-semibold">Bins</div>
       <div>
-        {editedBinId && (
-          <div>
-            Use <strong>arrow keys</strong> to move the bin around the map.
-            Press <strong>ctrl + enter</strong> to apply, or press{" "}
-            <strong>esc</strong> to cancel.
-          </div>
+        {editedBin && (
+          <EditedBinInfoBox
+            onCancel={handleCancelEditBin}
+            onConfirm={handleConfirmEditBin}
+          />
         )}
       </div>
       <div
         className={cn(
-          "border border-red-500 p-2",
-          isBinLocationUpdating && "opacity-50 pointer-events-none"
+          "grow",
+          isBinLocationUpdating && "pointer-events-none opacity-50",
         )}
       >
         <MapComponent
@@ -126,6 +114,7 @@ const MapPage = () => {
           longitude={longitude}
           onCenterChange={handleCenterChange}
           onContextMenu={handleContextMenu}
+          className="grow"
         >
           {contextMenuMarker?.[0] && contextMenuMarker?.[1] && (
             <ContextMenuMarker
@@ -137,16 +126,14 @@ const MapPage = () => {
           )}
           <BinsMarkers
             bins={bins}
+            editedBin={editedBin}
             onBinContextMenu={handleBinContextMenu}
-            selectedBinId={selectedBinId}
-            editedBinId={editedBinId}
+            selectedBin={selectedBin}
           />
-          {editedBinId && (
+          {editedBin && updatedBinPosition && (
             <EditedBinMarker
-              bins={bins}
-              editedBinId={editedBinId}
-              onCancel={handleCancelEditBin}
-              onConfirm={handleConfirmEditBin}
+              updatedPosition={updatedBinPosition}
+              onMarkerDragged={handleUpdateBinPosition}
             />
           )}
         </MapComponent>
@@ -158,9 +145,10 @@ const MapPage = () => {
           menuId={MAP_CONTEXT_MENU_ID}
           onVisibilityChange={handleMapContextMenuChange}
         />
-        {selectedBinId && (
+        {selectedBin && (
           <BinContextMenu
-            binId={selectedBinId}
+            bins={bins}
+            selectedBin={selectedBin}
             menuId={BIN_CONTEXT_MENU_ID}
             onDelete={handleDeleteBin}
             onEdit={handleEditBin}
@@ -168,7 +156,6 @@ const MapPage = () => {
           />
         )}
       </div>
-      <pre>{JSON.stringify({ selectedBinId, editedBinId })}</pre>
     </div>
   );
 };

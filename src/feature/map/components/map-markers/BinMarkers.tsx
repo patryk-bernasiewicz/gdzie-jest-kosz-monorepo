@@ -29,41 +29,42 @@ const editedBinIcon = L.icon({
 type BinsMarkersProps = {
   bins: Bin[];
   onBinContextMenu: (binId: number, event: MouseEvent) => void;
-  selectedBinId?: number | null;
-  editedBinId?: number | null;
+  selectedBin?: Bin | null;
+  editedBin?: Bin | null;
 };
 
 const BinsMarkers = ({
   bins,
+  editedBin,
+  selectedBin,
   onBinContextMenu,
-  selectedBinId,
-  editedBinId,
 }: BinsMarkersProps) => {
   const { show } = useContextMenu({ id: BIN_CONTEXT_MENU_ID });
 
   return (
     <>
-      {bins.map((bin) => (
-        <Marker
-          key={bin.id}
-          position={[Number(bin.latitude), Number(bin.longitude)]}
-          icon={
-            editedBinId === bin.id
-              ? editedBinIcon
-              : selectedBinId === bin.id
-                ? selectedBinIcon
-                : binIcon
-          }
-          eventHandlers={{
-            contextmenu: (e) => {
-              e.originalEvent.stopPropagation();
-              onBinContextMenu(bin.id, e.originalEvent);
-              show({ id: BIN_CONTEXT_MENU_ID, event: e.originalEvent });
-            },
-          }}
-          opacity={bin.acceptedAt ? 1 : 0.5}
-        />
-      ))}
+      {bins.map((bin) => {
+        const isEdited = editedBin && editedBin === bin;
+        const isSelected = selectedBin && selectedBin === bin;
+
+        return (
+          <Marker
+            key={bin.id}
+            position={[Number(bin.latitude), Number(bin.longitude)]}
+            icon={
+              isEdited ? editedBinIcon : isSelected ? selectedBinIcon : binIcon
+            }
+            eventHandlers={{
+              contextmenu: (e) => {
+                e.originalEvent.stopPropagation();
+                onBinContextMenu(bin.id, e.originalEvent);
+                show({ id: BIN_CONTEXT_MENU_ID, event: e.originalEvent });
+              },
+            }}
+            opacity={bin.acceptedAt ? 1 : 0.5}
+          />
+        );
+      })}
     </>
   );
 };

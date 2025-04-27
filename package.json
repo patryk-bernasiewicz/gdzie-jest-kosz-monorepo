@@ -1,7 +1,7 @@
 {
   "name": "gdzie-jest-kosz-dashboard",
   "private": true,
-  "version": "0.0.0",
+  "version": "DEV-0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -43,7 +43,8 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
+    "prettier": "3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.1.4",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
