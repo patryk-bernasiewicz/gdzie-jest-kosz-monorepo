@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import api from "../../../lib/axios";
-import { AxiosError } from "axios";
 
 type CreateBinParams = {
   latitude: number;
@@ -23,6 +22,7 @@ export const useCreateBin = () => {
           longitude,
         });
         return data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (
           error.response &&
