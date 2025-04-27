@@ -1,38 +1,37 @@
 # gdzie-jest-kosz-dashboard
 
-## Stack
+This is the admin dashboard for the Gdzie Jest Kosz mobile application. The dashboard is a web application for managing bins on a map, built with Vite, React, TypeScript, Tailwind CSS, Axios, React Router, and Clerk authentication (login only).
 
-- Vite + React + TypeScript
-- Tailwind CSS
-- ESLint & Prettier
-- Axios (with JWT interceptor)
-- React Router (lazy loading)
-- Clerk (login only)
+## Project Purpose
 
-## Setup
+This dashboard supports the Gdzie Jest Kosz React Native app, which helps dog owners find nearby trash bins to dispose of their dog's poop. The dashboard allows admins and moderators to manage bin locations and related data.
 
-1. Copy `.env.example` to `.env.local` and set your environment variables:
-   - `VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key`
-   - `VITE_API_BASE_URL=your_api_url`
-2. Run `npm install`
-3. Run `npm run dev`
+## Intended Users
 
-## Clerk Key Storage
+- Currently: Project owner (admin)
+- Future: Moderators and admins with dashboard access
 
-- **Never commit secrets to git.**
-- Store `CLERK_SECRET_KEY` and `CLERK_PUBLISHABLE_KEY` in `.env.local` (not tracked by git).
-- Use `process.env` (Node) or `import.meta.env` (Vite) to access keys.
+## Features
 
-## Folder Structure
+- Authentication via Clerk (login only, registration via the mobile app)
+- Map view for managing bin locations
+- Admin/moderator access controls
 
-- `src/components` – Reusable UI components
-- `src/hooks` – Custom React hooks
-- `src/lib` – Utility functions and API instances
-- `src/pages` – Route-based pages (lazy loaded)
+## Setup Instructions
 
-## Auth
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create a `.env.local` file with required environment variables (e.g., Clerk keys, API URLs)
+4. Start the development server: `npm run dev`
 
-- Only login is enabled (no signup)
+## API
+
+- All API calls use the Axios instance from `src/lib/axios.ts`
+- API endpoints and usage details are documented in the backend repo
+
+## Live Demo
+
+- Not available at the moment
 
 ---
 
