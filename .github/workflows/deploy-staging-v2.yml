@@ -1,0 +1,41 @@
+name: Deploy to Staging VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        default: 'master'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Powiąż to zadanie ze środowiskiem 'staging'
+    environment:
+      name: staging
+
+    steps:
+      - name: Connect to VPS and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          # Sekrety repozytorium do połączenia SSH
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }} # Domyślnie 22, jeśli nie zdefiniowano sekretu
+
+          # Skrypt do wykonania na VPS
+          # Używa sekretów środowiska 'staging'
+          script: |
+            echo "Connecting to VPS..."
+            cd ${{ secrets.DEPLOY_PATH }} || exit 1
+
+            echo "Pulling latest changes..."
+            git pull
+
+            echo "Installing dependencies..."
+            npm ci
+
+            echo "Restarting application with PM2..."
+            pm2 restart "${{ secrets.DEPLOY_APP_NAME }}" --update-env
+
+            echo "Deployment to staging finished."
