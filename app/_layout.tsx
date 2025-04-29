@@ -13,6 +13,7 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { plPL } from "@clerk/localizations/pl-PL";
 import Toast from "react-native-toast-message";
+import { resourceCache } from "@clerk/clerk-expo/resource-cache";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,6 +21,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+// Clerk workaround for muting network requests in non-browser environments.
+// TODO: Verify if this is still relevant and necessary.
 // @ts-ignore
 window.navigator.onLine = true;
 
@@ -42,7 +45,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} localization={plPL}>
+    <ClerkProvider
+      tokenCache={tokenCache}
+      experimental={{
+        rethrowOfflineNetworkErrors: true,
+      }}
+      __experimental_resourceCache={resourceCache}
+      localization={plPL}
+    >
       <QueryClientProvider client={queryClient}>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
