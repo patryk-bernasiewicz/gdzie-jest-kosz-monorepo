@@ -15,9 +15,9 @@ import { Bin, User } from '@prisma/client';
 import { UserService } from '../user/user.service';
 import { CurrentUser } from '../user/current-user.decorator';
 import { ClerkAuthGuard } from '../user/clerk-auth.guard';
-import { AdminGuard } from 'src/user/admin.guard';
+import { AdminGuard } from '../user/admin.guard';
 
-@Controller('bins')
+@Controller({ path: 'bins', version: '1' })
 export class BinsController {
   private logger = new Logger(BinsController.name);
 

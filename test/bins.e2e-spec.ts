@@ -1,3 +1,6 @@
+process.env.CLERK_PUBLISHABLE_KEY = 'test-pub-key';
+process.env.CLERK_SECRET_KEY = 'test-secret-key';
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -5,34 +8,28 @@ import { AppModule } from '../src/app.module';
 import { DatabaseService } from '../src/database/database.service';
 import { ClerkService } from '../src/clerk/clerk.service';
 
-// In-memory mock for DatabaseService
 class MockDatabaseService {
   bin = {
-    findMany: jest
-      .fn()
-      .mockResolvedValue([
-        {
-          id: 1,
-          lat: 50.0,
-          lng: 20.0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]),
-    create: jest
-      .fn()
-      .mockImplementation(({ data }) =>
-        Promise.resolve({
-          ...data,
-          id: 2,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }),
-      ),
+    findMany: jest.fn().mockResolvedValue([
+      {
+        id: 1,
+        lat: 50.0,
+        lng: 20.0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]),
+    create: jest.fn().mockImplementation(({ data }) =>
+      Promise.resolve({
+        ...data,
+        id: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    ),
   };
 }
 
-// Mock for ClerkService
 class MockClerkService {
   verifyToken = jest
     .fn()

@@ -1,3 +1,6 @@
+process.env.CLERK_PUBLISHABLE_KEY = 'test-pub-key';
+process.env.CLERK_SECRET_KEY = 'test-secret-key';
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
