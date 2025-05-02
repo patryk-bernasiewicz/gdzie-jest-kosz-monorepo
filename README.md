@@ -88,6 +88,20 @@ npm run test:e2e
 - Endpoints under `/admin` require the user to have the `admin` role (authorization enforced by AdminGuard).
 - CORS support: allowed origins can be configured via the `ALLOWED_ORIGINS` environment variable.
 
+## API Documentation (Swagger)
+
+This project now includes interactive API documentation powered by [Swagger](https://swagger.io/), automatically generated from the codebase using NestJS decorators.
+
+- **Access the docs:**
+  - After starting the backend, visit: `http://localhost:3220/api` (or the port set in your environment)
+  - The Swagger UI provides a browsable interface for all REST endpoints, request/response schemas, and authentication requirements.
+- **Authentication:**
+  - Endpoints requiring authentication expect a valid Clerk JWT in the `Authorization` header (as a Bearer token). You can use the "Authorize" button in Swagger UI to provide your token for testing protected endpoints.
+- **Versioning:**
+  - The API is versioned (currently `v1`). All endpoints are prefixed with `/api/v1/`.
+
+**Note:** The Swagger docs are generated from code annotations using `@nestjs/swagger`. Keep these up to date as you add or modify endpoints.
+
 ## Project Structure
 
 - `src/` – Source code (feature-based modules: bins, user, database, clerk)

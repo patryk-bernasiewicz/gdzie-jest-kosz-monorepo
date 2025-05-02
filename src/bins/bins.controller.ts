@@ -16,7 +16,17 @@ import { UserService } from '../user/user.service';
 import { CurrentUser } from '../user/current-user.decorator';
 import { ClerkAuthGuard } from '../user/clerk-auth.guard';
 import { AdminGuard } from '../user/admin.guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('bins')
 @Controller({ path: 'bins', version: '1' })
 export class BinsController {
   private logger = new Logger(BinsController.name);
@@ -26,6 +36,10 @@ export class BinsController {
     private readonly userService: UserService,
   ) {}
 
+  @ApiOperation({ summary: 'Get nearby bins using latitude and longitude' })
+  @ApiResponse({ status: 200, description: 'Nearby bins found' })
+  @ApiQuery({ name: 'latitude', required: true, type: Number })
+  @ApiQuery({ name: 'longitude', required: true, type: Number })
   @Get()
   getNearbyBins(
     @Query('latitude') latitude?: number,
@@ -38,6 +52,25 @@ export class BinsController {
     return this.binsService.getNearbyBins(Number(latitude), Number(longitude));
   }
 
+  @ApiOperation({ summary: 'Create a new bin as a signed in user' })
+  @ApiResponse({ status: 201, description: 'Bin created successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        latitude: { type: 'number' },
+        longitude: { type: 'number' },
+      },
+      required: ['latitude', 'longitude'],
+    },
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+  })
   @Post()
   @UseGuards(ClerkAuthGuard)
   async createBin(
@@ -49,6 +82,15 @@ export class BinsController {
     return this.binsService.createBin(latitude, longitude, user.id, isAdmin);
   }
 
+  @ApiOperation({ summary: 'Get all bins for the location as admin' })
+  @ApiResponse({ status: 200, description: 'All bins found' })
+  @ApiQuery({ name: 'latitude', required: true, type: Number })
+  @ApiQuery({ name: 'longitude', required: true, type: Number })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+  })
   @Get('admin')
   @UseGuards(ClerkAuthGuard, AdminGuard)
   async getAllBinsAsAdmin(
@@ -63,6 +105,23 @@ export class BinsController {
     );
   }
 
+  @ApiOperation({ summary: 'Create a bin as admin' })
+  @ApiResponse({ status: 201, description: 'Bin created successfully' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        latitude: { type: 'number' },
+        longitude: { type: 'number' },
+      },
+      required: ['latitude', 'longitude'],
+    },
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+  })
   @Post('admin')
   @UseGuards(ClerkAuthGuard, AdminGuard)
   async createBinAsAdmin(
@@ -73,6 +132,24 @@ export class BinsController {
     return this.binsService.createBin(latitude, longitude, user.id, true);
   }
 
+  @ApiOperation({ summary: 'Update bin location as admin' })
+  @ApiResponse({ status: 200, description: 'Bin location updated successfully' })
+  @ApiResponse({ status: 404, description: 'Bin not found' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        latitude: { type: 'number' },
+        longitude: { type: 'number' },
+      },
+      required: ['latitude', 'longitude'],
+    },
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+  })
   @Put('admin/:binId/location')
   @UseGuards(ClerkAuthGuard, AdminGuard)
   async updateBinLocationAsAdmin(
