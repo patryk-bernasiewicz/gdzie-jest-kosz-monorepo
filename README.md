@@ -14,25 +14,30 @@ A mobile app that allows users to track their location in real-time using Leafle
 - TypeScript
 - Leaflet (maps)
 - Clerk (authentication)
-- Jotai (state management)
+- Zustand (state management)
 - React Query (@tanstack/react-query)
 - Testing Library for React Native
 
 ## Project structure
 
 ```text
-- app/           # App entry points, navigation, and screens
-- components/    # Reusable UI and map components
-  - ui/          # UI primitives (buttons, text, input, etc.)
-  - map/         # Map and map-related components (Leaflet integration, context menu, debug tools)
-- constants/     # App-wide constants (e.g., color palette)
-- hooks/         # Custom React hooks (data fetching, geolocation, authentication, etc.)
-  - __test__/    # Tests for hooks
-- lib/           # Utility functions and API logic
-- store/         # State management atoms (Jotai)
-- types/         # TypeScript type definitions
-- assets/        # Fonts and images
-- scripts/       # Project scripts (e.g., reset-project.js)
+app/                # Expo Router entry points and navigation (routes as files/folders)
+assets/             # Fonts and images
+feature/            # Feature-based domain logic (auth, bins, map, user, etc.)
+  auth/             # Authentication feature (screens, components, store, etc.)
+  bins/             # Trash bin feature (hooks, types, utils, tests, etc.)
+  map/              # Map feature (screens, hooks, store, utils, etc.)
+  user/             # User profile and related logic (screens, components, hooks, etc.)
+scripts/            # Project scripts (e.g., reset-project.js)
+types/              # Global TypeScript type definitions
+ui/                 # Shared UI primitives, navigation, constants, hooks, and utils
+  components/       # Shared UI components (Heading, Text, IconSymbol, etc.)
+    input/          # Input primitives (TextInput, etc.)
+    navigation/     # Navigation UI (HapticTab, TabBarBackground, etc.)
+  constants/        # Shared constants (e.g., Colors)
+  hooks/            # Shared hooks (useColorScheme, useThemeColor, etc.)
+  utils/            # Shared utility functions (getColor, etc.)
+utils/              # App-wide utility functions (api, calculateDistance, etc.)
 ```
 
 ## Setup instructions
@@ -50,7 +55,7 @@ After installing the dependencies, use `npm run test` to run the test suites.
 ## Features
 
 - Real-time location tracking
-- Real-time trash bin tracking in the user’s area
+- Real-time trash bin tracking in the user's area
 - User authentication with Clerk
 - Map integration using Leaflet and OpenStreetMap
 - Context menu for submitting new bin locations

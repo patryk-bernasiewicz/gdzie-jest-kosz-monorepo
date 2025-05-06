@@ -1,48 +1,53 @@
-import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
+import { Tabs } from 'expo-router';
+import React from 'react';
 
-import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import IconSymbol from '@/ui/components/IconSymbol';
+import getColor from '@/ui/utils/getColor';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {},
-        }),
+        tabBarActiveTintColor: getColor('primary'),
+        tabBarInactiveTintColor: getColor('textDim'),
+        tabBarStyle: {
+          backgroundColor: getColor('background'),
+          borderTopColor: getColor('border'),
+          paddingBottom: 1,
+        },
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="map"
         options={{
-          title: "Mapa",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="map.fill" color={color} />
-          ),
+          title: 'Mapa',
+          tabBarIcon: ({ color, size }) => <IconSymbol name="map" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profil",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.fill" color={color} />
-          ),
+          title: 'Profil',
+          tabBarIcon: ({ color, size }) => <IconSymbol name="person" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="sign-in"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="sign-up"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="privacy-policy"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
