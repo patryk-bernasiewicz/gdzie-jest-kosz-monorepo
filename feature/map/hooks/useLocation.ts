@@ -6,6 +6,7 @@ import { handleApiError, showErrorToast } from '@/ui/utils/toastNotifications';
 
 const offsetMove = 20 / 111_111; // 20 meters in degrees for debug movement
 
+// Zustand store for location offset
 type LocationOffsetStore = {
   location: [number, number] | null;
   setLocation: (location: [number, number]) => void;
@@ -28,6 +29,7 @@ export const useLocationOffsetStore = create<LocationOffsetStore>((set) => ({
   resetOffset: () => set({ offset: [0, 0] }),
 }));
 
+// Actual hook
 type UseLocationReturnType = {
   isLoading: boolean;
   location: [number, number];

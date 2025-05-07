@@ -7,19 +7,15 @@ import api from '@/utils/api';
 import useLocation from '../../../map/hooks/useLocation';
 import useBins from '../useBins';
 
-// Mock useLocation (correct path)
 jest.mock('../../../map/hooks/useLocation', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-// Mock the entire api module (axios instance)
 jest.mock('@/utils/api');
 
-// Cast the imported api to its mocked type for type safety in tests
 const mockedApi = api as jest.Mocked<typeof api>;
 
-// Helper to mock useLocation's new return type
 function mockUseLocation({
   location = null,
   isLoading = false,

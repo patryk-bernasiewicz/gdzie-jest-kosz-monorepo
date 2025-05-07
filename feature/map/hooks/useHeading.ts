@@ -3,6 +3,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const MANGETOMETER_INTERVAL = 500;
 
+/**
+ * A custom hook that returns the heading (compass direction)
+ * of the device - currently unused
+ * @returns {number | null} - The heading of the device
+ */
 export default function useHeading() {
   const [heading, setHeading] = useState<number | null>(null);
   const headingHistoryRef = useRef<number[]>([]);

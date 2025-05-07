@@ -4,13 +4,11 @@ import getNearestBin from '../../../bins/utils/getNearestBin';
 import useLocation from '../../../map/hooks/useLocation';
 import useNearestBin from '../useNearestBin';
 
-// Mock useLocation
 jest.mock('../../../map/hooks/useLocation', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-// Mock getNearestBin
 jest.mock('../../../bins/utils/getNearestBin', () => ({
   __esModule: true,
   default: jest.fn(),

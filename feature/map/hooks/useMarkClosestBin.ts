@@ -5,6 +5,13 @@ import useBins from '@/feature/bins/hooks/useBins';
 import useBinsWithDistance from '@/feature/bins/hooks/useBinsWithDistance';
 import useNearestBin from '@/feature/bins/hooks/useNearestBin';
 
+/**
+ * A custom hook that injects JavaScript into a WebView when the bin is marked
+ * as the closest bin
+ * @param mapViewRef - reference to the WebView component
+ * @param isHtmlReady - boolean indicating whether the HTML is ready
+ * @return {void}
+ */
 export default function useMarkClosestBin(
   mapViewRef: RefObject<WebView | null>,
   isHtmlReady?: boolean | null

@@ -4,7 +4,6 @@ import useLocation from '../../../map/hooks/useLocation';
 import { Bin } from '../../types';
 import useBinsWithDistance from '../useBinsWithDistance';
 
-// Mock useLocation (correct path)
 jest.mock('../../../map/hooks/useLocation', () => ({
   __esModule: true,
   default: jest.fn(),
@@ -39,7 +38,6 @@ describe('useBinsWithDistance', () => {
   let wrapper: ({ children }: { children: React.ReactNode }) => JSX.Element;
 
   beforeEach(() => {
-    // Dynamically import to avoid import cycles and only load if needed
     ({ QueryClientProvider } = require('@tanstack/react-query'));
     queryClient = new (require('@tanstack/react-query').QueryClient)();
     wrapper = ({ children }: { children: React.ReactNode }) => (
