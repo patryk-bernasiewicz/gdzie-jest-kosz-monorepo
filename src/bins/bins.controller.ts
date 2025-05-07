@@ -17,7 +17,6 @@ import { CurrentUser } from '../user/current-user.decorator';
 import { ClerkAuthGuard } from '../user/clerk-auth.guard';
 import { AdminGuard } from '../user/admin.guard';
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiOperation,
@@ -133,7 +132,10 @@ export class BinsController {
   }
 
   @ApiOperation({ summary: 'Update bin location as admin' })
-  @ApiResponse({ status: 200, description: 'Bin location updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Bin location updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Bin not found' })
   @ApiBody({
     schema: {
