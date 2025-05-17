@@ -7,7 +7,6 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { BinsService } from './bins.service';
@@ -45,6 +44,7 @@ export class BinsController {
     @Body('longitude') longitude: number,
     @CurrentUser() user: User,
   ): Promise<Bin> {
+    console.log('POST createBin called');
     const isAdmin = user.role === 'admin';
     return this.binsService.createBin(latitude, longitude, user.id, isAdmin);
   }
