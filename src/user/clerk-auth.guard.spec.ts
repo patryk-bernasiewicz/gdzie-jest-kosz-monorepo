@@ -1,4 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ClerkAuthGuard } from './clerk-auth.guard';
 import { UserService } from './user.service';
 import { ExecutionContext } from '@nestjs/common';
@@ -27,6 +26,8 @@ describe('ClerkAuthGuard', () => {
   let request: any;
 
   beforeEach(() => {
+    process.env.CLERK_PUBLISHABLE_KEY = 'test-pub-key';
+    process.env.CLERK_SECRET_KEY = 'test-secret-key';
     jest.resetAllMocks();
     userService = {};
     clerkService = {
@@ -38,6 +39,11 @@ describe('ClerkAuthGuard', () => {
     context = {
       switchToHttp: () => ({ getRequest: () => request }),
     } as any;
+  });
+
+  afterEach(() => {
+    delete process.env.CLERK_PUBLISHABLE_KEY;
+    delete process.env.CLERK_SECRET_KEY;
   });
 
   it('should return false if no Authorization header', async () => {
