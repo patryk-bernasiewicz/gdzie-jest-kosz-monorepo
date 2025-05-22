@@ -3,7 +3,9 @@ import {
   Controller,
   Get,
   Logger,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -23,6 +25,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AcceptBinDto } from './dto/accept-bin.dto';
 
 @ApiTags('bins')
 @Controller({ path: 'bins', version: '1' })
@@ -49,6 +52,8 @@ export class BinsController {
 
     return this.binsService.getNearbyBins(Number(latitude), Number(longitude));
   }
+
+  // ------------------------------------------------------------
 
   @ApiOperation({ summary: 'Create a new bin as a signed in user' })
   @ApiResponse({ status: 201, description: 'Bin created successfully' })
@@ -81,6 +86,8 @@ export class BinsController {
     return this.binsService.createBin(latitude, longitude, user.id, isAdmin);
   }
 
+  // ------------------------------------------------------------
+
   @ApiOperation({ summary: 'Get all bins for the location as admin' })
   @ApiResponse({ status: 200, description: 'All bins found' })
   @ApiQuery({ name: 'latitude', required: true, type: Number })
@@ -103,6 +110,8 @@ export class BinsController {
       Number(longitude) || 0,
     );
   }
+
+  // ------------------------------------------------------------
 
   @ApiOperation({ summary: 'Create a bin as admin' })
   @ApiResponse({ status: 201, description: 'Bin created successfully' })
@@ -130,6 +139,8 @@ export class BinsController {
   ): Promise<Bin> {
     return this.binsService.createBin(latitude, longitude, user.id, true);
   }
+
+  // ------------------------------------------------------------
 
   @ApiOperation({ summary: 'Update bin location as admin' })
   @ApiResponse({
@@ -159,6 +170,38 @@ export class BinsController {
     @Body('latitude') latitude: number,
     @Body('longitude') longitude: number,
   ): Promise<Bin> {
+    const bin = await this.binsService.getBinById(binId);
+    if (!bin) {
+      throw new NotFoundException('Bin not found');
+    }
+
     return this.binsService.updateBinLocation(binId, latitude, longitude);
+  }
+
+  // ------------------------------------------------------------
+
+  @ApiOperation({ summary: 'Update bin state (acceptedAt field)' })
+  @ApiResponse({ status: 200, description: 'Bin state updated successfully' })
+  @ApiResponse({ status: 404, description: 'Bin not found' })
+  @ApiBody({
+    type: AcceptBinDto,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+  })
+  @Put('admin/:binId/accept')
+  @UseGuards(ClerkAuthGuard, AdminGuard)
+  async acceptBin(
+    @Param('binId', ParseIntPipe) binId: number,
+    @Body() acceptBinDto: AcceptBinDto,
+  ): Promise<Bin> {
+    const bin = await this.binsService.getBinById(binId);
+    if (!bin) {
+      throw new NotFoundException('Bin not found');
+    }
+
+    return this.binsService.acceptBin(binId, acceptBinDto.accept);
   }
 }

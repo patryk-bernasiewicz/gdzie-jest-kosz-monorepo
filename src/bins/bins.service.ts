@@ -60,6 +60,12 @@ export class BinsService {
     return bin;
   }
 
+  async getBinById(binId: number): Promise<Bin | null> {
+    return this.db.bin.findUnique({
+      where: { id: Number(binId) },
+    });
+  }
+
   async updateBinLocation(
     binId: number,
     latitude: number,
@@ -68,6 +74,13 @@ export class BinsService {
     return this.db.bin.update({
       where: { id: Number(binId) },
       data: { latitude, longitude },
+    });
+  }
+
+  async acceptBin(binId: number, accept: boolean): Promise<Bin> {
+    return this.db.bin.update({
+      where: { id: Number(binId) },
+      data: { acceptedAt: accept ? new Date() : null },
     });
   }
 }

@@ -4,6 +4,8 @@ import { BinsService } from './bins.service';
 import { UserService } from 'src/user/user.service';
 import { Bin, User, Prisma } from '@prisma/client';
 import { ClerkService } from '../clerk/clerk.service';
+import { NotFoundException } from '@nestjs/common';
+import { AcceptBinDto } from './dto/accept-bin.dto';
 
 describe('BinsController', () => {
   let controller: BinsController;
@@ -15,6 +17,10 @@ describe('BinsController', () => {
     binsService = {
       getNearbyBins: jest.fn(),
       createBin: jest.fn(),
+      getAllNearbyBins: jest.fn(),
+      updateBinLocation: jest.fn(),
+      acceptBin: jest.fn(),
+      getBinById: jest.fn(),
     };
     userService = {};
     clerkService = {};
@@ -170,24 +176,111 @@ describe('BinsController', () => {
 
   describe('updateBinLocationAsAdmin', () => {
     it('should update bin location as admin', async () => {
-      const bin: Bin = {
-        id: 12,
+      const binId = 12;
+      const updatedLatitude = 33.3;
+      const updatedLongitude = 44.4;
+      const mockBin: Bin = {
+        id: binId,
         type: 'bin',
-        latitude: new Prisma.Decimal('33.3'),
-        longitude: new Prisma.Decimal('44.4'),
+        latitude: new Prisma.Decimal(updatedLatitude),
+        longitude: new Prisma.Decimal(updatedLongitude),
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: new Date(),
         createdById: 5,
       };
-      binsService.updateBinLocation = jest.fn().mockResolvedValue(bin);
-      const result = await controller.updateBinLocationAsAdmin(12, 33.3, 44.4);
-      expect(result).toEqual(bin);
+      binsService.getBinById.mockResolvedValue(mockBin);
+      binsService.updateBinLocation.mockResolvedValue(mockBin);
+
+      const result = await controller.updateBinLocationAsAdmin(
+        binId,
+        updatedLatitude,
+        updatedLongitude,
+      );
+      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
       expect(binsService.updateBinLocation).toHaveBeenCalledWith(
-        12,
-        33.3,
-        44.4,
+        binId,
+        updatedLatitude,
+        updatedLongitude,
+      );
+      expect(result).toEqual(mockBin);
+    });
+
+    it('should throw NotFoundException if bin to update is not found', async () => {
+      const binId = 99;
+      binsService.getBinById.mockResolvedValue(null);
+
+      await expect(
+        controller.updateBinLocationAsAdmin(binId, 10, 20),
+      ).rejects.toThrow(NotFoundException);
+      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      expect(binsService.updateBinLocation).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('acceptBin', () => {
+    const binId = 1;
+    const acceptBinDto: AcceptBinDto = { accept: true };
+    const mockUser: User = { id: 1, clerkId: 'clerk-admin', role: 'admin' };
+
+    const mockAcceptedBin: Bin = {
+      id: binId,
+      type: 'bin',
+      latitude: new Prisma.Decimal('10.0'),
+      longitude: new Prisma.Decimal('20.0'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      acceptedAt: new Date(),
+      createdById: mockUser.id,
+    };
+
+    const mockRejectedBin: Bin = {
+      ...mockAcceptedBin,
+      acceptedAt: null,
+    };
+
+    it('should call binsService.acceptBin with true and return accepted bin', async () => {
+      binsService.getBinById.mockResolvedValue(mockAcceptedBin);
+      binsService.acceptBin.mockResolvedValue(mockAcceptedBin);
+
+      const result = await controller.acceptBin(binId, acceptBinDto);
+
+      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      expect(binsService.acceptBin).toHaveBeenCalledWith(binId, true);
+      expect(result).toEqual(mockAcceptedBin);
+    });
+
+    it('should call binsService.acceptBin with false and return rejected bin', async () => {
+      const rejectDto: AcceptBinDto = { accept: false };
+      binsService.getBinById.mockResolvedValue(mockRejectedBin);
+      binsService.acceptBin.mockResolvedValue(mockRejectedBin);
+
+      const result = await controller.acceptBin(binId, rejectDto);
+
+      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      expect(binsService.acceptBin).toHaveBeenCalledWith(binId, false);
+      expect(result).toEqual(mockRejectedBin);
+    });
+
+    it('should throw NotFoundException if bin is not found', async () => {
+      binsService.getBinById.mockResolvedValue(null);
+
+      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(
+        'Bin not found'
+      );
+      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      expect(binsService.acceptBin).not.toHaveBeenCalled();
+    });
+
+    it('should propagate error if binsService.acceptBin throws', async () => {
+      const errorMessage = 'Service error';
+      binsService.getBinById.mockResolvedValue(mockAcceptedBin);
+      binsService.acceptBin.mockRejectedValue(new Error(errorMessage));
+
+      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(
+        errorMessage,
       );
     });
   });
