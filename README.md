@@ -45,12 +45,35 @@ npx prisma generate
 
 ### Environment Setup
 
-Create a `.env` file with the following variables:
+The application supports multiple environment files with automatic detection:
 
-```
+#### Environment File Priority (in order):
+- **Development**: `.env.development` → `.env`
+- **Test**: `.env.test` → `.env.test.local` → `.env`  
+- **Production**: `.env.production` → `.env.production.local` → `.env`
+
+#### For Local Development:
+Create a `.env` file (or `.env.development` for development-specific config):
+
+```env
 DATABASE_URL=mysql://user:password@localhost:3306/dbname
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+NODE_ENV=development
+PORT=3220
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3223
+```
+
+#### For Production:
+Use environment variables directly or create `.env.production`:
+
+```env
+DATABASE_URL=mysql://user:password@production.host:3306/dbname
+CLERK_PUBLISHABLE_KEY=pk_live_your_production_key
+CLERK_SECRET_KEY=sk_live_your_production_secret
+NODE_ENV=production
+PORT=3220
+ALLOWED_ORIGINS=https://yourdomain.com
 ```
 
 ### Running the App
@@ -59,8 +82,11 @@ CLERK_SECRET_KEY=your_clerk_secret_key
 # development
 npm run start
 
-# watch mode
+# watch mode (recommended for development)
 npm run start:dev
+
+# debug mode
+npm run start:debug
 
 # production
 npm run start:prod

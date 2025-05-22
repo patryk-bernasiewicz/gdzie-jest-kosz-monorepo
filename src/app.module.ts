@@ -6,10 +6,11 @@ import { BinsModule } from './bins/bins.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ClerkModule } from './clerk/clerk.module';
+import { getConfigOptions } from './config/env.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env' }),
+    ConfigModule.forRoot(getConfigOptions()),
     DatabaseModule,
     BinsModule,
     UserModule,

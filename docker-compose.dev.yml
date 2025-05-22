@@ -1,0 +1,42 @@
+services:
+  backend:
+    image: ghcr.io/patryk-bernasiewicz/gjk-backend:180525_1510
+    ports:
+      - target: 3220
+        published: 3220
+        protocol: tcp
+        mode: host
+    environment:
+      NODE_ENV: development
+      PORT: 3220
+      ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3223"
+      CLERK_PUBLISHABLE_KEY: "pk_test_cmFwaWQtd2lsZGNhdC00Ni5jbGVyay5hY2NvdW50cy5kZXYk"
+    secrets:
+      - GJK_DEV_DATABASE_URL
+      - GJK_DEV_CLERK_SECRET_KEY
+    entrypoint:
+      - sh
+      - -c
+      - |
+        export DATABASE_URL=$$(cat /run/secrets/GJK_DEV_DATABASE_URL) && \
+        export CLERK_SECRET_KEY=$$(cat /run/secrets/GJK_DEV_CLERK_SECRET_KEY) && \
+        node dist/main
+    healthcheck:
+      test: ['CMD', 'node', '-e', 'require("http").get("http://localhost:3220/api/health", (res) => process.exit(res.statusCode === 200 ? 0 : 1))']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+secrets:
+  GJK_DEV_CLERK_SECRET_KEY:
+    external: true
+  GJK_DEV_DATABASE_URL:
+    external: true
