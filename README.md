@@ -1,5 +1,7 @@
 # Gdzie jest kosz
 
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/patryk-bernasiewicz/gdzie-jest-kosz?utm_source=oss&utm_medium=github&utm_campaign=patryk-bernasiewicz%2Fgdzie-jest-kosz&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
 ## Backend project
 
 This app uses Nest.js based backend as a Trash Bin database. It is located [here](https://github.com/patryk-bernasiewicz/gdzie-jest-kosz-backend).
