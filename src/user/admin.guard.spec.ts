@@ -1,5 +1,6 @@
 import { AdminGuard } from './admin.guard';
 import { ForbiddenException, ExecutionContext } from '@nestjs/common';
+import { InsufficientPermissionsException } from '../common/exceptions/auth.exceptions';
 
 describe('AdminGuard', () => {
   let guard: AdminGuard;
@@ -22,23 +23,19 @@ describe('AdminGuard', () => {
     expect(guard.canActivate(mockContext as ExecutionContext)).toBe(true);
   });
 
-  it('should throw ForbiddenException if user is not admin', () => {
-    const req = { user: { role: 'user' } };
-    (mockContext.switchToHttp as jest.Mock).mockReturnValue({
-      getRequest: () => req,
-    });
-    expect(() => guard.canActivate(mockContext as ExecutionContext)).toThrow(
-      ForbiddenException,
-    );
+  it('should throw InsufficientPermissionsException if user is not admin', () => {
+    const req = { user: { id: 1, role: 'user' } };
+    const mockContext = {
+      switchToHttp: () => ({ getRequest: () => req }),
+    };
+    expect(() => guard.canActivate(mockContext as any)).toThrow(InsufficientPermissionsException);
   });
 
-  it('should throw ForbiddenException if user is missing', () => {
+  it('should throw InsufficientPermissionsException if user is missing', () => {
     const req = {};
-    (mockContext.switchToHttp as jest.Mock).mockReturnValue({
-      getRequest: () => req,
-    });
-    expect(() => guard.canActivate(mockContext as ExecutionContext)).toThrow(
-      ForbiddenException,
-    );
+    const mockContext = {
+      switchToHttp: () => ({ getRequest: () => req }),
+    };
+    expect(() => guard.canActivate(mockContext as any)).toThrow(InsufficientPermissionsException);
   });
 });

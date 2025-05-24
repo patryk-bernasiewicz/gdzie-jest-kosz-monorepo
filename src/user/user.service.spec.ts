@@ -47,7 +47,7 @@ describe('UserService', () => {
     it('should throw an error if upsert fails', async () => {
       db.user.upsert.mockRejectedValue(new Error('DB error'));
       await expect(service.upsertUser('clerk-err')).rejects.toThrow(
-        'Failed to upsert user',
+        'Failed to create or update user account',
       );
     });
   });

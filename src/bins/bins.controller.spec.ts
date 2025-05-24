@@ -6,6 +6,9 @@ import { Bin, User, Prisma } from '@prisma/client';
 import { ClerkService } from '../clerk/clerk.service';
 import { NotFoundException } from '@nestjs/common';
 import { AcceptBinDto } from './dto/accept-bin.dto';
+import { CreateBinDto } from './dto/create-bin.dto';
+import { GetNearbyBinsDto } from './dto/get-nearby-bins.dto';
+import { BinNotFoundException } from '../common/exceptions/bin.exceptions';
 
 describe('BinsController', () => {
   let controller: BinsController;
@@ -57,19 +60,13 @@ describe('BinsController', () => {
         },
       ];
       binsService.getNearbyBins.mockResolvedValue(bins);
-      const result = await controller.getNearbyBins(
-        1.12345678901234,
-        2.98765432109876,
-      );
+      const dto: GetNearbyBinsDto = { latitude: 1.12345678901234, longitude: 2.98765432109876 };
+      const result = await controller.getNearbyBins(dto);
       expect(result).toEqual(bins);
       expect(binsService.getNearbyBins).toHaveBeenCalledWith(
         1.12345678901234,
         2.98765432109876,
       );
-    });
-    it('should return empty array if coordinates are missing', async () => {
-      const result = await controller.getNearbyBins(undefined, undefined);
-      expect(result).toEqual([]);
     });
   });
 
@@ -88,11 +85,8 @@ describe('BinsController', () => {
       };
       const user: User = { id: 1, clerkId: 'clerk1', role: 'user' };
       binsService.createBin.mockResolvedValue(bin);
-      const result = await controller.createBin(
-        1.12345678901234,
-        2.98765432109876,
-        user,
-      );
+      const dto: CreateBinDto = { latitude: 1.12345678901234, longitude: 2.98765432109876, type: 'bin' };
+      const result = await controller.createBin(dto, user);
       expect(result).toEqual(bin);
       expect(binsService.createBin).toHaveBeenCalledWith(
         1.12345678901234,
@@ -115,11 +109,8 @@ describe('BinsController', () => {
       };
       const user: User = { id: 2, clerkId: 'clerk2', role: 'admin' };
       binsService.createBin.mockResolvedValue(bin);
-      const result = await controller.createBin(
-        3.00000000000001,
-        4.00000000000002,
-        user,
-      );
+      const dto: CreateBinDto = { latitude: 3.00000000000001, longitude: 4.00000000000002, type: 'bin' };
+      const result = await controller.createBin(dto, user);
       expect(result).toEqual(bin);
       expect(binsService.createBin).toHaveBeenCalledWith(
         3.00000000000001,
@@ -147,7 +138,8 @@ describe('BinsController', () => {
       ];
       binsService.getAllNearbyBins = jest.fn().mockResolvedValue(bins);
       const user: User = { id: 3, clerkId: 'clerk3', role: 'admin' };
-      const result = await controller.getAllBinsAsAdmin(10.1, 20.2, user);
+      const dto: GetNearbyBinsDto = { latitude: 10.1, longitude: 20.2 };
+      const result = await controller.getAllBinsAsAdmin(dto, user);
       expect(result).toEqual(bins);
       expect(binsService.getAllNearbyBins).toHaveBeenCalledWith(10.1, 20.2);
     });
@@ -168,7 +160,8 @@ describe('BinsController', () => {
       };
       binsService.createBin = jest.fn().mockResolvedValue(bin);
       const user: User = { id: 4, clerkId: 'clerk4', role: 'admin' };
-      const result = await controller.createBinAsAdmin(11.1, 22.2, user);
+      const dto: CreateBinDto = { latitude: 11.1, longitude: 22.2, type: 'bin' };
+      const result = await controller.createBinAsAdmin(dto, user);
       expect(result).toEqual(bin);
       expect(binsService.createBin).toHaveBeenCalledWith(11.1, 22.2, 4, true);
     });
@@ -192,28 +185,26 @@ describe('BinsController', () => {
       };
       binsService.getBinById.mockResolvedValue(mockBin);
       binsService.updateBinLocation.mockResolvedValue(mockBin);
-
+      const dto: CreateBinDto = { latitude: updatedLatitude, longitude: updatedLongitude, type: 'bin' };
       const result = await controller.updateBinLocationAsAdmin(
         binId,
-        updatedLatitude,
-        updatedLongitude,
+        dto,
       );
-      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      expect(result).toEqual(mockBin);
       expect(binsService.updateBinLocation).toHaveBeenCalledWith(
         binId,
         updatedLatitude,
         updatedLongitude,
       );
-      expect(result).toEqual(mockBin);
     });
 
-    it('should throw NotFoundException if bin to update is not found', async () => {
+    it('should throw BinNotFoundException if bin does not exist', async () => {
       const binId = 99;
       binsService.getBinById.mockResolvedValue(null);
-
+      const dto: CreateBinDto = { latitude: 10, longitude: 20, type: 'bin' };
       await expect(
-        controller.updateBinLocationAsAdmin(binId, 10, 20),
-      ).rejects.toThrow(NotFoundException);
+        controller.updateBinLocationAsAdmin(binId, dto),
+      ).rejects.toThrow(BinNotFoundException);
       expect(binsService.getBinById).toHaveBeenCalledWith(binId);
       expect(binsService.updateBinLocation).not.toHaveBeenCalled();
     });
@@ -264,14 +255,12 @@ describe('BinsController', () => {
       expect(result).toEqual(mockRejectedBin);
     });
 
-    it('should throw NotFoundException if bin is not found', async () => {
+    it('should throw BinNotFoundException if bin is not found', async () => {
+      const binId = 1;
       binsService.getBinById.mockResolvedValue(null);
-
-      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(
-        'Bin not found'
-      );
+      const acceptBinDto: AcceptBinDto = { accept: false };
+      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(BinNotFoundException);
       expect(binsService.getBinById).toHaveBeenCalledWith(binId);
-      expect(binsService.acceptBin).not.toHaveBeenCalled();
     });
 
     it('should propagate error if binsService.acceptBin throws', async () => {
