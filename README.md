@@ -128,6 +128,55 @@ This project now includes interactive API documentation powered by [Swagger](htt
 
 **Note:** The Swagger docs are generated from code annotations using `@nestjs/swagger`. Keep these up to date as you add or modify endpoints.
 
+## Error Handling & Response Format
+
+All API errors are handled in a consistent, secure, and developer-friendly way.
+
+### Standardized Error Responses
+
+Every error response from the API follows this structure:
+
+```json
+{
+  "statusCode": 404,
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "path": "/api/v1/bins/123",
+  "message": "Bin with ID 123 not found",
+  "error": "Not Found"
+}
+```
+
+- `statusCode`: HTTP status code
+- `timestamp`: When the error occurred
+- `path`: The endpoint that was called
+- `message`: Human-readable error message (can be a string or array)
+- `error`: Short error type (e.g., "Not Found", "Validation Error")
+
+> **Note:** In development mode, you may also see a `details` field with stack traces or extra debug info. In production, this is never included for security.
+
+### Custom Exceptions
+
+The backend uses custom exception classes for domain-specific errors, such as:
+- `BinNotFoundException`
+- `InvalidLocationException`
+- `BinAlreadyExistsException`
+- `InsufficientPermissionsException`
+- `MissingTokenException`
+- `InvalidTokenException`
+- ...and more
+
+You can rely on both the `statusCode` and the `error` field to programmatically handle errors in your frontend/mobile app.
+
+### Validation Errors
+
+If you send invalid data, you'll get a `400 Bad Request` with a clear message about what went wrong.
+
+### Security
+
+Sensitive information (like stack traces or database error details) is **never** exposed in production error responses.
+
+> For a full list of possible error responses and examples, see the [API Documentation (Swagger)](#api-documentation-swagger) section above.
+
 ## Project Structure
 
 - `src/` – Source code (feature-based modules: bins, user, database, clerk)
