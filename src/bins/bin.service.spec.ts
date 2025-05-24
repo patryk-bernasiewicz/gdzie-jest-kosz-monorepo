@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BinsService } from './bins.service';
 import { DatabaseService } from 'src/database/database.service';
 import { Bin, Prisma } from '@prisma/client';
+import { NEARBY_BINS_DELTA_USER } from './bins.constants';
 
 describe('BinsService', () => {
   let service: BinsService;
@@ -23,7 +24,7 @@ describe('BinsService', () => {
   });
 
   describe('getNearbyBins', () => {
-    it('should query bins within 0.1 of given coordinates and return result', async () => {
+    it('should query bins within 0.01 of given coordinates and return result', async () => {
       const bins: Bin[] = [
         {
           id: 1,
@@ -40,10 +41,10 @@ describe('BinsService', () => {
       db.bin.findMany.mockResolvedValue(bins);
       const result = await service.getNearbyBins(1.1, 2.2);
       const callArgs = db.bin.findMany.mock.calls[0][0];
-      expect(callArgs.where.latitude.gte).toBeCloseTo(1.0, 10);
-      expect(callArgs.where.latitude.lte).toBeCloseTo(1.2, 10);
-      expect(callArgs.where.longitude.gte).toBeCloseTo(2.1, 10);
-      expect(callArgs.where.longitude.lte).toBeCloseTo(2.3, 10);
+      expect(callArgs.where.latitude.gte).toBeCloseTo(1.1 - NEARBY_BINS_DELTA_USER, 10);
+      expect(callArgs.where.latitude.lte).toBeCloseTo(1.1 + NEARBY_BINS_DELTA_USER, 10);
+      expect(callArgs.where.longitude.gte).toBeCloseTo(2.2 - NEARBY_BINS_DELTA_USER, 10);
+      expect(callArgs.where.longitude.lte).toBeCloseTo(2.2 + NEARBY_BINS_DELTA_USER, 10);
       expect(callArgs.where.NOT).toEqual({ acceptedAt: null });
       expect(result).toEqual(bins);
     });

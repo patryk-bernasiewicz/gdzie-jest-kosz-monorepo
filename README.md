@@ -198,6 +198,28 @@ Authentication is managed using [Clerk](https://clerk.com/). The backend verifie
 - Clerk integration is handled in the `src/clerk/` and `src/user/` modules, including guards and decorators for extracting and validating the current user.
 - No user credentials are stored in the backend; all authentication and user management is delegated to Clerk.
 
+## How Bin Search Distance Works
+
+When you request nearby bins (as a user or admin), the backend determines which bins to return based on a **bounding box** around your provided latitude and longitude.
+
+- **Bounding Box Delta:**  
+  The search area is defined by a configurable delta (in degrees) for both latitude and longitude.  
+  - For both regular users and admins, this delta is currently set to `0.01` degrees (about ±1.1 km at the equator).
+- **How it works:**  
+  - The backend fetches all bins where:
+    ```
+    latitude  >= (your_latitude  - 0.01)
+    latitude  <= (your_latitude  + 0.01)
+    longitude >= (your_longitude - 0.01)
+    longitude <= (your_longitude + 0.01)
+    ```
+  - This forms a square search area centered on your location.
+- **Configurable:**  
+  - The deltas are defined in `src/bins/bins.constants.ts` as `NEARBY_BINS_DELTA_USER` and `NEARBY_BINS_DELTA_ADMIN`.
+  - You can easily adjust these values to make the search area larger or smaller for different user types.
+
+> **Note:** This approach is fast and simple, but it's a square, not a true radius. For most use cases, it's accurate enough, but you can switch to a true radius/geospatial query if needed in the future.
+
 ## License
 
 MIT

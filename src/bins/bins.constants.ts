@@ -1,0 +1,2 @@
+export const NEARBY_BINS_DELTA_USER = 0.01;
+export const NEARBY_BINS_DELTA_ADMIN = 0.01; 
