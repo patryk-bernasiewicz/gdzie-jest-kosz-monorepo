@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 import { fetchAndSetClerkToken } from '@/feature/auth/store/clerkToken.util';
+import { getApiBaseUrl } from './getApiBaseUrl';
 
 const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_BACKEND_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -15,6 +16,7 @@ api.interceptors.request.use(async (config) => {
     config.headers = config.headers || {};
     config.headers['Authorization'] = `Bearer ${token}`;
   }
+
   return config;
 });
 
