@@ -1,44 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Bin, Prisma } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
+import { BinNotFoundException, InvalidLocationException } from '../common/exceptions/bin.exceptions';
 
 @Injectable()
 export class BinsService {
+  private readonly logger = new Logger(BinsService.name);
+
   constructor(private db: DatabaseService) {}
 
   async getNearbyBins(latitude: number, longitude: number): Promise<Bin[]> {
-    const bins = await this.db.bin.findMany({
-      where: {
-        latitude: {
-          gte: latitude - 0.1,
-          lte: latitude + 0.1,
+    this.validateCoordinates(latitude, longitude);
+    
+    try {
+      const bins = await this.db.bin.findMany({
+        where: {
+          latitude: {
+            gte: latitude - 0.1,
+            lte: latitude + 0.1,
+          },
+          longitude: {
+            gte: longitude - 0.1,
+            lte: longitude + 0.1,
+          },
+          NOT: {
+            acceptedAt: null,
+          },
         },
-        longitude: {
-          gte: longitude - 0.1,
-          lte: longitude + 0.1,
-        },
-        NOT: {
-          acceptedAt: null,
-        },
-      },
-    });
-    return bins;
+      });
+      
+      this.logger.debug(`Found ${bins.length} nearby bins for coordinates (${latitude}, ${longitude})`);
+      return bins;
+    } catch (error) {
+      this.logger.error(`Failed to get nearby bins for coordinates (${latitude}, ${longitude})`, error);
+      throw error; // Let global filter handle Prisma errors
+    }
   }
 
   async getAllNearbyBins(latitude: number, longitude: number): Promise<Bin[]> {
-    const bins = await this.db.bin.findMany({
-      where: {
-        latitude: {
-          gte: latitude - 0.01,
-          lte: latitude + 0.01,
+    this.validateCoordinates(latitude, longitude);
+    
+    try {
+      const bins = await this.db.bin.findMany({
+        where: {
+          latitude: {
+            gte: latitude - 0.01,
+            lte: latitude + 0.01,
+          },
+          longitude: {
+            gte: longitude - 0.01,
+            lte: longitude + 0.01,
+          },
         },
-        longitude: {
-          gte: longitude - 0.01,
-          lte: longitude + 0.01,
-        },
-      },
-    });
-    return bins;
+      });
+      
+      this.logger.debug(`Found ${bins.length} nearby bins (including unaccepted) for coordinates (${latitude}, ${longitude})`);
+      return bins;
+    } catch (error) {
+      this.logger.error(`Failed to get all nearby bins for coordinates (${latitude}, ${longitude})`, error);
+      throw error;
+    }
   }
 
   async createBin(
@@ -47,23 +68,43 @@ export class BinsService {
     userId: number,
     isAdmin: boolean,
   ): Promise<Bin> {
-    // Call the real DB method as expected by the test
-    const bin = await this.db.bin.create({
-      data: {
-        latitude,
-        longitude,
-        type: 'bin',
-        acceptedAt: isAdmin ? new Date() : null,
-        createdById: userId,
-      },
-    });
-    return bin;
+    this.validateCoordinates(latitude, longitude);
+    
+    try {
+      const bin = await this.db.bin.create({
+        data: {
+          latitude,
+          longitude,
+          type: 'bin',
+          acceptedAt: isAdmin ? new Date() : null,
+          createdById: userId,
+        },
+      });
+      
+      this.logger.log(`Created bin ${bin.id} at coordinates (${latitude}, ${longitude}) by user ${userId}`);
+      return bin;
+    } catch (error) {
+      this.logger.error(`Failed to create bin at coordinates (${latitude}, ${longitude})`, error);
+      throw error;
+    }
   }
 
   async getBinById(binId: number): Promise<Bin | null> {
-    return this.db.bin.findUnique({
-      where: { id: Number(binId) },
-    });
+    try {
+      const bin = await this.db.bin.findUnique({
+        where: { id: Number(binId) },
+      });
+      
+      if (!bin) {
+        this.logger.debug(`Bin with ID ${binId} not found`);
+        return null;
+      }
+      
+      return bin;
+    } catch (error) {
+      this.logger.error(`Failed to get bin by ID: ${binId}`, error);
+      throw error;
+    }
   }
 
   async updateBinLocation(
@@ -71,16 +112,44 @@ export class BinsService {
     latitude: number,
     longitude: number,
   ): Promise<Bin> {
-    return this.db.bin.update({
-      where: { id: Number(binId) },
-      data: { latitude, longitude },
-    });
+    this.validateCoordinates(latitude, longitude);
+    
+    try {
+      const bin = await this.db.bin.update({
+        where: { id: Number(binId) },
+        data: { latitude, longitude },
+      });
+      
+      this.logger.log(`Updated bin ${binId} location to coordinates (${latitude}, ${longitude})`);
+      return bin;
+    } catch (error) {
+      this.logger.error(`Failed to update bin ${binId} location`, error);
+      throw error;
+    }
   }
 
   async acceptBin(binId: number, accept: boolean): Promise<Bin> {
-    return this.db.bin.update({
-      where: { id: Number(binId) },
-      data: { acceptedAt: accept ? new Date() : null },
-    });
+    try {
+      const bin = await this.db.bin.update({
+        where: { id: Number(binId) },
+        data: { acceptedAt: accept ? new Date() : null },
+      });
+      
+      this.logger.log(`${accept ? 'Accepted' : 'Rejected'} bin ${binId}`);
+      return bin;
+    } catch (error) {
+      this.logger.error(`Failed to ${accept ? 'accept' : 'reject'} bin ${binId}`, error);
+      throw error;
+    }
+  }
+
+  private validateCoordinates(latitude: number, longitude: number): void {
+    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+      throw new InvalidLocationException(latitude, longitude);
+    }
+    
+    if (isNaN(latitude) || isNaN(longitude)) {
+      throw new InvalidLocationException(latitude, longitude);
+    }
   }
 }
