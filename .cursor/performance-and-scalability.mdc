@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## 8. Performance and Scalability
+
+- Cursor should prioritize performance and scalability in code generation and architectural suggestions.
+- Suggest scalable backend patterns (e.g., modular monolith, microservices if appropriate).
+
+- Recommend RESTful API design best practices and efficient database schema approaches.

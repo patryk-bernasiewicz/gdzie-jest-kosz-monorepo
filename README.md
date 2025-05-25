@@ -183,6 +183,63 @@ Sensitive information (like stack traces or database error details) is **never**
 - `prisma/` – Prisma schema and migrations
 - `test/` – Integration and e2e tests
 
+## Architecture Overview
+
+The following diagram shows the high-level architecture and relationships between the main modules, services, and database entities in this backend.
+
+```mermaid
+graph TD
+  %% Main App Module
+  A[AppModule]
+  A --> BinsModule
+  A --> UserModule
+  A --> DatabaseModule
+  A --> ClerkModule
+  A --> ConfigModule
+
+  %% Bins Feature
+  BinsModule --> BinsController
+  BinsModule --> BinsService
+  BinsModule --> DatabaseModule
+  BinsModule --> UserModule
+  BinsModule --> ClerkModule
+
+  %% User Feature
+  UserModule --> UserController
+  UserModule --> UserService
+  UserModule --> DatabaseModule
+  UserModule --> ClerkModule
+
+  %% Database
+  DatabaseModule --> DatabaseService
+
+  %% Clerk Auth
+  ClerkModule --> ClerkService
+  ClerkModule --> ClerkClientProvider
+  ClerkModule --> ConfigModule
+
+  %% Entities (Prisma)
+  subgraph Prisma Models
+    Bin
+    User
+  end
+  DatabaseService -->|Prisma| Bin
+  DatabaseService -->|Prisma| User
+
+  %% Relationships
+  User -- "1:N" --> Bin
+
+  %% Decorators, Guards, DTOs (not shown as nodes, but used in controllers/services)
+  %% - ClerkAuthGuard, AdminGuard, CurrentUserDecorator
+  %% - DTOs for Bin operations
+
+  %% Notes
+  classDef faded fill:#eee,stroke:#bbb,stroke-width:1px;
+  class Bin,BinsController,BinsService faded;
+```
+
+Basically everything will use the Clerk Module to authorize user's actions on bins. TODO: introduce AuthModule that will handle authorization and make everything less coupled.
+
 ## Development Notes
 
 - Code style: TypeScript, single quotes, semicolons mandatory

@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## 7. Standards and Best Practices
+
+- **Domain-Specific Standards**: None currently defined (examples are welcome for evaluation).
+- **Accessibility**: Not applicable for backend code.
+
+- **Internationalization**: Not required at this stage.
