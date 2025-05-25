@@ -7,7 +7,7 @@ import { UserCreationException } from '../common/exceptions/auth.exceptions';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private db: DatabaseService) {}
+  constructor(private db: DatabaseService) { }
 
   async upsertUser(clerkId: string): Promise<User> {
     this.logger.debug(`Upserting user with clerkId: ${clerkId}`);
@@ -18,7 +18,7 @@ export class UserService {
         update: {},
         create: { clerkId },
       });
-      
+
       this.logger.debug(`Successfully upserted user: ${user.id}`);
       return user;
     } catch (error) {
@@ -28,6 +28,7 @@ export class UserService {
   }
 
   async getUserById(userId: number): Promise<User | null> {
+    this.logger.log(`getUserById called with userId: ${userId}`);
     try {
       return await this.db.user.findUnique({
         where: { id: userId },

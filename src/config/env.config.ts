@@ -1,4 +1,5 @@
 import { existsSync } from 'fs';
+import { Logger } from '@nestjs/common';
 
 /**
  * Environment configuration helper
@@ -8,7 +9,9 @@ export function getEnvFilePaths(): string[] {
   const nodeEnv = process.env.NODE_ENV || 'development';
   const envPaths: string[] = [];
 
-  console.log(`🔧 Loading environment configuration for NODE_ENV: ${nodeEnv}`);
+  const logger = new Logger('EnvConfig');
+
+  logger.log(`🔧 Loading environment configuration for NODE_ENV: ${nodeEnv}`);
 
   // Priority order for environment files
   // Higher priority files are loaded first and can override lower priority ones
@@ -35,13 +38,13 @@ export function getEnvFilePaths(): string[] {
   const existingPaths = envPaths.filter((path) => {
     const exists = existsSync(path);
     if (exists) {
-      console.log(`📁 Found env file: ${path}`);
+      logger.log(`📁 Found env file: ${path}`);
     }
     return exists;
   });
 
   if (existingPaths.length === 0) {
-    console.warn('⚠️  No environment files found, using process.env only');
+    logger.warn('⚠️  No environment files found, using process.env only');
   }
 
   return existingPaths;

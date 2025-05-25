@@ -47,7 +47,7 @@ export class BinsController {
   constructor(
     private readonly binsService: BinsService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @ApiOperation({ summary: 'Get nearby bins using latitude and longitude' })
   @ApiResponse({ status: 200, description: 'Nearby bins found' })
@@ -59,6 +59,7 @@ export class BinsController {
   getNearbyBins(
     @Query() query: GetNearbyBinsDto,
   ): Promise<Bin[]> {
+    this.logger.log(`GET /bins called with lat=${query.latitude}, lng=${query.longitude}`);
     return this.binsService.getNearbyBins(query.latitude, query.longitude);
   }
 
@@ -84,9 +85,9 @@ export class BinsController {
     this.logger.debug(`User ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`);
     const isAdmin = user.role === 'admin';
     return this.binsService.createBin(
-      createBinDto.latitude, 
-      createBinDto.longitude, 
-      user.id, 
+      createBinDto.latitude,
+      createBinDto.longitude,
+      user.id,
       isAdmin
     );
   }
@@ -135,9 +136,9 @@ export class BinsController {
   ): Promise<Bin> {
     this.logger.log(`Admin ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`);
     return this.binsService.createBin(
-      createBinDto.latitude, 
-      createBinDto.longitude, 
-      user.id, 
+      createBinDto.latitude,
+      createBinDto.longitude,
+      user.id,
       true
     );
   }
@@ -168,8 +169,8 @@ export class BinsController {
 
     this.logger.log(`Admin updating bin ${binId} location to (${updateLocationDto.latitude}, ${updateLocationDto.longitude})`);
     return this.binsService.updateBinLocation(
-      binId, 
-      updateLocationDto.latitude, 
+      binId,
+      updateLocationDto.latitude,
       updateLocationDto.longitude
     );
   }
