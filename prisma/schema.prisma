@@ -9,7 +9,7 @@ datasource db {
 
 model Bin {
   id          Int       @id @default(autoincrement())
-  type        String
+  type        String // default: bin
   latitude    Decimal   @db.Decimal(18, 14)
   longitude   Decimal   @db.Decimal(18, 14)
   createdAt   DateTime  @default(now())

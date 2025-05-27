@@ -29,11 +29,11 @@ export class CreateBinDto {
 
   @ApiProperty({
     description: 'Type of the bin',
-    example: 'general',
+    example: 'bin',
     required: false,
-    default: 'general',
+    default: 'bin',
   })
   @IsOptional()
   @IsString({ message: 'Bin type must be a string' })
-  type?: string = 'general';
+  type?: string = 'bin';
 } 
