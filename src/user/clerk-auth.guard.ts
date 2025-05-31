@@ -8,9 +8,9 @@ import { Request } from 'express';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
 import { ClerkService } from '../clerk/clerk.service';
-import { 
-  InvalidTokenException, 
-  MissingTokenException 
+import {
+  InvalidTokenException,
+  MissingTokenException
 } from '../common/exceptions/auth.exceptions';
 
 declare module 'express' {
@@ -26,15 +26,9 @@ export class ClerkAuthGuard implements CanActivate {
   constructor(
     private readonly userService: UserService,
     private readonly clerkService: ClerkService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (!process.env.CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY) {
-      const error = 'Clerk environment variables missing: CLERK_PUBLISHABLE_KEY and/or CLERK_SECRET_KEY must be set.';
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
     const request = context.switchToHttp().getRequest<Request>();
 
     const authHeader = request.headers['authorization'];
@@ -54,7 +48,7 @@ export class ClerkAuthGuard implements CanActivate {
       const { userId } = await this.clerkService.getSession(sid);
       const user = await this.userService.upsertUser(userId);
       request.user = user;
-      
+
       this.logger.debug(`Successfully authenticated user: ${user.id}`);
       return true;
     } catch (err) {

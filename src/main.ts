@@ -3,9 +3,20 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
+  const clerkPublishableKey = configService.get('CLERK_PUBLISHABLE_KEY');
+  const clerkSecretKey = configService.get('CLERK_SECRET_KEY');
+  if (!clerkPublishableKey || !clerkSecretKey) {
+    throw new Error(
+      'Clerk environment variables missing: CLERK_PUBLISHABLE_KEY and/or CLERK_SECRET_KEY must be set.',
+    );
+  }
+
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((origin) =>
     origin.trim(),
   );

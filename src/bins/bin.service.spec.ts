@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BinsService } from './bins.service';
 import { DatabaseService } from 'src/database/database.service';
 import { Bin, Prisma } from '@prisma/client';
-import { NEARBY_BINS_DELTA_USER } from './bins.constants';
+import { NEARBY_BINS_DELTA_USER, NEARBY_BINS_DELTA_ADMIN } from './bins.constants';
+import { InvalidLocationException } from '../common/exceptions/bin.exceptions';
 
 describe('BinsService', () => {
   let service: BinsService;
@@ -47,6 +48,61 @@ describe('BinsService', () => {
       expect(callArgs.where.longitude.lte).toBeCloseTo(2.2 + NEARBY_BINS_DELTA_USER, 10);
       expect(callArgs.where.NOT).toEqual({ acceptedAt: null });
       expect(result).toEqual(bins);
+    });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.findMany.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.getNearbyBins(1.1, 2.2)).rejects.toThrow('DB Test Error');
+    });
+  });
+
+  describe('getAllNearbyBins', () => {
+    it('should query bins within admin delta and return result', async () => {
+      const bins: Bin[] = [
+        {
+          id: 1,
+          type: 'bin',
+          latitude: new Prisma.Decimal(1.1),
+          longitude: new Prisma.Decimal(2.2),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          acceptedAt: new Date(), // Can be accepted
+          createdById: 1,
+        },
+        {
+          id: 2,
+          type: 'bin',
+          latitude: new Prisma.Decimal(1.105),
+          longitude: new Prisma.Decimal(2.205),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          acceptedAt: null, // Can be unaccepted
+          createdById: 2,
+        },
+      ];
+      db.bin.findMany.mockResolvedValue(bins);
+      const result = await service.getAllNearbyBins(1.1, 2.2);
+      const callArgs = db.bin.findMany.mock.calls[0][0];
+      // Using NEARBY_BINS_DELTA_ADMIN from BinsService, actual value not needed for mock
+      expect(callArgs.where.latitude.gte).toBeCloseTo(1.1 - NEARBY_BINS_DELTA_ADMIN, 5);
+      expect(callArgs.where.latitude.lte).toBeCloseTo(1.1 + NEARBY_BINS_DELTA_ADMIN, 5);
+      expect(callArgs.where.longitude.gte).toBeCloseTo(2.2 - NEARBY_BINS_DELTA_ADMIN, 5);
+      expect(callArgs.where.longitude.lte).toBeCloseTo(2.2 + NEARBY_BINS_DELTA_ADMIN, 5);
+      expect(callArgs.where.NOT).toBeUndefined(); // Should not filter by acceptedAt
+      expect(result).toEqual(bins);
+    });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.findMany.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.getAllNearbyBins(1.1, 2.2)).rejects.toThrow('DB Test Error');
+    });
+
+    it('should call validateCoordinates and throw if invalid', async () => {
+      // This test implicitly checks if validateCoordinates is called
+      // by getAllNearbyBins, as validateCoordinates throws for invalid coords.
+      await expect(service.getAllNearbyBins(100, 200)).rejects.toThrow(InvalidLocationException);
     });
   });
 
@@ -105,6 +161,11 @@ describe('BinsService', () => {
       });
       expect(result).toEqual(bin);
     });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.create.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.createBin(1, 1, 1, false)).rejects.toThrow('DB Test Error');
+    });
   });
 
   describe('updateBinLocation', () => {
@@ -127,6 +188,11 @@ describe('BinsService', () => {
         data: { latitude: 12.34, longitude: 56.78 },
       });
       expect(result).toEqual(updatedBin);
+    });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.update.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.updateBinLocation(10, 12.34, 56.78)).rejects.toThrow('DB Test Error');
     });
   });
 
@@ -188,6 +254,11 @@ describe('BinsService', () => {
         where: { id: binIdNumber },
       });
       expect(result).toEqual(bin);
+    });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.findUnique.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.getBinById(1)).rejects.toThrow('DB Test Error');
     });
   });
 
@@ -258,16 +329,50 @@ describe('BinsService', () => {
       };
       db.bin.update.mockResolvedValue(acceptedBin);
 
-      const result = await service.acceptBin(
-        binIdString as any as number,
-        true,
-      );
+      const result = await service.acceptBin(binIdString as any as number, true);
 
       expect(db.bin.update).toHaveBeenCalledWith({
         where: { id: binIdNumber },
         data: { acceptedAt: expect.any(Date) },
       });
       expect(result).toEqual(acceptedBin);
+    });
+
+    it('should throw an error if db call fails', async () => {
+      db.bin.update.mockRejectedValue(new Error('DB Test Error'));
+      await expect(service.acceptBin(1, true)).rejects.toThrow('DB Test Error');
+    });
+  });
+
+  describe('validateCoordinates', () => {
+    it('should throw InvalidLocationException for latitude < -90', () => {
+      expect(() => service['validateCoordinates'](-90.1, 0)).toThrow(InvalidLocationException);
+    });
+
+    it('should throw InvalidLocationException for latitude > 90', () => {
+      expect(() => service['validateCoordinates'](90.1, 0)).toThrow(InvalidLocationException);
+    });
+
+    it('should throw InvalidLocationException for longitude < -180', () => {
+      expect(() => service['validateCoordinates'](0, -180.1)).toThrow(InvalidLocationException);
+    });
+
+    it('should throw InvalidLocationException for longitude > 180', () => {
+      expect(() => service['validateCoordinates'](0, 180.1)).toThrow(InvalidLocationException);
+    });
+
+    it('should throw InvalidLocationException for NaN latitude', () => {
+      expect(() => service['validateCoordinates'](NaN, 0)).toThrow(InvalidLocationException);
+    });
+
+    it('should throw InvalidLocationException for NaN longitude', () => {
+      expect(() => service['validateCoordinates'](0, NaN)).toThrow(InvalidLocationException);
+    });
+
+    it('should not throw for valid coordinates (within bounds)', () => {
+      expect(() => service['validateCoordinates'](0, 0)).not.toThrow();
+      expect(() => service['validateCoordinates'](90, 180)).not.toThrow();
+      expect(() => service['validateCoordinates'](-90, -180)).not.toThrow();
     });
   });
 });

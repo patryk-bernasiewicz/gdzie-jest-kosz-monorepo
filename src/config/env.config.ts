@@ -53,10 +53,10 @@ export function getEnvFilePaths(): string[] {
 /**
  * Configuration options for different environments
  */
-export function getConfigOptions() {
+export function getConfigOptions(isGlobal = true) {
   return {
     envFilePath: getEnvFilePaths(),
-    isGlobal: true,
+    isGlobal,
     // Expand variables like ${VAR} in env files
     expandVariables: true,
     // Cache the configuration

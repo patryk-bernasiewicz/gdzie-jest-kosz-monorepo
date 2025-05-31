@@ -39,11 +39,19 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse();
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object') {
-        message = (exceptionResponse as any).message || exceptionResponse;
-        error = (exceptionResponse as any).error || exception.name;
-        if (isDev && (exceptionResponse as any).details) {
-          details = (exceptionResponse as any).details;
+        // Default to a title-cased version of the HttpStatus key or exception.name
+        const statusKey = Object.keys(HttpStatus).find(key => HttpStatus[key] === status);
+        if (statusKey) {
+          error = statusKey.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+        } else {
+          error = exception.name;
+        }
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const typedResponse = exceptionResponse as Record<string, any>; // Cast for type safety
+        message = typedResponse.message || JSON.stringify(exceptionResponse); // Fallback for non-standard objects
+        error = typedResponse.error || exception.name;
+        if (isDev && typedResponse.details) {
+          details = typedResponse.details;
         }
       }
     }
