@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 
@@ -63,16 +63,24 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
   useInjectMapPosition(mapViewRef, latitude, longitude);
 
   // Hooks to handle user interactions with the map
-  useBinCreatedEffect(mapViewRef, isBinCreated, () => {
-    setContextMenuPos(null);
-    setSelectedPos(null);
-    setMapSelectedBins([]);
-  });
-  useBinMarkedInvalidEffect(mapViewRef, isBinMarkedInvalid, () => {
-    setContextMenuPos(null);
-    setSelectedPos(null);
-    setMapSelectedBins([]);
-  });
+  useBinCreatedEffect(
+    mapViewRef,
+    isBinCreated,
+    useCallback(() => {
+      setContextMenuPos(null);
+      setSelectedPos(null);
+      setMapSelectedBins([]);
+    }, []),
+  );
+  useBinMarkedInvalidEffect(
+    mapViewRef,
+    isBinMarkedInvalid,
+    useCallback(() => {
+      setContextMenuPos(null);
+      setSelectedPos(null);
+      setMapSelectedBins([]);
+    }, []),
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const logWebViewMessage = (...messages: any[]) => {
@@ -86,23 +94,29 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
     mutateCreateBin(selectedPos);
   };
 
-  const handleConfirmInvalidBin = (binId: number) => {
-    if (isMarkingBinInvalid) return;
-    markInvalidBin(binId);
-  };
+  const handleConfirmInvalidBin = useCallback(
+    (binId: number) => {
+      if (isMarkingBinInvalid) return;
+      markInvalidBin(binId);
+    },
+    [isMarkingBinInvalid, markInvalidBin],
+  );
 
-  const handleMarkInvalidBin = (binId: number) => {
-    Alert.alert('Potwierdź akcję', `Czy chcesz oznaczyć kosz ID: ${binId} jako nieaktualny?`, [
-      {
-        text: 'Tak',
-        onPress: () => handleConfirmInvalidBin(binId),
-      },
-      {
-        text: 'Nie',
-        style: 'cancel',
-      },
-    ]);
-  };
+  const handleMarkInvalidBin = useCallback(
+    (binId: number) => {
+      Alert.alert('Potwierdź akcję', `Czy chcesz oznaczyć kosz ID: ${binId} jako nieaktualny?`, [
+        {
+          text: 'Tak',
+          onPress: () => handleConfirmInvalidBin(binId),
+        },
+        {
+          text: 'Nie',
+          style: 'cancel',
+        },
+      ]);
+    },
+    [handleConfirmInvalidBin],
+  );
 
   const handleWebViewMessage = (event: WebViewMessageEvent) => {
     try {
