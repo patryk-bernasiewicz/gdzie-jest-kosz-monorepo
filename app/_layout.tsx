@@ -37,7 +37,13 @@ function InitialLayout() {
 
     if (isSignedIn) {
       if (isStrictAuthRoute) {
-        router.replace('/(tabs)/map');
+        // Make sure we're using the correct route format
+        try {
+          router.navigate('/(tabs)/map');
+        } catch (e) {
+          // Fallback navigation if the first attempt fails
+          router.navigate('/');
+        }
       }
     }
   }, [isLoaded, isSignedIn, segments, router]);

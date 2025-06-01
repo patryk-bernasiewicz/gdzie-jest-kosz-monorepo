@@ -21,22 +21,32 @@ export async function fetchAndSetClerkToken() {
     let token: string | null;
     token = await getCachedClerkToken();
     if (!token) {
+      // Check if we have an active session before trying to get token
+      if (!clerkInstance.session) {
+        console.warn('[fetchAndSetClerkToken] No active session available.');
+        useAuthToken.setState({ token: null });
+        return null;
+      }
+
       token =
         (await clerkInstance.session?.getToken({
           skipCache: true,
         })) || null;
-      cachedToken = token;
-      cachedAt = Date.now();
-      useAuthToken.setState({ token });
+
+      if (token) {
+        cachedToken = token;
+        cachedAt = Date.now();
+        useAuthToken.setState({ token });
+      } else {
+        console.warn('[fetchAndSetClerkToken] Token fetch returned null.');
+        useAuthToken.setState({ token: null });
+      }
     }
 
-    if (token) {
-      return token;
-    } else {
-      console.warn('[fetchAndSetClerkToken] Token fetch returned null.');
-    }
+    return token;
   } catch (error) {
     console.error('[fetchAndSetClerkToken] Error fetching Clerk token:', error);
+    useAuthToken.setState({ token: null });
     return null;
   }
 }

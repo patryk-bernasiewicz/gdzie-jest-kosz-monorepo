@@ -16,8 +16,9 @@ export default function useBins() {
   const [latitude, longitude] = location?.[0] && location?.[1] ? [location[0], location[1]] : [null, null];
 
   // Store the last location that triggered a fetch
-  const lastFetchedLocationRef = useRef<[number, number] | null>(null);
-  const [lastFetchedLocation, setLastFetchedLocation] = useState<[number, number] | null>(null);
+  const initialLocation = latitude && longitude ? [latitude, longitude] as [number, number] : null;
+  const lastFetchedLocationRef = useRef<[number, number] | null>(initialLocation);
+  const [lastFetchedLocation, setLastFetchedLocation] = useState<[number, number] | null>(initialLocation);
 
   useEffect(() => {
     if (latitude === null || longitude === null) return;

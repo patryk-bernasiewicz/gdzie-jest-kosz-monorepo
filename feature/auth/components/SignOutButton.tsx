@@ -1,5 +1,5 @@
 import { useClerk } from '@clerk/clerk-expo';
-import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,6 +8,7 @@ import getColor from '@/ui/utils/getColor';
 export default function SignOutButton() {
   const [isPending, setPending] = useState(false);
   const { signOut } = useClerk();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     if (isPending) return;
@@ -16,9 +17,9 @@ export default function SignOutButton() {
 
     try {
       await signOut();
-      Linking.openURL(Linking.createURL('/(tabs)/profile'));
+      router.navigate('/(tabs)/profile');
     } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      console.error('Sign out error:', err);
     } finally {
       setPending(false);
     }

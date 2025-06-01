@@ -27,7 +27,13 @@ export default function SignInScreen() {
     }
 
     (async () => {
-      router.replace('/(tabs)/profile');
+      try {
+        // Navigate to map screen after successful login
+        router.navigate('/(tabs)/map');
+      } catch (e) {
+        // Fallback to profile if map navigation fails
+        router.navigate('/(tabs)/profile');
+      }
     })();
   }, [isLoaded, router, session]);
 

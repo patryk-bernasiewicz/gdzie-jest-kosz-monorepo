@@ -34,9 +34,13 @@ export default function SignUpScreen() {
     if (!isLoaded || !session) return;
 
     (async () => {
-      const token = await session.getToken();
-      console.log('Token:', token);
-      router.replace('/(tabs)/profile');
+      try {
+        // Navigate to map screen after successful signup
+        router.navigate('/(tabs)/map');
+      } catch (e) {
+        // Fallback to profile if map navigation fails
+        router.navigate('/(tabs)/profile');
+      }
     })();
   }, [isLoaded, session, router]);
 
