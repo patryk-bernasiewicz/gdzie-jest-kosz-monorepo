@@ -10,4 +10,4 @@ import { ClerkModule } from '../clerk/clerk.module';
   providers: [UserService],
   exports: [UserService],
 })
-export class UserModule {}
+export class UserModule { }

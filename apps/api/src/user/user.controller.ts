@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { ClerkAuthGuard } from './clerk-auth.guard';
-import { CurrentUser } from './current-user.decorator';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -18,7 +18,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get current user' })
   @ApiResponse({ status: 200, description: 'User found' })
   @Get('me')
-  @UseGuards(ClerkAuthGuard)
+  @UseGuards(AuthGuard)
   async authenticateAndUpsert(@CurrentUser() user: User): Promise<User> {
     this.logger.log('GET /user/me called');
     return user;
