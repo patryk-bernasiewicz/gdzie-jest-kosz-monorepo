@@ -1,0 +1,26 @@
+{
+  "name": "gjk-monorepo",
+  "version": "DEV-0.0.1",
+  "description": "GJK Monorepo",
+  "main": "index.js",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "start": "turbo run start --parallel",
+    "test": "turbo run test --parallel"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
