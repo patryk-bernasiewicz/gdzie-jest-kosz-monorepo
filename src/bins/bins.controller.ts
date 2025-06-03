@@ -12,10 +12,9 @@ import {
 } from '@nestjs/common';
 import { BinsService } from './bins.service';
 import { Bin, User } from '@prisma/client';
-import { UserService } from '../user/user.service';
-import { CurrentUser } from '../user/current-user.decorator';
-import { ClerkAuthGuard } from '../user/clerk-auth.guard';
-import { AdminGuard } from '../user/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
 import {
   ApiBody,
   ApiHeader,
@@ -46,7 +45,6 @@ export class BinsController {
 
   constructor(
     private readonly binsService: BinsService,
-    private readonly userService: UserService,
   ) { }
 
   @ApiOperation({ summary: 'Get nearby bins using latitude and longitude' })
@@ -77,7 +75,7 @@ export class BinsController {
     required: true,
   })
   @Post()
-  @UseGuards(ClerkAuthGuard)
+  @UseGuards(AuthGuard)
   async createBin(
     @Body() createBinDto: CreateBinDto,
     @CurrentUser() user: User,
@@ -106,7 +104,7 @@ export class BinsController {
     required: true,
   })
   @Get('admin')
-  @UseGuards(ClerkAuthGuard, AdminGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   async getAllBinsAsAdmin(
     @Query() query: GetNearbyBinsDto,
     @CurrentUser() user: User,
@@ -129,7 +127,7 @@ export class BinsController {
     required: true,
   })
   @Post('admin')
-  @UseGuards(ClerkAuthGuard, AdminGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   async createBinAsAdmin(
     @Body() createBinDto: CreateBinDto,
     @CurrentUser() user: User,
@@ -157,7 +155,7 @@ export class BinsController {
     required: true,
   })
   @Put('admin/:binId/location')
-  @UseGuards(ClerkAuthGuard, AdminGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   async updateBinLocationAsAdmin(
     @Param('binId', ParseIntPipe) binId: number,
     @Body() updateLocationDto: CreateBinDto,
@@ -189,7 +187,7 @@ export class BinsController {
     required: true,
   })
   @Put('admin/:binId/accept')
-  @UseGuards(ClerkAuthGuard, AdminGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   async acceptBin(
     @Param('binId', ParseIntPipe) binId: number,
     @Body() acceptBinDto: AcceptBinDto,

@@ -1,23 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BinsController } from './bins.controller';
 import { BinsService } from './bins.service';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from '../auth/auth.service';
 import { Bin, User, Prisma } from '@prisma/client';
-import { ClerkService } from '../clerk/clerk.service';
-import { NotFoundException } from '@nestjs/common';
-import { AcceptBinDto } from './dto/accept-bin.dto';
-import { CreateBinDto } from './dto/create-bin.dto';
 import { GetNearbyBinsDto } from './dto/get-nearby-bins.dto';
+import { CreateBinDto } from './dto/create-bin.dto';
+import { AcceptBinDto } from './dto/accept-bin.dto';
 import { BinNotFoundException } from '../common/exceptions/bin.exceptions';
+
+const mockUserRegular: User = { id: 1, clerkId: 'clerkUser1', role: 'user' };
+const mockUserAdmin: User = { id: 2, clerkId: 'clerkAdmin1', role: 'admin' };
+
+const createMockBin = (id: number, createdById: number, type: string = 'bin', overrides: Partial<Bin> = {}): Bin => {
+  const defaultLatitude = '0.0';
+  const defaultLongitude = '0.0';
+  return {
+    id,
+    type,
+    latitude: new Prisma.Decimal(overrides.latitude?.toString() || defaultLatitude),
+    longitude: new Prisma.Decimal(overrides.longitude?.toString() || defaultLongitude),
+    createdAt: overrides.createdAt || new Date(),
+    updatedAt: overrides.updatedAt || new Date(),
+    deletedAt: overrides.deletedAt === undefined ? null : overrides.deletedAt,
+    acceptedAt: overrides.acceptedAt === undefined ? null : overrides.acceptedAt,
+    createdById,
+    ...overrides,
+  } as Bin;
+};
 
 describe('BinsController', () => {
   let controller: BinsController;
-  let binsService: any;
-  let userService: Partial<UserService>;
-  let clerkService: Partial<ClerkService>;
+  let binsServiceMock: Partial<BinsService>;
+  let authServiceMock: Partial<AuthService>;
 
   beforeEach(async () => {
-    binsService = {
+    binsServiceMock = {
       getNearbyBins: jest.fn(),
       createBin: jest.fn(),
       getAllNearbyBins: jest.fn(),
@@ -25,18 +42,23 @@ describe('BinsController', () => {
       acceptBin: jest.fn(),
       getBinById: jest.fn(),
     };
-    userService = {};
-    clerkService = {};
+
+    authServiceMock = {
+      validateUser: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BinsController],
       providers: [
-        { provide: BinsService, useValue: binsService },
-        { provide: UserService, useValue: userService },
-        { provide: ClerkService, useValue: clerkService },
+        { provide: BinsService, useValue: binsServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
       ],
     }).compile();
 
     controller = module.get<BinsController>(BinsController);
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -46,231 +68,105 @@ describe('BinsController', () => {
 
   describe('getNearbyBins', () => {
     it('should return bins for valid coordinates', async () => {
-      const bins: Bin[] = [
-        {
-          id: 1,
-          type: 'bin',
-          latitude: new Prisma.Decimal('1.12345678901234'),
-          longitude: new Prisma.Decimal('2.98765432109876'),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          deletedAt: null,
-          acceptedAt: new Date(),
-          createdById: 1,
-        },
-      ];
-      binsService.getNearbyBins.mockResolvedValue(bins);
-      const dto: GetNearbyBinsDto = { latitude: 1.12345678901234, longitude: 2.98765432109876 };
-      const result = await controller.getNearbyBins(dto);
-      expect(result).toEqual(bins);
-      expect(binsService.getNearbyBins).toHaveBeenCalledWith(
-        1.12345678901234,
-        2.98765432109876,
-      );
+      const bins: Bin[] = [createMockBin(1, 1, 'bin', { latitude: new Prisma.Decimal('1.0'), longitude: new Prisma.Decimal('1.0') })];
+      (binsServiceMock.getNearbyBins as jest.Mock).mockResolvedValue(bins);
+      const dto: GetNearbyBinsDto = { latitude: 1.0, longitude: 1.0 };
+      expect(await controller.getNearbyBins(dto)).toEqual(bins);
+      expect(binsServiceMock.getNearbyBins).toHaveBeenCalledWith(1.0, 1.0);
     });
   });
 
-  describe('createBin', () => {
+  describe('createBin (AuthGuard dependent)', () => {
+    beforeEach(() => {
+      (authServiceMock.validateUser as jest.Mock).mockResolvedValue(mockUserRegular);
+    });
+
     it('should create a bin with user info', async () => {
-      const bin: Bin = {
-        id: 1,
-        type: 'bin',
-        latitude: new Prisma.Decimal('1.12345678901234'),
-        longitude: new Prisma.Decimal('2.98765432109876'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        acceptedAt: null,
-        createdById: 1,
-      };
-      const user: User = { id: 1, clerkId: 'clerk1', role: 'user' };
-      binsService.createBin.mockResolvedValue(bin);
-      const dto: CreateBinDto = { latitude: 1.12345678901234, longitude: 2.98765432109876, type: 'bin' };
-      const result = await controller.createBin(dto, user);
-      expect(result).toEqual(bin);
-      expect(binsService.createBin).toHaveBeenCalledWith(
-        1.12345678901234,
-        2.98765432109876,
-        1,
-        false,
-      );
+      const binDto: CreateBinDto = { latitude: 1.0, longitude: 1.0, type: 'bin' };
+      const expectedBin = createMockBin(1, mockUserRegular.id, binDto.type, { latitude: new Prisma.Decimal(binDto.latitude), longitude: new Prisma.Decimal(binDto.longitude), acceptedAt: null });
+      (binsServiceMock.createBin as jest.Mock).mockResolvedValue(expectedBin);
+      const result = await controller.createBin(binDto, mockUserRegular);
+      expect(result).toEqual(expectedBin);
+      expect(binsServiceMock.createBin).toHaveBeenCalledWith(binDto.latitude, binDto.longitude, mockUserRegular.id, false);
     });
+
     it('should set isAdmin true if user is admin', async () => {
-      const bin: Bin = {
-        id: 2,
-        type: 'bin',
-        latitude: new Prisma.Decimal('3.00000000000001'),
-        longitude: new Prisma.Decimal('4.00000000000002'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        acceptedAt: new Date(),
-        createdById: 2,
-      };
-      const user: User = { id: 2, clerkId: 'clerk2', role: 'admin' };
-      binsService.createBin.mockResolvedValue(bin);
-      const dto: CreateBinDto = { latitude: 3.00000000000001, longitude: 4.00000000000002, type: 'bin' };
-      const result = await controller.createBin(dto, user);
-      expect(result).toEqual(bin);
-      expect(binsService.createBin).toHaveBeenCalledWith(
-        3.00000000000001,
-        4.00000000000002,
-        2,
-        true,
-      );
+      (authServiceMock.validateUser as jest.Mock).mockResolvedValue(mockUserAdmin);
+      const binDto: CreateBinDto = { latitude: 2.0, longitude: 2.0, type: 'bin' };
+      const expectedBin = createMockBin(2, mockUserAdmin.id, binDto.type, { latitude: new Prisma.Decimal(binDto.latitude), longitude: new Prisma.Decimal(binDto.longitude), acceptedAt: new Date() });
+      (binsServiceMock.createBin as jest.Mock).mockResolvedValue(expectedBin);
+      const result = await controller.createBin(binDto, mockUserAdmin);
+      expect(result).toEqual(expectedBin);
+      expect(binsServiceMock.createBin).toHaveBeenCalledWith(binDto.latitude, binDto.longitude, mockUserAdmin.id, true);
     });
   });
 
-  describe('getAllBinsAsAdmin', () => {
-    it('should return bins for admin with valid coordinates', async () => {
-      const bins: Bin[] = [
-        {
-          id: 10,
-          type: 'bin',
-          latitude: new Prisma.Decimal('10.1'),
-          longitude: new Prisma.Decimal('20.2'),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          deletedAt: null,
-          acceptedAt: new Date(),
-          createdById: 3,
-        },
-      ];
-      binsService.getAllNearbyBins = jest.fn().mockResolvedValue(bins);
-      const user: User = { id: 3, clerkId: 'clerk3', role: 'admin' };
-      const dto: GetNearbyBinsDto = { latitude: 10.1, longitude: 20.2 };
-      const result = await controller.getAllBinsAsAdmin(dto, user);
-      expect(result).toEqual(bins);
-      expect(binsService.getAllNearbyBins).toHaveBeenCalledWith(10.1, 20.2);
-    });
-  });
-
-  describe('createBinAsAdmin', () => {
-    it('should create a bin as admin', async () => {
-      const bin: Bin = {
-        id: 11,
-        type: 'bin',
-        latitude: new Prisma.Decimal('11.1'),
-        longitude: new Prisma.Decimal('22.2'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        acceptedAt: new Date(),
-        createdById: 4,
-      };
-      binsService.createBin = jest.fn().mockResolvedValue(bin);
-      const user: User = { id: 4, clerkId: 'clerk4', role: 'admin' };
-      const dto: CreateBinDto = { latitude: 11.1, longitude: 22.2, type: 'bin' };
-      const result = await controller.createBinAsAdmin(dto, user);
-      expect(result).toEqual(bin);
-      expect(binsService.createBin).toHaveBeenCalledWith(11.1, 22.2, 4, true);
-    });
-  });
-
-  describe('updateBinLocationAsAdmin', () => {
-    it('should update bin location as admin', async () => {
-      const binId = 12;
-      const updatedLatitude = 33.3;
-      const updatedLongitude = 44.4;
-      const mockBin: Bin = {
-        id: binId,
-        type: 'bin',
-        latitude: new Prisma.Decimal(updatedLatitude),
-        longitude: new Prisma.Decimal(updatedLongitude),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-        acceptedAt: new Date(),
-        createdById: 5,
-      };
-      binsService.getBinById.mockResolvedValue(mockBin);
-      binsService.updateBinLocation.mockResolvedValue(mockBin);
-      const dto: CreateBinDto = { latitude: updatedLatitude, longitude: updatedLongitude, type: 'bin' };
-      const result = await controller.updateBinLocationAsAdmin(
-        binId,
-        dto,
-      );
-      expect(result).toEqual(mockBin);
-      expect(binsService.updateBinLocation).toHaveBeenCalledWith(
-        binId,
-        updatedLatitude,
-        updatedLongitude,
-      );
+  describe('Admin Routes (AuthGuard, AdminGuard dependent)', () => {
+    beforeEach(() => {
+      (authServiceMock.validateUser as jest.Mock).mockResolvedValue(mockUserAdmin);
     });
 
-    it('should throw BinNotFoundException if bin does not exist', async () => {
-      const binId = 99;
-      binsService.getBinById.mockResolvedValue(null);
-      const dto: CreateBinDto = { latitude: 10, longitude: 20, type: 'bin' };
-      await expect(
-        controller.updateBinLocationAsAdmin(binId, dto),
-      ).rejects.toThrow(BinNotFoundException);
-      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
-      expect(binsService.updateBinLocation).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('acceptBin', () => {
-    const binId = 1;
-    const acceptBinDto: AcceptBinDto = { accept: true };
-    const mockUser: User = { id: 1, clerkId: 'clerk-admin', role: 'admin' };
-
-    const mockAcceptedBin: Bin = {
-      id: binId,
-      type: 'bin',
-      latitude: new Prisma.Decimal('10.0'),
-      longitude: new Prisma.Decimal('20.0'),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      acceptedAt: new Date(),
-      createdById: mockUser.id,
-    };
-
-    const mockRejectedBin: Bin = {
-      ...mockAcceptedBin,
-      acceptedAt: null,
-    };
-
-    it('should call binsService.acceptBin with true and return accepted bin', async () => {
-      binsService.getBinById.mockResolvedValue(mockAcceptedBin);
-      binsService.acceptBin.mockResolvedValue(mockAcceptedBin);
-
-      const result = await controller.acceptBin(binId, acceptBinDto);
-
-      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
-      expect(binsService.acceptBin).toHaveBeenCalledWith(binId, true);
-      expect(result).toEqual(mockAcceptedBin);
+    it('getAllBinsAsAdmin should return bins', async () => {
+      const bins: Bin[] = [createMockBin(1, mockUserAdmin.id, 'bin')];
+      (binsServiceMock.getAllNearbyBins as jest.Mock).mockResolvedValue(bins);
+      const dto: GetNearbyBinsDto = { latitude: 1.0, longitude: 1.0 };
+      expect(await controller.getAllBinsAsAdmin(dto, mockUserAdmin)).toEqual(bins);
+      expect(binsServiceMock.getAllNearbyBins).toHaveBeenCalledWith(1.0, 1.0);
     });
 
-    it('should call binsService.acceptBin with false and return rejected bin', async () => {
-      const rejectDto: AcceptBinDto = { accept: false };
-      binsService.getBinById.mockResolvedValue(mockRejectedBin);
-      binsService.acceptBin.mockResolvedValue(mockRejectedBin);
-
-      const result = await controller.acceptBin(binId, rejectDto);
-
-      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
-      expect(binsService.acceptBin).toHaveBeenCalledWith(binId, false);
-      expect(result).toEqual(mockRejectedBin);
+    it('createBinAsAdmin should create a bin', async () => {
+      const binDto: CreateBinDto = { latitude: 1.0, longitude: 1.0, type: 'bin' };
+      const expectedBin = createMockBin(1, mockUserAdmin.id, binDto.type, { latitude: new Prisma.Decimal(binDto.latitude), longitude: new Prisma.Decimal(binDto.longitude), acceptedAt: new Date() });
+      (binsServiceMock.createBin as jest.Mock).mockResolvedValue(expectedBin);
+      expect(await controller.createBinAsAdmin(binDto, mockUserAdmin)).toEqual(expectedBin);
+      expect(binsServiceMock.createBin).toHaveBeenCalledWith(binDto.latitude, binDto.longitude, mockUserAdmin.id, true);
     });
 
-    it('should throw BinNotFoundException if bin is not found', async () => {
+    it('updateBinLocationAsAdmin should update bin', async () => {
       const binId = 1;
-      binsService.getBinById.mockResolvedValue(null);
-      const acceptBinDto: AcceptBinDto = { accept: false };
-      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(BinNotFoundException);
-      expect(binsService.getBinById).toHaveBeenCalledWith(binId);
+      const dto: CreateBinDto = { latitude: 1.1, longitude: 1.1, type: 'bin' };
+      const targetBin = createMockBin(binId, mockUserAdmin.id, 'some_type');
+      const updatedBin = createMockBin(binId, mockUserAdmin.id, dto.type, { latitude: new Prisma.Decimal(dto.latitude), longitude: new Prisma.Decimal(dto.longitude), acceptedAt: new Date() });
+      (binsServiceMock.getBinById as jest.Mock).mockResolvedValue(targetBin);
+      (binsServiceMock.updateBinLocation as jest.Mock).mockResolvedValue(updatedBin);
+      expect(await controller.updateBinLocationAsAdmin(binId, dto)).toEqual(updatedBin);
+      expect(binsServiceMock.updateBinLocation).toHaveBeenCalledWith(binId, dto.latitude, dto.longitude);
     });
 
-    it('should propagate error if binsService.acceptBin throws', async () => {
-      const errorMessage = 'Service error';
-      binsService.getBinById.mockResolvedValue(mockAcceptedBin);
-      binsService.acceptBin.mockRejectedValue(new Error(errorMessage));
+    it('updateBinLocationAsAdmin should throw BinNotFoundException if bin not found', async () => {
+      const binId = 99;
+      const dto: CreateBinDto = { latitude: 1.1, longitude: 1.1, type: 'bin' };
+      (binsServiceMock.getBinById as jest.Mock).mockResolvedValue(null);
+      await expect(controller.updateBinLocationAsAdmin(binId, dto)).rejects.toThrow(new BinNotFoundException(binId));
+    });
 
-      await expect(controller.acceptBin(binId, acceptBinDto)).rejects.toThrow(
-        errorMessage,
-      );
+    it('acceptBin should accept a bin', async () => {
+      const binId = 1;
+      const acceptDto: AcceptBinDto = { accept: true };
+      const currentBin = createMockBin(binId, mockUserAdmin.id, 'bin', { acceptedAt: null });
+      const acceptedBin = { ...currentBin, acceptedAt: new Date() };
+      (binsServiceMock.getBinById as jest.Mock).mockResolvedValue(currentBin);
+      (binsServiceMock.acceptBin as jest.Mock).mockResolvedValue(acceptedBin);
+      expect(await controller.acceptBin(binId, acceptDto)).toEqual(acceptedBin);
+      expect(binsServiceMock.acceptBin).toHaveBeenCalledWith(binId, true);
+    });
+
+    it('acceptBin should reject a bin', async () => {
+      const binId = 1;
+      const acceptDto: AcceptBinDto = { accept: false };
+      const currentBin = createMockBin(binId, mockUserAdmin.id, 'bin', { acceptedAt: new Date() });
+      const rejectedBin = { ...currentBin, acceptedAt: null };
+      (binsServiceMock.getBinById as jest.Mock).mockResolvedValue(currentBin);
+      (binsServiceMock.acceptBin as jest.Mock).mockResolvedValue(rejectedBin);
+      expect(await controller.acceptBin(binId, acceptDto)).toEqual(rejectedBin);
+      expect(binsServiceMock.acceptBin).toHaveBeenCalledWith(binId, false);
+    });
+
+    it('acceptBin should throw BinNotFoundException if bin not found', async () => {
+      const binId = 99;
+      const acceptDto: AcceptBinDto = { accept: true };
+      (binsServiceMock.getBinById as jest.Mock).mockResolvedValue(null);
+      await expect(controller.acceptBin(binId, acceptDto)).rejects.toThrow(new BinNotFoundException(binId));
     });
   });
 });

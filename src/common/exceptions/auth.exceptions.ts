@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class InvalidTokenException extends HttpException {
-  constructor() {
+  constructor(message?: string) {
     const errorCode = 'INVALID_TOKEN';
+    const defaultMessage = 'Invalid or expired authentication token';
     super({
-      message: 'Invalid or expired authentication token',
+      message: message || defaultMessage,
       error: 'Authentication Failed',
       details: { errorCode }
     }, HttpStatus.UNAUTHORIZED);
@@ -12,10 +13,11 @@ export class InvalidTokenException extends HttpException {
 }
 
 export class MissingTokenException extends HttpException {
-  constructor() {
+  constructor(message?: string) {
     const errorCode = 'MISSING_TOKEN';
+    const defaultMessage = 'Authentication token is required';
     super({
-      message: 'Authentication token is required',
+      message: message || defaultMessage,
       error: 'Authentication Required',
       details: { errorCode }
     }, HttpStatus.UNAUTHORIZED);
@@ -24,7 +26,7 @@ export class MissingTokenException extends HttpException {
 
 export class InsufficientPermissionsException extends HttpException {
   constructor(requiredRole?: string) {
-    const message = requiredRole 
+    const message = requiredRole
       ? `${requiredRole} role is required for this operation`
       : 'Insufficient permissions for this operation';
     const errorCode = 'INSUFFICIENT_PERMISSIONS';
