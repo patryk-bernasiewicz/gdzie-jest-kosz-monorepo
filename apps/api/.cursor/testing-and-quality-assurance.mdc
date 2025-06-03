@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## 5. Testing and Quality Assurance
+
+- **Testing Framework**: Jest.
+- **Priority**: Focus on integration tests. Unit tests are required only for complex components.
+- **Coverage**: No specific testing coverage requirements, but try your best to cover new code with relevant tests.
+
+Every task needs to be finished by running the linter and the formatter. Use commands: `npm run lint`, `npm run format`.
+
+Every large task (25+ conversations) should end by ensuring that we've updated the test suites in our project relevant to the task, or added new ones if needed. Also, all (existing and new) test suites should be ran before declaring that the task has been finished.

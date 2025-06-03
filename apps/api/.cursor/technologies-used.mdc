@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+### Technologies Used:
+
+- **Backend Framework**: NestJS.
+- **Database**: MySQL.
+- **Authentication**: Clerk for user authentication.
+- **Language**: TypeScript.
+
+- **Geolocation**: Manages and serves geolocation data.

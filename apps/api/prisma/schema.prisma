@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Bin {
+  id          Int       @id @default(autoincrement())
+  type        String // default: bin
+  latitude    Decimal   @db.Decimal(18, 14)
+  longitude   Decimal   @db.Decimal(18, 14)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  acceptedAt  DateTime?
+  createdById Int?
+  createdBy   User?     @relation(fields: [createdById], references: [id])
+
+  @@index([createdById], map: "Bin_createdById_fkey")
+}
+
+model User {
+  id      Int     @id @default(autoincrement())
+  clerkId String  @unique
+  role    String? @default("user")
+  bins    Bin[]
+}
