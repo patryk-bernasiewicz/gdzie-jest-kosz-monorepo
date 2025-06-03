@@ -1,5 +1,5 @@
 {
-  "name": "gdzie-jest-kosz-backend",
+  "name": "@gjk/backend",
   "version": "DEV-0.0.1",
   "description": "",
   "author": "",
@@ -9,6 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "dev": "nest start --watch",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -20,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@gjk/shared-utils": "workspace:*",
     "@clerk/backend": "^1.29.1",
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@nestjs/common": "^11.0.1",

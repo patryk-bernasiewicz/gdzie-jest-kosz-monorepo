@@ -1,5 +1,5 @@
 {
-  "name": "gdzie-jest-kosz",
+  "name": "@gjk/mobile",
   "main": "expo-router/entry",
   "version": "DEV-0.0.1",
   "scripts": {
@@ -20,6 +20,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@gjk/shared-utils": "workspace:*",
     "@clerk/clerk-expo": "^2.10.7",
     "@clerk/localizations": "^3.14.4",
     "@expo/vector-icons": "^14.1.0",

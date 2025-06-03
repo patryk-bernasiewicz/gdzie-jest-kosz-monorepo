@@ -6,6 +6,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "dev:mobile": "turbo run dev --filter=@gjk/mobile",
+    "dev:dashboard": "turbo run dev --filter=@gjk/dashboard",
+    "dev:backend": "turbo run dev --filter=@gjk/backend",
     "start": "turbo run start --parallel",
     "test": "turbo run test --parallel"
   },
@@ -18,7 +21,8 @@
     "packages/*"
   ],
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "latest",
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=20.0.0"
