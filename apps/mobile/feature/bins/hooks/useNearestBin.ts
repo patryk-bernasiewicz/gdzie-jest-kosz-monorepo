@@ -13,7 +13,8 @@ export default function useNearestBin(bins?: BinWithDistance[] | null): {
   const { location } = useLocation();
 
   const nearestBin = useMemo(() => {
-    if (!bins || bins.length === 0 || !location || !location[0] || !location[1]) return null;
+    if (!bins || bins.length === 0 || !location || !location[0] || !location[1])
+      return null;
 
     return getNearestBin(bins, location[0], location[1]);
   }, [bins, location]);

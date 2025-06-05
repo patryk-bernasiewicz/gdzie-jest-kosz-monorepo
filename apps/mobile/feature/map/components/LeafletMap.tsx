@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 
@@ -70,7 +70,7 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
       setContextMenuPos(null);
       setSelectedPos(null);
       setMapSelectedBins([]);
-    }, []),
+    }, [])
   );
   useBinMarkedInvalidEffect(
     mapViewRef,
@@ -79,7 +79,7 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
       setContextMenuPos(null);
       setSelectedPos(null);
       setMapSelectedBins([]);
-    }, []),
+    }, [])
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,23 +99,27 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
       if (isMarkingBinInvalid) return;
       markInvalidBin(binId);
     },
-    [isMarkingBinInvalid, markInvalidBin],
+    [isMarkingBinInvalid, markInvalidBin]
   );
 
   const handleMarkInvalidBin = useCallback(
     (binId: number) => {
-      Alert.alert('Potwierdź akcję', `Czy chcesz oznaczyć kosz ID: ${binId} jako nieaktualny?`, [
-        {
-          text: 'Tak',
-          onPress: () => handleConfirmInvalidBin(binId),
-        },
-        {
-          text: 'Nie',
-          style: 'cancel',
-        },
-      ]);
+      Alert.alert(
+        'Potwierdź akcję',
+        `Czy chcesz oznaczyć kosz ID: ${binId} jako nieaktualny?`,
+        [
+          {
+            text: 'Tak',
+            onPress: () => handleConfirmInvalidBin(binId),
+          },
+          {
+            text: 'Nie',
+            style: 'cancel',
+          },
+        ]
+      );
     },
-    [handleConfirmInvalidBin],
+    [handleConfirmInvalidBin]
   );
 
   const handleWebViewMessage = (event: WebViewMessageEvent) => {
@@ -169,7 +173,10 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
           selectedBinIds={mapSelectedBins}
           onMarkInvalidBin={handleMarkInvalidBin}
         />
-        <NearestBinInformation nearestBin={nearestBin} direction={nearestBinDirection} />
+        <NearestBinInformation
+          nearestBin={nearestBin}
+          direction={nearestBinDirection}
+        />
         <DebugOnly>
           <BinsList bins={binsWithDistance} />
           <OffsetControls />

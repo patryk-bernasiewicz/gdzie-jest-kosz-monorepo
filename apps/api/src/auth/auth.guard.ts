@@ -24,11 +24,9 @@ declare module 'express' {
 export class AuthGuard implements CanActivate {
   private readonly logger = new Logger(AuthGuard.name);
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers['authorization'];
 
@@ -44,7 +42,9 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      this.logger.debug(`Attempting to validate token in AuthGuard: ${token.substring(0, 10)}...`);
+      this.logger.debug(
+        `Attempting to validate token in AuthGuard: ${token.substring(0, 10)}...`,
+      );
       const user = await this.authService.validateUser(token);
 
       if (user) {
@@ -57,10 +57,15 @@ export class AuthGuard implements CanActivate {
       }
     } catch (error) {
       this.logger.warn(`AuthGuard: Authentication failed - ${error.message}`);
-      if (error instanceof MissingTokenException || error instanceof InvalidTokenException) {
+      if (
+        error instanceof MissingTokenException ||
+        error instanceof InvalidTokenException
+      ) {
         throw error;
       }
-      throw new InvalidTokenException(error.message || 'Authentication failed due to an unexpected error.');
+      throw new InvalidTokenException(
+        error.message || 'Authentication failed due to an unexpected error.',
+      );
     }
   }
-} 
+}

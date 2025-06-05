@@ -16,7 +16,10 @@ export default function Text(props: TextProps) {
   return (
     <RNText
       {...props}
-      style={[styles.text, ...(Array.isArray(props.style) ? props.style : [props.style])]}
+      style={[
+        styles.text,
+        ...(Array.isArray(props.style) ? props.style : [props.style]),
+      ]}
     />
   );
 }

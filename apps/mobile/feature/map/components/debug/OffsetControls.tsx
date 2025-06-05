@@ -5,8 +5,13 @@ import TouchableOpacityButton from '@/ui/components/TouchableOpacityButton';
 import getColor from '@/ui/utils/getColor';
 
 export default function OffsetControls() {
-  const { moveOffsetSouth, moveOffsetNorth, moveOffsetEast, moveOffsetWest, resetOffset } =
-    useLocation();
+  const {
+    moveOffsetSouth,
+    moveOffsetNorth,
+    moveOffsetEast,
+    moveOffsetWest,
+    resetOffset,
+  } = useLocation();
 
   return (
     <View style={styles.container}>

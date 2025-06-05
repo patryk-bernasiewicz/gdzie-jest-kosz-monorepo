@@ -18,7 +18,9 @@ const queryClient = new QueryClient();
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
-  console.warn('Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY. App may not work correctly.');
+  console.warn(
+    'Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY. App may not work correctly.'
+  );
 }
 
 function InitialLayout() {
@@ -33,7 +35,8 @@ function InitialLayout() {
 
     const currentRoute = segments.join('/');
     const isStrictAuthRoute =
-      currentRoute.startsWith('(tabs)/sign-in') || currentRoute.startsWith('(tabs)/sign-up');
+      currentRoute.startsWith('(tabs)/sign-in') ||
+      currentRoute.startsWith('(tabs)/sign-up');
 
     if (isSignedIn) {
       if (isStrictAuthRoute) {

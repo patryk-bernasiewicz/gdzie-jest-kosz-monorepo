@@ -43,7 +43,9 @@ describe('useUpsertUser', () => {
       ok: true,
       json: async () => mockUser,
     });
-    const { result } = renderHook(() => useUpsertUser(), { wrapper: wrapper as any });
+    const { result } = renderHook(() => useUpsertUser(), {
+      wrapper: wrapper as any,
+    });
     result.current.mutate('session-123');
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -61,7 +63,9 @@ describe('useUpsertUser', () => {
 
   it('handles network error', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false });
-    const { result } = renderHook(() => useUpsertUser(), { wrapper: wrapper as any });
+    const { result } = renderHook(() => useUpsertUser(), {
+      wrapper: wrapper as any,
+    });
     result.current.mutate('session-err');
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -71,7 +75,9 @@ describe('useUpsertUser', () => {
 
   it('handles fetch exception', async () => {
     mockFetch.mockRejectedValueOnce(new Error('fetch failed'));
-    const { result } = renderHook(() => useUpsertUser(), { wrapper: wrapper as any });
+    const { result } = renderHook(() => useUpsertUser(), {
+      wrapper: wrapper as any,
+    });
     result.current.mutate('session-exc');
     await waitFor(() => {
       expect(result.current.isError).toBe(true);

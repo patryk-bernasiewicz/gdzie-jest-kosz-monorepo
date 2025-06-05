@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { fetchAndSetClerkToken } from '@/feature/auth/store/clerkToken.util';
+
 import { getApiBaseUrl } from './getApiBaseUrl';
 
 const api = axios.create({

@@ -26,4 +26,4 @@ export class GetNearbyBinsDto {
   @Max(180, { message: 'Longitude must be between -180 and 180 degrees' })
   @Type(() => Number)
   longitude: number;
-} 
+}

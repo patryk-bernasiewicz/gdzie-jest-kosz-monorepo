@@ -95,7 +95,9 @@ describe('useBins', () => {
     const { result } = renderHook(() => useBins(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.data).toEqual([{ id: 1, latitude: 52.1, longitude: 21.0 }]);
+      expect(result.current.data).toEqual([
+        { id: 1, latitude: 52.1, longitude: 21.0 },
+      ]);
     });
     expect(mockedApi.get).toHaveBeenCalledWith(
       expect.stringContaining(`/bins/?latitude=52.1&longitude=21`)
@@ -105,7 +107,9 @@ describe('useBins', () => {
   it('handles fetch errors gracefully', async () => {
     mockUseLocation({ location: [52.1, 21.0] });
 
-    mockedApi.get.mockRejectedValueOnce(new Error('Network response was not ok'));
+    mockedApi.get.mockRejectedValueOnce(
+      new Error('Network response was not ok')
+    );
 
     const { result } = renderHook(() => useBins(), { wrapper });
 
@@ -113,7 +117,9 @@ describe('useBins', () => {
       () => {
         expect(result.current.isError).toBe(true);
         expect(result.current.error).toBeInstanceOf(Error);
-        expect((result.current.error as Error).message).toBe('Network response was not ok');
+        expect((result.current.error as Error).message).toBe(
+          'Network response was not ok'
+        );
       },
       { timeout: 5000 }
     );

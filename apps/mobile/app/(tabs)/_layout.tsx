@@ -21,14 +21,18 @@ export default function TabLayout() {
         name="map"
         options={{
           title: 'Mapa',
-          tabBarIcon: ({ color, size }) => <IconSymbol name="map" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => (
+            <IconSymbol name="map" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profil',
-          tabBarIcon: ({ color, size }) => <IconSymbol name="person" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => (
+            <IconSymbol name="person" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen

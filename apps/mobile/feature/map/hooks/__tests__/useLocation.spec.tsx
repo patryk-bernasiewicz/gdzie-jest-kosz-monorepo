@@ -14,7 +14,11 @@ const offsetMove = 20 / 111_111;
 describe('useLocation', () => {
   let queryClient: import('@tanstack/react-query').QueryClient;
   let QueryClientProvider: typeof import('@tanstack/react-query').QueryClientProvider;
-  let wrapperWithQuery: ({ children }: { children: React.ReactNode }) => React.ReactElement;
+  let wrapperWithQuery: ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => React.ReactElement;
 
   const initialStoreState = useLocationOffsetStore.getState();
 
@@ -28,15 +32,19 @@ describe('useLocation', () => {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    (LocationService.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+    (
+      LocationService.requestForegroundPermissionsAsync as jest.Mock
+    ).mockResolvedValue({
       status: 'granted',
     });
     (LocationService.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
       coords: { latitude: 1, longitude: 2 },
     });
-    (LocationService.watchPositionAsync as jest.Mock).mockImplementation(() => ({
-      remove: jest.fn(),
-    }));
+    (LocationService.watchPositionAsync as jest.Mock).mockImplementation(
+      () => ({
+        remove: jest.fn(),
+      })
+    );
   });
 
   afterEach(async () => {
@@ -45,7 +53,9 @@ describe('useLocation', () => {
   });
 
   it('should request location permission and set location if granted', async () => {
-    const { result } = renderHook(() => useLocation(), { wrapper: wrapperWithQuery as any });
+    const { result } = renderHook(() => useLocation(), {
+      wrapper: wrapperWithQuery as any,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     await waitFor(() => expect(result.current.location).toEqual([1, 2]));
@@ -54,22 +64,33 @@ describe('useLocation', () => {
   });
 
   it('should show error toast if permission is denied', async () => {
-    (LocationService.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+    (
+      LocationService.requestForegroundPermissionsAsync as jest.Mock
+    ).mockResolvedValue({
       status: 'denied',
     });
-    const { result } = renderHook(() => useLocation(), { wrapper: wrapperWithQuery as any });
+    const { result } = renderHook(() => useLocation(), {
+      wrapper: wrapperWithQuery as any,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(Toast.show).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'error', text1: 'Brak dostępu do lokalizacji.' })
+      expect.objectContaining({
+        type: 'error',
+        text1: 'Brak dostępu do lokalizacji.',
+      })
     );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.location).toBeNull();
   });
 
   it('should show error toast if location cannot be established', async () => {
-    (LocationService.getCurrentPositionAsync as jest.Mock).mockRejectedValue(new Error('fail'));
-    const { result } = renderHook(() => useLocation(), { wrapper: wrapperWithQuery as any });
+    (LocationService.getCurrentPositionAsync as jest.Mock).mockRejectedValue(
+      new Error('fail')
+    );
+    const { result } = renderHook(() => useLocation(), {
+      wrapper: wrapperWithQuery as any,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(Toast.show).toHaveBeenCalledWith(
@@ -80,7 +101,9 @@ describe('useLocation', () => {
   });
 
   it('should move offset north, south, east, and west and update location accordingly', async () => {
-    const { result } = renderHook(() => useLocation(), { wrapper: wrapperWithQuery as any });
+    const { result } = renderHook(() => useLocation(), {
+      wrapper: wrapperWithQuery as any,
+    });
 
     await waitFor(() => expect(result.current.location).toEqual([1, 2]));
     expect(result.current.isLoading).toBe(false);
@@ -88,7 +111,9 @@ describe('useLocation', () => {
     act(() => {
       result.current.moveOffsetNorth();
     });
-    await waitFor(() => expect(result.current.location).toEqual([1 + offsetMove, 2]));
+    await waitFor(() =>
+      expect(result.current.location).toEqual([1 + offsetMove, 2])
+    );
 
     act(() => {
       result.current.moveOffsetSouth();
@@ -98,7 +123,9 @@ describe('useLocation', () => {
     act(() => {
       result.current.moveOffsetEast();
     });
-    await waitFor(() => expect(result.current.location).toEqual([1, 2 + offsetMove]));
+    await waitFor(() =>
+      expect(result.current.location).toEqual([1, 2 + offsetMove])
+    );
 
     act(() => {
       result.current.moveOffsetWest();

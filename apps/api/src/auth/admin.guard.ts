@@ -18,16 +18,20 @@ export class AdminGuard implements CanActivate {
     const user = request.user as User; // Get user from request, populated by AuthGuard
 
     if (!user) {
-      this.logger.warn('AdminGuard: No user object found on request. AuthGuard might not have run or failed.');
+      this.logger.warn(
+        'AdminGuard: No user object found on request. AuthGuard might not have run or failed.',
+      );
       throw new ForbiddenException('Access denied. User not authenticated.');
     }
 
     if (user.role !== 'admin') {
-      this.logger.warn(`AdminGuard: User ${user.id} with role '${user.role}' attempted admin access.`);
+      this.logger.warn(
+        `AdminGuard: User ${user.id} with role '${user.role}' attempted admin access.`,
+      );
       throw new InsufficientPermissionsException('admin'); // Custom exception
     }
 
     this.logger.debug(`AdminGuard: Admin access granted to user ${user.id}.`);
     return true;
   }
-} 
+}

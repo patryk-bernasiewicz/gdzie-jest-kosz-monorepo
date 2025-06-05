@@ -48,11 +48,13 @@ npx prisma generate
 The application supports multiple environment files with automatic detection:
 
 #### Environment File Priority (in order):
+
 - **Development**: `.env.development` → `.env`
-- **Test**: `.env.test` → `.env.test.local` → `.env`  
+- **Test**: `.env.test` → `.env.test.local` → `.env`
 - **Production**: `.env.production` → `.env.production.local` → `.env`
 
 #### For Local Development:
+
 Create a `.env` file (or `.env.development` for development-specific config):
 
 ```env
@@ -65,6 +67,7 @@ ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3223
 ```
 
 #### For Production:
+
 Use environment variables directly or create `.env.production`:
 
 ```env
@@ -157,6 +160,7 @@ Every error response from the API follows this structure:
 ### Custom Exceptions
 
 The backend uses custom exception classes for domain-specific errors, such as:
+
 - `BinNotFoundException`
 - `InvalidLocationException`
 - `BinAlreadyExistsException`
@@ -260,9 +264,9 @@ Authentication is managed using [Clerk](https://clerk.com/). The backend verifie
 When you request nearby bins (as a user or admin), the backend determines which bins to return based on a **bounding box** around your provided latitude and longitude.
 
 - **Bounding Box Delta:**  
-  The search area is defined by a configurable delta (in degrees) for both latitude and longitude.  
+  The search area is defined by a configurable delta (in degrees) for both latitude and longitude.
   - For both regular users and admins, this delta is currently set to `0.01` degrees (about ±1.1 km at the equator).
-- **How it works:**  
+- **How it works:**
   - The backend fetches all bins where:
     ```
     latitude  >= (your_latitude  - 0.01)
@@ -271,7 +275,7 @@ When you request nearby bins (as a user or admin), the backend determines which 
     longitude <= (your_longitude + 0.01)
     ```
   - This forms a square search area centered on your location.
-- **Configurable:**  
+- **Configurable:**
   - The deltas are defined in `src/bins/bins.constants.ts` as `NEARBY_BINS_DELTA_USER` and `NEARBY_BINS_DELTA_ADMIN`.
   - You can easily adjust these values to make the search area larger or smaller for different user types.
 

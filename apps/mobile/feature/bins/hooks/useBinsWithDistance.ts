@@ -25,7 +25,10 @@ export default function useBinsWithDistance(bins?: Bin[]) {
       return {
         ...bin,
         distance: isCloseEnough
-          ? calculateDistance([userLatitude, userLongitude], [bin.latitude, bin.longitude])
+          ? calculateDistance(
+              [userLatitude, userLongitude],
+              [bin.latitude, bin.longitude]
+            )
           : null,
       };
     });

@@ -22,10 +22,22 @@ export const useLocationOffsetStore = create<LocationOffsetStore>((set) => ({
   location: null,
   setLocation: (location: [number, number]) => set({ location }),
   offset: [0, 0],
-  moveSouth: () => set((state) => ({ offset: [state.offset[0] - offsetMove, state.offset[1]] })),
-  moveNorth: () => set((state) => ({ offset: [state.offset[0] + offsetMove, state.offset[1]] })),
-  moveEast: () => set((state) => ({ offset: [state.offset[0], state.offset[1] + offsetMove] })),
-  moveWest: () => set((state) => ({ offset: [state.offset[0], state.offset[1] - offsetMove] })),
+  moveSouth: () =>
+    set((state) => ({
+      offset: [state.offset[0] - offsetMove, state.offset[1]],
+    })),
+  moveNorth: () =>
+    set((state) => ({
+      offset: [state.offset[0] + offsetMove, state.offset[1]],
+    })),
+  moveEast: () =>
+    set((state) => ({
+      offset: [state.offset[0], state.offset[1] + offsetMove],
+    })),
+  moveWest: () =>
+    set((state) => ({
+      offset: [state.offset[0], state.offset[1] - offsetMove],
+    })),
   resetOffset: () => set({ offset: [0, 0] }),
 }));
 
@@ -42,15 +54,24 @@ type UseLocationReturnType = {
 
 export default function useLocation(): UseLocationReturnType {
   const [isLoading, setLoading] = useState(true);
-  const { location, setLocation, offset, moveSouth, moveNorth, moveEast, moveWest, resetOffset } =
-    useLocationOffsetStore();
+  const {
+    location,
+    setLocation,
+    offset,
+    moveSouth,
+    moveNorth,
+    moveEast,
+    moveWest,
+    resetOffset,
+  } = useLocationOffsetStore();
 
   useEffect(() => {
     let subscription: LocationService.LocationSubscription | null = null;
 
     (async () => {
       try {
-        const { status } = await LocationService.requestForegroundPermissionsAsync();
+        const { status } =
+          await LocationService.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           console.log('Permission to access location was denied');
           showErrorToast(
@@ -76,7 +97,8 @@ export default function useLocation(): UseLocationReturnType {
         handleApiError(error, {
           context: 'ustalania lokalizacji',
           defaultErrorTitle: 'Błąd lokalizacji',
-          defaultErrorMessage: 'Nie udało się ustalić Twojej lokalizacji. Sprawdź ustawienia GPS.',
+          defaultErrorMessage:
+            'Nie udało się ustalić Twojej lokalizacji. Sprawdź ustawienia GPS.',
         });
       } finally {
         setLoading(false);

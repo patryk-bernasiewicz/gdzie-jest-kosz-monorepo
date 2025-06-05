@@ -8,10 +8,10 @@ export function serializeAxiosError(error: unknown) {
       config: error.config,
       response: error.response
         ? {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers,
-        }
+            status: error.response.status,
+            data: error.response.data,
+            headers: error.response.headers,
+          }
         : undefined,
       isAxiosError: true,
       stack: error.stack,
@@ -23,4 +23,4 @@ export function serializeAxiosError(error: unknown) {
     stack: (error as any)?.stack,
     isAxiosError: false,
   };
-} 
+}

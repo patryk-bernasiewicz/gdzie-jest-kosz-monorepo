@@ -56,12 +56,20 @@ export default function SignUpScreen() {
       setPendingVerification(true);
     } catch (err) {
       if (isClerkAPIResponseError(err)) {
-        const emailError = err.errors.find(({ meta }) => meta?.paramName === 'email_address');
+        const emailError = err.errors.find(
+          ({ meta }) => meta?.paramName === 'email_address'
+        );
         const emailErrorText =
-          errorTranslations[emailError?.code || ''] || emailError?.message || null;
-        const passwordError = err.errors.find(({ meta }) => meta?.paramName === 'password');
+          errorTranslations[emailError?.code || ''] ||
+          emailError?.message ||
+          null;
+        const passwordError = err.errors.find(
+          ({ meta }) => meta?.paramName === 'password'
+        );
         const passwordErrorText =
-          errorTranslations[passwordError?.code || ''] || passwordError?.message || null;
+          errorTranslations[passwordError?.code || ''] ||
+          passwordError?.message ||
+          null;
         setErrors({
           email_address: emailErrorText,
           password: passwordErrorText,
@@ -71,7 +79,8 @@ export default function SignUpScreen() {
         handleApiError(err, {
           context: 'rejestracji',
           defaultErrorTitle: 'Błąd podczas tworzenia konta',
-          defaultErrorMessage: 'Wystąpił nieoczekiwany problem. Spróbuj ponownie.',
+          defaultErrorMessage:
+            'Wystąpił nieoczekiwany problem. Spróbuj ponownie.',
         });
       }
     } finally {
@@ -89,17 +98,26 @@ export default function SignUpScreen() {
       if (signUpAttempt.status === 'complete') {
         await setActive({ session: signUpAttempt.createdSessionId });
       } else {
-        console.error('[Verification Error]', JSON.stringify(signUpAttempt, null, 2));
-        handleApiError(new Error('Weryfikacja nie powiodła się. Status: ' + signUpAttempt.status), {
-          context: 'weryfikacji e-mail',
-          defaultErrorTitle: 'Błąd weryfikacji',
-        });
+        console.error(
+          '[Verification Error]',
+          JSON.stringify(signUpAttempt, null, 2)
+        );
+        handleApiError(
+          new Error(
+            'Weryfikacja nie powiodła się. Status: ' + signUpAttempt.status
+          ),
+          {
+            context: 'weryfikacji e-mail',
+            defaultErrorTitle: 'Błąd weryfikacji',
+          }
+        );
       }
     } catch (err) {
       handleApiError(err, {
         context: 'weryfikacji e-mail',
         defaultErrorTitle: 'Błąd podczas weryfikacji kodu',
-        defaultErrorMessage: 'Wystąpił nieoczekiwany problem. Spróbuj ponownie.',
+        defaultErrorMessage:
+          'Wystąpił nieoczekiwany problem. Spróbuj ponownie.',
       });
     } finally {
       setPending(false);
@@ -108,10 +126,13 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <ScreenWrapper contentContainerStyle={styles.contentContainerVerification}>
+      <ScreenWrapper
+        contentContainerStyle={styles.contentContainerVerification}
+      >
         <Heading text="Zweryfikuj adres e-mail" />
         <Text style={styles.verificationText}>
-          Wprowadź kod potwierdzający, który został wysłany na podany adres e-mail.
+          Wprowadź kod potwierdzający, który został wysłany na podany adres
+          e-mail.
         </Text>
         <TextInput
           value={code}

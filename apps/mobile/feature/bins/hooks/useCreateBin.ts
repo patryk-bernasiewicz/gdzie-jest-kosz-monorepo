@@ -29,7 +29,10 @@ export default function useCreateBin() {
 
         return res.data;
       } catch (error) {
-        console.error('Error creating bin:', JSON.stringify(serializeAxiosError(error), null, 2));
+        console.error(
+          'Error creating bin:',
+          JSON.stringify(serializeAxiosError(error), null, 2)
+        );
         throw error;
       }
     },

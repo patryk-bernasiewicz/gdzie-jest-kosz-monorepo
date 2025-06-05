@@ -40,13 +40,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
         // Default to a title-cased version of the HttpStatus key or exception.name
-        const statusKey = Object.keys(HttpStatus).find(key => HttpStatus[key] === status);
+        const statusKey = Object.keys(HttpStatus).find(
+          (key) => HttpStatus[key] === status,
+        );
         if (statusKey) {
-          error = statusKey.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+          error = statusKey
+            .split('_')
+            .map(
+              (word) =>
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+            )
+            .join(' ');
         } else {
           error = exception.name;
         }
-      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      } else if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null
+      ) {
         const typedResponse = exceptionResponse as Record<string, any>; // Cast for type safety
         message = typedResponse.message || JSON.stringify(exceptionResponse); // Fallback for non-standard objects
         error = typedResponse.error || exception.name;
@@ -121,7 +132,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
   }
 
-  private getPrismaErrorMessage(exception: Prisma.PrismaClientKnownRequestError): string {
+  private getPrismaErrorMessage(
+    exception: Prisma.PrismaClientKnownRequestError,
+  ): string {
     switch (exception.code) {
       case 'P2002':
         return `A record with this ${exception.meta?.target} already exists`;
@@ -135,4 +148,4 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return 'A database error occurred';
     }
   }
-} 
+}

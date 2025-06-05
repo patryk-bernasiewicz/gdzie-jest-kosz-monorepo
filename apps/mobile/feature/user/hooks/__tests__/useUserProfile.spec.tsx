@@ -44,11 +44,16 @@ describe('useUserProfile', () => {
 
   it('fetches user profile when user is present', async () => {
     (useUser as jest.Mock).mockReturnValue({ user: mockUser });
-    (api.get as jest.Mock).mockResolvedValue({ data: { id: '123', name: 'Test User' } });
-
-    const { result } = renderHook(() => useUserProfile({ refetchInterval: false }), {
-      wrapper: wrapper as any,
+    (api.get as jest.Mock).mockResolvedValue({
+      data: { id: '123', name: 'Test User' },
     });
+
+    const { result } = renderHook(
+      () => useUserProfile({ refetchInterval: false }),
+      {
+        wrapper: wrapper as any,
+      }
+    );
 
     await waitFor(
       () => {
@@ -65,7 +70,9 @@ describe('useUserProfile', () => {
 
   it('does not fetch user profile when user is not present', async () => {
     (useUser as jest.Mock).mockReturnValue({ user: null });
-    const { result } = renderHook(() => useUserProfile(), { wrapper: wrapper as any });
+    const { result } = renderHook(() => useUserProfile(), {
+      wrapper: wrapper as any,
+    });
     expect(result.current.isLoading).toBe(false);
     expect(api.get).not.toHaveBeenCalled();
   });

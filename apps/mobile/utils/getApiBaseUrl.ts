@@ -6,7 +6,9 @@ export function getApiBaseUrl() {
     throw new Error('Missing EXPO_PUBLIC_BACKEND_URL environment variable.');
   }
   if (!prefix) {
-    throw new Error('Missing EXPO_PUBLIC_BACKEND_API_PREFIX environment variable.');
+    throw new Error(
+      'Missing EXPO_PUBLIC_BACKEND_API_PREFIX environment variable.'
+    );
   }
 
   // Remove trailing slash from baseUrl and leading slash from prefix
@@ -14,4 +16,4 @@ export function getApiBaseUrl() {
   const normalizedPrefix = prefix.replace(/^\/+/, '');
 
   return `${normalizedBase}/${normalizedPrefix}`;
-} 
+}

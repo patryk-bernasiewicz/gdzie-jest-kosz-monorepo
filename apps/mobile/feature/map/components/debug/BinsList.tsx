@@ -26,7 +26,10 @@ function BinsList({ bins }: BinsListProps) {
     <View style={styles.binList}>
       <Text>Total bins in area: {bins?.length ?? 0}</Text>
       <View style={styles.scrollWrapper} pointerEvents="box-none">
-        <ScrollView keyboardShouldPersistTaps="handled" style={styles.scrollView}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          style={styles.scrollView}
+        >
           {bins.map((bin) => {
             const isNearest = nearestBin === bin;
 
@@ -34,7 +37,10 @@ function BinsList({ bins }: BinsListProps) {
               <View key={bin.id}>
                 <Text style={isNearest ? styles.nearestBin : undefined}>
                   Bin ID: {bin.id} ({bin.distance} meters
-                  {isNearest && nearestBinDirection && `, ${nearestBinDirection}`})
+                  {isNearest &&
+                    nearestBinDirection &&
+                    `, ${nearestBinDirection}`}
+                  )
                 </Text>
               </View>
             );

@@ -15,7 +15,10 @@ export default function TokenDebug() {
   }
 
   return (
-    <View style={styles.debug} onTouchEnd={() => console.log(`Token: ${token}`)}>
+    <View
+      style={styles.debug}
+      onTouchEnd={() => console.log(`Token: ${token}`)}
+    >
       <Text>Token:</Text>
       <Text>{token ? `${token.slice(0, 12)}...` : 'not found'}</Text>
     </View>

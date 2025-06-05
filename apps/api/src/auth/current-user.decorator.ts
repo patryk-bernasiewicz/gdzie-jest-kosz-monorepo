@@ -10,4 +10,4 @@ export const CurrentUser = createParamDecorator(
     // Assumes AuthGuard has set request.user
     return request.user as User | undefined;
   },
-); 
+);

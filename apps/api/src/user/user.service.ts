@@ -7,7 +7,7 @@ import { UserCreationException } from '../common/exceptions/auth.exceptions';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private db: DatabaseService) { }
+  constructor(private db: DatabaseService) {}
 
   async upsertUser(clerkId: string): Promise<User> {
     this.logger.debug(`Upserting user with clerkId: ${clerkId}`);
@@ -22,8 +22,14 @@ export class UserService {
       this.logger.debug(`Successfully upserted user: ${user.id}`);
       return user;
     } catch (error) {
-      this.logger.error(`Failed to upsert user with clerkId: ${clerkId}`, error);
-      throw new UserCreationException(clerkId, error instanceof Error ? error.message : 'Unknown error');
+      this.logger.error(
+        `Failed to upsert user with clerkId: ${clerkId}`,
+        error,
+      );
+      throw new UserCreationException(
+        clerkId,
+        error instanceof Error ? error.message : 'Unknown error',
+      );
     }
   }
 

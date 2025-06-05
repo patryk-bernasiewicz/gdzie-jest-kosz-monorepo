@@ -36,4 +36,4 @@ export class CreateBinDto {
   @IsOptional()
   @IsString({ message: 'Bin type must be a string' })
   type?: string = 'bin';
-} 
+}

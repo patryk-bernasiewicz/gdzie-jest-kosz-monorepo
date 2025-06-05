@@ -57,7 +57,8 @@ export default function SignInScreen() {
       handleApiError(err, {
         context: 'logowania',
         defaultErrorTitle: 'Nie można zalogować',
-        defaultErrorMessage: 'Sprawdź poprawność danych logowania lub spróbuj ponownie później.',
+        defaultErrorMessage:
+          'Sprawdź poprawność danych logowania lub spróbuj ponownie później.',
       });
     } finally {
       setPending(false);

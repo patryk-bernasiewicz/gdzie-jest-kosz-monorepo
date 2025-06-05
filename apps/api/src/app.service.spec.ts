@@ -27,4 +27,4 @@ describe('AppService', () => {
       expect(service.getHealth()).toBe('OK');
     });
   });
-}); 
+});

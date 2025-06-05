@@ -43,7 +43,9 @@ describe('useCreateBin hook', () => {
         },
       },
     });
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
   }
 
   describe('useCreateBin', () => {
@@ -82,12 +84,19 @@ describe('useCreateBin hook', () => {
       });
 
       expect(data).toEqual(mockBinData);
-      expect(api.post).toHaveBeenCalledWith('/bins', { latitude: 1, longitude: 2 });
+      expect(api.post).toHaveBeenCalledWith('/bins', {
+        latitude: 1,
+        longitude: 2,
+      });
     });
 
     it('throws error and logs when post fails', async () => {
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-      (api.post as jest.Mock).mockRejectedValue(new Error('Network response was not ok'));
+      const errorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      (api.post as jest.Mock).mockRejectedValue(
+        new Error('Network response was not ok')
+      );
       const { result } = renderHook(() => useCreateBin(), { wrapper });
 
       await expect(result.current.mutateAsync([1, 2])).rejects.toThrow(
@@ -105,11 +114,15 @@ describe('useCreateBin hook', () => {
     });
 
     it('throws and logs error on post exception', async () => {
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      const errorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       (api.post as jest.Mock).mockRejectedValue(new Error('fetch failed'));
       const { result } = renderHook(() => useCreateBin(), { wrapper });
 
-      await expect(result.current.mutateAsync([1, 2])).rejects.toThrow('fetch failed');
+      await expect(result.current.mutateAsync([1, 2])).rejects.toThrow(
+        'fetch failed'
+      );
 
       await waitFor(() => {
         expect(Toast.show).not.toHaveBeenCalled();
@@ -129,10 +142,15 @@ describe('useCreateBin hook', () => {
 
       await result.current.mutateAsync([3, 4]);
 
-      expect(api.post).toHaveBeenCalledWith('/bins', { latitude: 3, longitude: 4 });
+      expect(api.post).toHaveBeenCalledWith('/bins', {
+        latitude: 3,
+        longitude: 4,
+      });
 
       await waitFor(() => {
-        expect(Toast.show).toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+        expect(Toast.show).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'success' })
+        );
       });
     });
   });

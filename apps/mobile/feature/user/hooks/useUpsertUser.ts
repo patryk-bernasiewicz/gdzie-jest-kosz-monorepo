@@ -2,19 +2,26 @@ import { UseMutationResult, useMutation } from '@tanstack/react-query';
 
 import { User } from '../types';
 
-export default function useUpsertUser(): UseMutationResult<User, Error, string> {
+export default function useUpsertUser(): UseMutationResult<
+  User,
+  Error,
+  string
+> {
   const upsertUser = useMutation<User, Error, string>({
     mutationFn: async (sessionId: string) => {
       try {
-        const res = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user/validate-session`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sessionId,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/user/validate-session`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId,
+            }),
+          }
+        );
 
         if (!res.ok) {
           throw new Error('Network response was not ok');

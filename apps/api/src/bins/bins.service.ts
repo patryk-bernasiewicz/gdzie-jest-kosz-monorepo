@@ -1,14 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Bin, Prisma } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
-import { BinNotFoundException, InvalidLocationException } from '../common/exceptions/bin.exceptions';
-import { NEARBY_BINS_DELTA_USER, NEARBY_BINS_DELTA_ADMIN } from './bins.constants';
+import {
+  BinNotFoundException,
+  InvalidLocationException,
+} from '../common/exceptions/bin.exceptions';
+import {
+  NEARBY_BINS_DELTA_USER,
+  NEARBY_BINS_DELTA_ADMIN,
+} from './bins.constants';
 
 @Injectable()
 export class BinsService {
   private readonly logger = new Logger(BinsService.name);
 
-  constructor(private db: DatabaseService) { }
+  constructor(private db: DatabaseService) {}
 
   async getNearbyBins(latitude: number, longitude: number): Promise<Bin[]> {
     this.validateCoordinates(latitude, longitude);
@@ -30,10 +36,15 @@ export class BinsService {
         },
       });
 
-      this.logger.debug(`Found ${bins.length} nearby bins for coordinates (${latitude}, ${longitude})`);
+      this.logger.debug(
+        `Found ${bins.length} nearby bins for coordinates (${latitude}, ${longitude})`,
+      );
       return bins;
     } catch (error) {
-      this.logger.error(`Failed to get nearby bins for coordinates (${latitude}, ${longitude})`, error);
+      this.logger.error(
+        `Failed to get nearby bins for coordinates (${latitude}, ${longitude})`,
+        error,
+      );
       throw error; // Let global filter handle Prisma errors
     }
   }
@@ -55,10 +66,15 @@ export class BinsService {
         },
       });
 
-      this.logger.debug(`Found ${bins.length} nearby bins (including unaccepted) for coordinates (${latitude}, ${longitude})`);
+      this.logger.debug(
+        `Found ${bins.length} nearby bins (including unaccepted) for coordinates (${latitude}, ${longitude})`,
+      );
       return bins;
     } catch (error) {
-      this.logger.error(`Failed to get all nearby bins for coordinates (${latitude}, ${longitude})`, error);
+      this.logger.error(
+        `Failed to get all nearby bins for coordinates (${latitude}, ${longitude})`,
+        error,
+      );
       throw error;
     }
   }
@@ -82,10 +98,15 @@ export class BinsService {
         },
       });
 
-      this.logger.log(`Created bin ${bin.id} at coordinates (${latitude}, ${longitude}) by user ${userId}`);
+      this.logger.log(
+        `Created bin ${bin.id} at coordinates (${latitude}, ${longitude}) by user ${userId}`,
+      );
       return bin;
     } catch (error) {
-      this.logger.error(`Failed to create bin at coordinates (${latitude}, ${longitude})`, error);
+      this.logger.error(
+        `Failed to create bin at coordinates (${latitude}, ${longitude})`,
+        error,
+      );
       throw error;
     }
   }
@@ -121,7 +142,9 @@ export class BinsService {
         data: { latitude, longitude },
       });
 
-      this.logger.log(`Updated bin ${binId} location to coordinates (${latitude}, ${longitude})`);
+      this.logger.log(
+        `Updated bin ${binId} location to coordinates (${latitude}, ${longitude})`,
+      );
       return bin;
     } catch (error) {
       this.logger.error(`Failed to update bin ${binId} location`, error);
@@ -139,13 +162,21 @@ export class BinsService {
       this.logger.log(`${accept ? 'Accepted' : 'Rejected'} bin ${binId}`);
       return bin;
     } catch (error) {
-      this.logger.error(`Failed to ${accept ? 'accept' : 'reject'} bin ${binId}`, error);
+      this.logger.error(
+        `Failed to ${accept ? 'accept' : 'reject'} bin ${binId}`,
+        error,
+      );
       throw error;
     }
   }
 
   private validateCoordinates(latitude: number, longitude: number): void {
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
       throw new InvalidLocationException(latitude, longitude);
     }
 

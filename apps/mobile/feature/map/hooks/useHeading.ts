@@ -14,9 +14,13 @@ export default function useHeading() {
 
   // Handle normalized heading from the last 5 entries
   const handleSetHeading = useCallback((newHeading: number) => {
-    headingHistoryRef.current = [...headingHistoryRef.current.slice(-4), newHeading];
+    headingHistoryRef.current = [
+      ...headingHistoryRef.current.slice(-4),
+      newHeading,
+    ];
     const averageHeading =
-      headingHistoryRef.current.reduce((a, b) => a + b, 0) / headingHistoryRef.current.length;
+      headingHistoryRef.current.reduce((a, b) => a + b, 0) /
+      headingHistoryRef.current.length;
     setHeading(averageHeading);
   }, []);
 

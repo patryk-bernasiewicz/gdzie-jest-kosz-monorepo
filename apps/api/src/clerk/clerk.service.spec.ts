@@ -63,7 +63,9 @@ describe('ClerkService', () => {
     it('should call clerkClient.sessions.getSession and return its result', async () => {
       const sid = 'test-session-id';
       const expectedResult = { userId: 'test-user-id' };
-      (clerkClient.sessions.getSession as jest.Mock).mockResolvedValue(expectedResult);
+      (clerkClient.sessions.getSession as jest.Mock).mockResolvedValue(
+        expectedResult,
+      );
 
       const result = await service.getSession(sid);
 
@@ -79,4 +81,4 @@ describe('ClerkService', () => {
       await expect(service.getSession(sid)).rejects.toThrow(error);
     });
   });
-}); 
+});

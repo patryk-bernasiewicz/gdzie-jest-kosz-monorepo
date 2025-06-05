@@ -45,14 +45,23 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function TextInput({ error, label, disabled, ...inputProps }: TextInputProps) {
+export default function TextInput({
+  error,
+  label,
+  disabled,
+  ...inputProps
+}: TextInputProps) {
   return (
     <View style={styles.outerWrapper}>
       <View style={styles.wrapper}>
         {label && <Text style={styles.label}>{label}</Text>}
         <RNTextInput
           {...inputProps}
-          style={[styles.input, error ? styles.error : null, disabled && styles.inputDisabled]}
+          style={[
+            styles.input,
+            error ? styles.error : null,
+            disabled && styles.inputDisabled,
+          ]}
         />
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}

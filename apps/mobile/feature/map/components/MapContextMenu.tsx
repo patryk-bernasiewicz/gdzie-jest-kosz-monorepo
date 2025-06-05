@@ -1,5 +1,10 @@
 import { Fragment, useMemo } from 'react';
-import { Dimensions, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 import Text from '@/ui/components/Text';
 import getColor from '@/ui/utils/getColor';
@@ -59,7 +64,9 @@ export default function MapContextMenu({
         {selectedBinIds?.map((binId) => (
           <Fragment key={binId}>
             <View style={styles.separator} />
-            <Text onPress={() => onMarkInvalidBin(binId)}>Kosz ID: {binId} - nieaktualny?</Text>
+            <Text onPress={() => onMarkInvalidBin(binId)}>
+              Kosz ID: {binId} - nieaktualny?
+            </Text>
           </Fragment>
         ))}
       </View>

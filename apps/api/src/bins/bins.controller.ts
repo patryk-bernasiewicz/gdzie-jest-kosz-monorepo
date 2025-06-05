@@ -43,31 +43,57 @@ const ErrorResponseSchema = {
 export class BinsController {
   private readonly logger = new Logger(BinsController.name);
 
-  constructor(
-    private readonly binsService: BinsService,
-  ) { }
+  constructor(private readonly binsService: BinsService) {}
 
   @ApiOperation({ summary: 'Get nearby bins using latitude and longitude' })
   @ApiResponse({ status: 200, description: 'Nearby bins found' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiQuery({ name: 'latitude', required: true, type: Number })
   @ApiQuery({ name: 'longitude', required: true, type: Number })
   @Get()
-  getNearbyBins(
-    @Query() query: GetNearbyBinsDto,
-  ): Promise<Bin[]> {
-    this.logger.log(`GET /bins called with lat=${query.latitude}, lng=${query.longitude}`);
+  getNearbyBins(@Query() query: GetNearbyBinsDto): Promise<Bin[]> {
+    this.logger.log(
+      `GET /bins called with lat=${query.latitude}, lng=${query.longitude}`,
+    );
     return this.binsService.getNearbyBins(query.latitude, query.longitude);
   }
 
   @ApiOperation({ summary: 'Create a new bin as a signed in user' })
   @ApiResponse({ status: 201, description: 'Bin created successfully' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 409, description: 'Conflict (duplicate bin)', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict (duplicate bin)',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiBody({ type: CreateBinDto })
   @ApiHeader({
     name: 'Authorization',
@@ -80,22 +106,40 @@ export class BinsController {
     @Body() createBinDto: CreateBinDto,
     @CurrentUser() user: User,
   ): Promise<Bin> {
-    this.logger.debug(`User ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`);
+    this.logger.debug(
+      `User ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`,
+    );
     const isAdmin = user.role === 'admin';
     return this.binsService.createBin(
       createBinDto.latitude,
       createBinDto.longitude,
       user.id,
-      isAdmin
+      isAdmin,
     );
   }
 
   @ApiOperation({ summary: 'Get all bins for the location as admin' })
   @ApiResponse({ status: 200, description: 'All bins found' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiQuery({ name: 'latitude', required: true, type: Number })
   @ApiQuery({ name: 'longitude', required: true, type: Number })
   @ApiHeader({
@@ -109,17 +153,39 @@ export class BinsController {
     @Query() query: GetNearbyBinsDto,
     @CurrentUser() user: User,
   ): Promise<Bin[]> {
-    this.logger.log(`Admin ${user.id} requesting all bins for coordinates (${query.latitude}, ${query.longitude})`);
+    this.logger.log(
+      `Admin ${user.id} requesting all bins for coordinates (${query.latitude}, ${query.longitude})`,
+    );
     return this.binsService.getAllNearbyBins(query.latitude, query.longitude);
   }
 
   @ApiOperation({ summary: 'Create a bin as admin' })
   @ApiResponse({ status: 201, description: 'Bin created successfully' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 409, description: 'Conflict (duplicate bin)', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict (duplicate bin)',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiBody({ type: CreateBinDto })
   @ApiHeader({
     name: 'Authorization',
@@ -132,22 +198,47 @@ export class BinsController {
     @Body() createBinDto: CreateBinDto,
     @CurrentUser() user: User,
   ): Promise<Bin> {
-    this.logger.log(`Admin ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`);
+    this.logger.log(
+      `Admin ${user.id} creating bin at (${createBinDto.latitude}, ${createBinDto.longitude})`,
+    );
     return this.binsService.createBin(
       createBinDto.latitude,
       createBinDto.longitude,
       user.id,
-      true
+      true,
     );
   }
 
   @ApiOperation({ summary: 'Update bin location as admin' })
-  @ApiResponse({ status: 200, description: 'Bin location updated successfully' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 404, description: 'Bin not found', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 200,
+    description: 'Bin location updated successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Bin not found',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiBody({ type: CreateBinDto })
   @ApiHeader({
     name: 'Authorization',
@@ -165,21 +256,43 @@ export class BinsController {
       throw new BinNotFoundException(binId);
     }
 
-    this.logger.log(`Admin updating bin ${binId} location to (${updateLocationDto.latitude}, ${updateLocationDto.longitude})`);
+    this.logger.log(
+      `Admin updating bin ${binId} location to (${updateLocationDto.latitude}, ${updateLocationDto.longitude})`,
+    );
     return this.binsService.updateBinLocation(
       binId,
       updateLocationDto.latitude,
-      updateLocationDto.longitude
+      updateLocationDto.longitude,
     );
   }
 
   @ApiOperation({ summary: 'Update bin state (acceptedAt field)' })
   @ApiResponse({ status: 200, description: 'Bin state updated successfully' })
-  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 404, description: 'Bin not found', schema: ErrorResponseSchema })
-  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Bin not found',
+    schema: ErrorResponseSchema,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: ErrorResponseSchema,
+  })
   @ApiBody({ type: AcceptBinDto })
   @ApiHeader({
     name: 'Authorization',
@@ -197,7 +310,9 @@ export class BinsController {
       throw new BinNotFoundException(binId);
     }
 
-    this.logger.log(`${acceptBinDto.accept ? 'Accepting' : 'Rejecting'} bin ${binId}`);
+    this.logger.log(
+      `${acceptBinDto.accept ? 'Accepting' : 'Rejecting'} bin ${binId}`,
+    );
     return this.binsService.acceptBin(binId, acceptBinDto.accept);
   }
 }

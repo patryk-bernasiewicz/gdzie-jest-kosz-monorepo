@@ -47,7 +47,7 @@ describe('UserController', () => {
       // with mockUser bypasses the guard's full execution path for this specific call.
       (authServiceMock.validateUser as jest.Mock).mockResolvedValue(mockUser);
 
-      // In a unit test of the controller method, we assume the guard/decorator 
+      // In a unit test of the controller method, we assume the guard/decorator
       // has already done its job and provided the user.
       const result = await controller.authenticateAndUpsert(mockUser);
       expect(result).toEqual(mockUser);

@@ -75,7 +75,9 @@ describe('useBinsWithDistance', () => {
 
   it('handles null bins correctly', () => {
     mockUseLocation({ location: [52.1, 21.0] });
-    const { result } = renderHook(() => useBinsWithDistance(undefined), { wrapper });
+    const { result } = renderHook(() => useBinsWithDistance(undefined), {
+      wrapper,
+    });
     expect(result.current).toEqual([]);
   });
 

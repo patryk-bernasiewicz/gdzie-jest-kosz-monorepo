@@ -1,6 +1,6 @@
 export default function testUtil() {
-  console.log("testUtil");
+  console.log('testUtil');
   return {
-    test: "test",
+    test: 'test',
   };
 }
