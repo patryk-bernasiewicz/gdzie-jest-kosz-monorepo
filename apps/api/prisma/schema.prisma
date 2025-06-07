@@ -20,7 +20,7 @@ model Bin {
   createdBy   User?     @relation(fields: [createdById], references: [id])
 
   @@index([createdById], map: "Bin_createdById_fkey")
-  @@index([latitude, longitude], map: "Bin_latitude_longitude_idx")
+  @@index([latitude, longitude])
 }
 
 model User {
