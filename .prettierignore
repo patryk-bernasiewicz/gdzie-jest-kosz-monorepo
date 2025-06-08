@@ -1,1 +1,9 @@
+**/node_modules
+**/dist
 
+**/*.yaml
+**/*.yml
+**/*.json
+**/*.lock
+**/*.md
+**/*.txt

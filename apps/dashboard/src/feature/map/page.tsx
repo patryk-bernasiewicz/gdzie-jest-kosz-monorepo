@@ -17,6 +17,8 @@ import EditedBinInfoBox from "./components/EditedBinInfoBox";
 import useEditBin from "./hooks/useEditBin";
 import { Bin } from "./Bin";
 import { Position } from "./types/Position";
+import AcceptBinDialog from "./components/AcceptBinDialog";
+import { useAcceptBin } from "./hooks/useAcceptBin";
 
 // ‼️ TODO: refactor heavily!!! this is a mess now
 
@@ -42,6 +44,11 @@ const MapPage = () => {
     updatedBinPosition,
     handleUpdateBinPosition,
   } = useEditBin();
+
+  // Accept bin dialog state
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [acceptingBin, setAcceptingBin] = useState<Bin | null>(null);
+  const acceptBinMutation = useAcceptBin();
 
   const handleCenterChange = useCallback(
     (lat: number, lng: number) => {
@@ -74,6 +81,24 @@ const MapPage = () => {
     // TODO: Implement delete logic
 
     console.log("Delete bin", bin.id);
+  };
+
+  const handleAcceptBin = (bin: Bin) => {
+    setAcceptingBin(bin);
+    setAcceptDialogOpen(true);
+  };
+
+  const handleConfirmAcceptBin = async () => {
+    if (!acceptingBin) return;
+    await acceptBinMutation.mutateAsync(acceptingBin.id);
+    setAcceptDialogOpen(false);
+    setAcceptingBin(null);
+    setSelectedBin(null);
+  };
+
+  const handleCancelAcceptBin = () => {
+    setAcceptDialogOpen(false);
+    setAcceptingBin(null);
   };
 
   const handleBinContextMenuChange = (visible: boolean) => {
@@ -152,9 +177,16 @@ const MapPage = () => {
             menuId={BIN_CONTEXT_MENU_ID}
             onDelete={handleDeleteBin}
             onEdit={handleEditBin}
+            onAccept={handleAcceptBin}
             onVisibilityChange={handleBinContextMenuChange}
           />
         )}
+        <AcceptBinDialog
+          open={acceptDialogOpen}
+          bin={acceptingBin}
+          onConfirm={handleConfirmAcceptBin}
+          onCancel={handleCancelAcceptBin}
+        />
       </div>
     </div>
   );
