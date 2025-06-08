@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Monorepo Structure (Turborepo + pnpm)
+- Use Turborepo for build orchestration and caching
+- Leverage pnpm workspaces for dependency management
+- Configure proper task dependencies in turbo.json
+- Use shared configurations where possible
+- Implement proper package versioning strategy
+
+# Documentation
+- Use JSDoc comments for all public APIs
+- Include usage examples in documentation
+- Document complex business logic
+- Keep README files up to date
+- Document API endpoints with Swagger/OpenAPI
+
+# Git Practices
+- Leave commiting and interaction with remote repository to the user, only suggest commit messages
+- Keep commit messages suggestion short but descriptive
+
+# Code Reviews
+- Review for architectural decisions
+- Check for proper error handling
+- Verify test coverage
+- Ensure documentation is updated
+- Check for proper React Query usage patterns
+
+# Monitoring & Logging
+- Implement proper logging strategies
+- Use structured logging
+- Monitor performance metrics
+- Implement proper error tracking
+
+- Track React Query cache performance

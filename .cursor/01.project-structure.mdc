@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This is a monorepo with the following structure:
+- `apps/mobile/` - React Native + Expo mobile app
+- `apps/api/` - NestJS + Prisma backend API
+- `apps/web/` - React + Vite dashboard web app
+
+- `packages/shared-utils/` - Shared utilities package

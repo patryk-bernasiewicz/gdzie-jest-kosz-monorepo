@@ -1,0 +1,106 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Component Architecture
+- Use functional components with hooks
+- Implement proper component composition
+- Use compound components pattern where appropriate
+- Keep components small and reusable
+- Implement proper prop validation with TypeScript
+
+# State Management
+- Use React Query/TanStack Query for server state
+- Use Zustand or Redux Toolkit for client state
+- Keep state as local as possible
+- Implement proper state normalization
+
+# Routing
+- Use React Router v6+ patterns
+- Implement proper route guards
+- Use lazy loading for route components
+- Implement proper error boundaries for routes
+
+# Forms
+- Use React Hook Form for form management
+- Implement proper validation with Zod or Yup
+- Create reusable form components
+- Handle form errors gracefully
+
+# Data Fetching & State Management
+- Use React Query/TanStack Query for all server state
+- Create custom hooks for data fetching operations
+- Implement proper caching strategies with React Query
+- Handle loading and error states consistently
+- Use proper optimistic updates where appropriate
+- Keep server state separate from client state
+
+# Styling
+- Use CSS Modules or styled-components consistently
+- Implement proper responsive design
+- Use design system/theme consistently
+- Implement proper accessibility
+
+# Testing
+- Use Vitest for unit and integration testing
+- Use React Testing Library for component testing
+- Use MSW (Mock Service Worker) for API mocking
+- Test user interactions, not implementation details
+- Test accessibility features and keyboard navigation
+- Mock React Query properly in tests
+
+# Code Examples
+```typescript
+// Good component with React Query custom hook
+type DashboardProps = {
+  userId: string;
+}
+
+export const Dashboard: React.FC = ({ userId }) => {
+  const { data: user, isLoading, error } = useUser(userId);
+  const updateUserMutation = useUpdateUser();
+
+  if (isLoading) return ;
+  if (error) return ;
+
+  return (
+    
+      <UserProfile 
+        user={user} 
+        onUpdate={(userData) => updateUserMutation.mutate({ id: userId, ...userData })}
+        isUpdating={updateUserMutation.isPending}
+      />
+    
+  );
+};
+
+// Good custom hook with React Query
+export const useUser = (userId: string) => {
+  return useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => userApi.getUser(userId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      if (error?.status === 404) return false;
+      return failureCount < 3;
+    }
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: userApi.updateUser,
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(['user', updatedUser.id], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => {
+      console.error('Failed to update user:', error);
+    }
+  });
+};
+
+```

@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Organization
+- Follow single responsibility principle
+- Keep functions small and focused (max 20-30 lines)
+- Use meaningful, descriptive names for variables, functions, and components
+- Group related functionality together
+- Separate concerns clearly (business logic, UI, data access)
+
+# Architecture Principles
+- Write code that is easily testable and mockable
+- Implement dependency injection where appropriate
+- Use composition over inheritance
+- Keep components and services loosely coupled
+- Implement proper error boundaries and error handling
+- Use TypeScript strictly - avoid `any` type
+
+# Testing Requirements
+- **API**: Use Jest + Supertest for HTTP testing, @nestjs/testing for DI, Prisma Client Mock for database mocking
+- **React Web**: Use Vitest + React Testing Library + MSW for API mocking
+- **React Native**: Use Jest + React Native Testing Library
+- Write unit tests for all business logic
+- Write integration tests for API endpoints
+- Write component tests for React components
+- Aim for high test coverage (80%+)
+- Use descriptive test names that explain the behavior being tested
+- Follow AAA pattern (Arrange, Act, Assert)
+- Mock external dependencies properly
+
+# Code Style
+- Use TypeScript for all new code, prefer declaring types over interfaces
+- Follow framework-specific naming conventions (React: PascalCase components, NestJS: camelCase services/controllers)
+- Use relative imports whenever possible (absolute imports for shared packages)
+- Keep imports organized: external libraries first, then internal imports
+- Global ESLint/Prettier config with app-specific overrides as needed
+- Use meaningful commit messages following conventional commits
+
+# Error Handling
+- **API**: Use exception-based error handling with custom NestJS exceptions
+- **React/React Native**: Implement error boundaries + try-catch for async operations
+- Always handle async operations with proper error catching
+- Log errors appropriately with context
+- Provide user-friendly error messages
+- Use global exception filters in NestJS for consistent error responses
+
+# Performance Considerations
+- Implement proper memoization where needed
+- Use lazy loading for routes and heavy components
+- Optimize database queries and avoid N+1 problems
+- Implement proper caching strategies
+
+- Use proper pagination for large datasets

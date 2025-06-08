@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Package Structure
+- Export all utilities from index.ts
+- Group related utilities in separate files
+- Use proper TypeScript typing
+- Keep utilities pure and side-effect free
+- Write comprehensive tests for all utilities
+
+# Utility Categories
+- **Type utilities**: Common TypeScript types and guards
+- **Validation utilities**: Shared validation functions
+- **Date utilities**: Date formatting and manipulation
+- **String utilities**: String manipulation and validation
+- **Array utilities**: Array processing and transformation
+- **Object utilities**: Object manipulation and validation
+
+# Testing
+- Write unit tests for all utilities
+- Test edge cases thoroughly
+- Use property-based testing where appropriate
+- Ensure utilities work across all apps
+
+# Code Examples
+```typescript
+// Good utility structure
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const formatCurrency = (
+  amount: number,
+  currency: string = 'USD'
+): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency
+  }).format(amount);
+};
+
+// Good type guard
+export const isNonNullable = (value: T | null | undefined): value is T => {
+  return value !== null && value !== undefined;
+};
+
+// Good validation utility
+export const validatePassword = (password: string): ValidationResult => {
+  const errors: string[] = [];
+  
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
+```

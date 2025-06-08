@@ -1,0 +1,148 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Architecture Pattern
+- Follow Controller-Service pattern (current setup)
+- Controllers handle HTTP requests/responses only
+- Services contain business logic and database operations
+- Keep controllers thin - delegate all logic to services
+- Use proper dependency injection throughout
+
+# Module Structure
+- Follow NestJS module organization
+- Keep modules focused and cohesive
+- Use proper dependency injection
+- Implement proper validation using class-validator
+- Use DTOs for all input/output data
+
+# Controller Guidelines
+- Keep controllers thin - delegate to services
+- Use proper HTTP status codes
+- Implement proper request validation
+- Use proper error handling middleware
+- Document APIs with Swagger/OpenAPI
+
+# Service Layer
+- Implement business logic in services
+- Keep services focused on single responsibility
+- Use dependency injection properly
+- Implement proper error handling
+- Make services easily testable
+
+# Database Layer (Prisma + MySQL)
+- Services directly use Prisma Client for database operations
+- Use proper error handling for database operations
+- Use transactions where appropriate (especially for multi-table operations)
+- Implement proper pagination for large datasets
+- Avoid N+1 queries - use proper includes and selects
+- Use pull/push workflow for development (prisma db pull/push)
+- Consider using @@map for legacy table naming if needed
+- Leverage MySQL-specific features when beneficial
+
+# Authentication & Authorization
+- Implement proper JWT handling
+- Use guards for route protection
+- Implement role-based access control
+- Hash passwords properly
+- Implement proper session management
+
+# Testing
+- Use Jest for unit testing services
+- Use Supertest for integration testing controllers
+- Use @nestjs/testing for dependency injection testing
+- Use Prisma Client Mock or @quramy/prisma-fabbrica for database mocking
+- Write end-to-end tests for critical user flows
+- Mock external services and APIs properly
+- Test both success and error scenarios
+
+# Code Examples
+```typescript
+// Good controller structure
+@Controller('users')
+@ApiTags('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, description: 'User found', type: UserDto })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise {
+    return this.usersService.findOne(id);
+  }
+}
+
+// Good service structure with exception handling
+@Injectable()
+export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findOne(id: string): Promise {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        include: { profile: true }
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+
+      return this.mapToDto(user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch user');
+    }
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise {
+    try {
+      const user = await this.prisma.user.create({
+        data: createUserDto,
+        include: { profile: true }
+      });
+      
+      return this.mapToDto(user);
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('User with this email already exists');
+      }
+      throw new InternalServerErrorException('Failed to create user');
+    }
+  }
+
+  private mapToDto(user: User & { profile?: Profile }): UserDto {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      profile: user.profile ? {
+        bio: user.profile.bio,
+        avatar: user.profile.avatar
+      } : null
+    };
+  }
+}
+
+// Good DTO structure
+export class CreateUserDto {
+  @IsEmail()
+  @ApiProperty({ example: 'user@example.com' })
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  @ApiProperty({ minLength: 8 })
+  password: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false })
+  name?: string;
+}
+
+```

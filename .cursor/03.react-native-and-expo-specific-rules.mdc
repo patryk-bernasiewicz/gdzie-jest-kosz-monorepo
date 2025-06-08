@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Component Structure
+- Use functional components with hooks
+- Keep components small and focused
+- Extract custom hooks for reusable logic
+- Use proper TypeScript typing for props and state, prefer types over interfaces
+- Implement proper loading and error states
+
+# State Management
+- Use React Query/TanStack Query for server state management
+- Use custom hooks for data fetching logic
+- Use React's built-in state management for simple local state
+- Consider Zustand for complex global client state
+- Keep state as close to where it's used as possible
+
+# Navigation
+- Use React Navigation v6+ patterns
+- Implement proper type safety for navigation
+- Use deep linking appropriately
+- Implement proper authentication guards
+
+# Performance
+- Use FlatList for large lists
+- Implement proper image optimization
+- Use proper memory management
+- Implement proper offline capabilities where needed
+
+# Testing
+- Use React Native Testing Library for component testing
+- Use Jest for unit tests
+- Test user interactions and navigation flows
+- Mock API calls with MSW or manual mocks
+- Test accessibility features
+- Focus on user behavior rather than implementation details
+
+# Platform Considerations
+- Handle platform differences appropriately
+- Use proper safe area handling
+- Implement proper keyboard handling
+- Consider different screen sizes and orientations
+
+# Code Examples
+
+```typescript
+// Good component structure
+type UserProfileProps = {
+  userId: string;
+  onUpdate: (user: User) => void;
+}
+
+export const UserProfile: React.FC = ({ userId, onUpdate }) => {
+  const { user, loading, error } = useUser(userId);
+  
+  if (loading) return ;
+  if (error) return ;
+  if (!user) return ;
+  
+  return (
+    
+      {/* Component JSX */}
+    
+  );
+};
+
+// Good custom hook
+export const useUser = (userId: string) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    // Fetch user logic with proper error handling
+  }, [userId]);
+  
+  return { user, loading, error };
+};
+
+```
