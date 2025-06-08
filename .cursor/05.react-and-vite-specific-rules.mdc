@@ -12,12 +12,11 @@ alwaysApply: true
 
 # State Management
 - Use React Query/TanStack Query for server state
-- Use Zustand or Redux Toolkit for client state
 - Keep state as local as possible
 - Implement proper state normalization
 
 # Routing
-- Use React Router v6+ patterns
+- Use React Router v7+ patterns
 - Implement proper route guards
 - Use lazy loading for route components
 - Implement proper error boundaries for routes

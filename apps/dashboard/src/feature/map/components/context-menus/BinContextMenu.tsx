@@ -7,6 +7,7 @@ type BinContextMenuProps = {
   menuId: string;
   onDelete?: (bin: Bin) => void;
   onEdit?: (bin: Bin) => void;
+  onAccept?: (bin: Bin) => void;
   onVisibilityChange?: MenuProps["onVisibilityChange"];
 };
 
@@ -15,6 +16,7 @@ const BinContextMenu = ({
   menuId,
   onDelete,
   onEdit,
+  onAccept,
   onVisibilityChange,
 }: BinContextMenuProps) => {
   return (
@@ -26,6 +28,9 @@ const BinContextMenu = ({
     >
       <Item onClick={() => onEdit?.(selectedBin)}>Edit bin</Item>
       <Item onClick={() => onDelete?.(selectedBin)}>Delete bin</Item>
+      {selectedBin.acceptedAt === null && (
+        <Item onClick={() => onAccept?.(selectedBin)}>Accept user bin</Item>
+      )}
     </Menu>
   );
 };

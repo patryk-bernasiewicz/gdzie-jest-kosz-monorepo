@@ -29,7 +29,10 @@ const MapComponent = ({
       // @ts-ignore
       center={[latitude, longitude]}
       zoom={19}
-      className={cn("h-full min-h-[400px] w-full rounded-lg shadow", className)}
+      className={cn(
+        "z-0 h-full min-h-[400px] w-full rounded-lg shadow",
+        className,
+      )}
       scrollWheelZoom={true}
     >
       <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
