@@ -1,4 +1,4 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { BinsService } from './bins.service';
 import { DatabaseService } from 'src/database/database.service';
@@ -7,7 +7,10 @@ import {
   NEARBY_BINS_DELTA_USER,
   NEARBY_BINS_DELTA_ADMIN,
 } from './bins.constants';
-import { InvalidLocationException, BinNotFoundException } from '../common/exceptions/bin.exceptions';
+import {
+  InvalidLocationException,
+  BinNotFoundException,
+} from '../common/exceptions/bin.exceptions';
 
 describe('BinsService', () => {
   let service: BinsService;
@@ -40,6 +43,7 @@ describe('BinsService', () => {
           updatedAt: new Date(),
           deletedAt: null,
           acceptedAt: new Date(),
+          visibility: true,
           createdById: 1,
         },
       ];
@@ -87,6 +91,7 @@ describe('BinsService', () => {
           updatedAt: new Date(),
           deletedAt: null,
           acceptedAt: new Date(), // Can be accepted
+          visibility: true,
           createdById: 1,
         },
         {
@@ -98,6 +103,7 @@ describe('BinsService', () => {
           updatedAt: new Date(),
           deletedAt: null,
           acceptedAt: null, // Can be unaccepted
+          visibility: true,
           createdById: 2,
         },
       ];
@@ -152,6 +158,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: null,
+        visibility: true,
         createdById: 5,
       };
       db.bin.create.mockResolvedValue(bin);
@@ -178,6 +185,7 @@ describe('BinsService', () => {
         updatedAt: now,
         deletedAt: null,
         acceptedAt: now,
+        visibility: true,
         createdById: 7,
       };
       db.bin.create.mockResolvedValue(bin);
@@ -216,6 +224,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: null,
+        visibility: true,
         createdById: 2,
       };
       db.bin.update = jest.fn().mockResolvedValue(updatedBin);
@@ -247,6 +256,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: new Date(),
+        visibility: true,
         createdById: 3,
       };
       db.bin.findUnique.mockResolvedValue(bin);
@@ -283,6 +293,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: null,
+        visibility: true,
         createdById: 4,
       };
       db.bin.findUnique.mockResolvedValue(bin);
@@ -313,6 +324,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: new Date(),
+        visibility: true,
         createdById: 1,
       };
       db.bin.update.mockResolvedValue(acceptedBin);
@@ -338,6 +350,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: null,
+        visibility: true,
         createdById: 1,
       };
       db.bin.update.mockResolvedValue(rejectedBin);
@@ -364,6 +377,7 @@ describe('BinsService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         acceptedAt: new Date(),
+        visibility: true,
         createdById: 1,
       };
       db.bin.update.mockResolvedValue(acceptedBin);
@@ -447,7 +461,10 @@ describe('BinsService', () => {
       } as Bin;
       db.bin.update = jest.fn().mockResolvedValue(updatedBin);
       const result = await service.toggleBinVisibility(binId, true);
-      expect(db.bin.update).toHaveBeenCalledWith({ where: { id: binId }, data: { visibility: true } });
+      expect(db.bin.update).toHaveBeenCalledWith({
+        where: { id: binId },
+        data: { visibility: true },
+      });
       expect(result).toEqual(updatedBin);
     });
 

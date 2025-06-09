@@ -35,3 +35,6 @@ alwaysApply: true
 - Implement proper error tracking
 
 - Track React Query cache performance
+
+# Running commands
+- This is a Turbo monorepo utilizing pnpm. So only ever use pnpm (or npx) to run relevant commands.

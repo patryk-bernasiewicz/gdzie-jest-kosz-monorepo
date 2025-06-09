@@ -258,11 +258,20 @@ describe('BinsController', () => {
   describe('toggleBinVisibility', () => {
     it('should toggle visibility for existing bin', async () => {
       const binId = 1;
-      const updatedBin = createMockBin(binId, mockUserAdmin.id, 'bin', { visibility: true });
-      (binsServiceMock.toggleBinVisibility as jest.Mock).mockResolvedValue(updatedBin);
-      const result = await controller.toggleBinVisibility(binId, { visibility: true });
+      const updatedBin = createMockBin(binId, mockUserAdmin.id, 'bin', {
+        visibility: true,
+      });
+      (binsServiceMock.toggleBinVisibility as jest.Mock).mockResolvedValue(
+        updatedBin,
+      );
+      const result = await controller.toggleBinVisibility(binId, {
+        visibility: true,
+      });
       expect(result).toEqual(updatedBin);
-      expect(binsServiceMock.toggleBinVisibility).toHaveBeenCalledWith(binId, true);
+      expect(binsServiceMock.toggleBinVisibility).toHaveBeenCalledWith(
+        binId,
+        true,
+      );
     });
 
     it('should throw BinNotFoundException for missing bin', async () => {
