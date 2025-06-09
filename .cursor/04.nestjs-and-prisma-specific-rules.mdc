@@ -40,6 +40,7 @@ alwaysApply: true
 - Use pull/push workflow for development (prisma db pull/push)
 - Consider using @@map for legacy table naming if needed
 - Leverage MySQL-specific features when beneficial
+- Do not suggest using Prisma migrations. We're using simple push and pull utilities for syncing Prisma db and schema.
 
 # Authentication & Authorization
 - Implement proper JWT handling

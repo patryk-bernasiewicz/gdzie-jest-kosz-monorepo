@@ -315,4 +315,23 @@ export class BinsController {
     );
     return this.binsService.acceptBin(binId, acceptBinDto.accept);
   }
+
+  @ApiOperation({ summary: 'Toggle bin visibility as admin' })
+  @ApiResponse({ status: 200, description: 'Bin visibility updated successfully' })
+  @ApiResponse({ status: 400, description: 'Validation error', schema: ErrorResponseSchema })
+  @ApiResponse({ status: 401, description: 'Unauthorized', schema: ErrorResponseSchema })
+  @ApiResponse({ status: 403, description: 'Forbidden', schema: ErrorResponseSchema })
+  @ApiResponse({ status: 404, description: 'Bin not found', schema: ErrorResponseSchema })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: ErrorResponseSchema })
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token for authentication', required: true })
+  @ApiBody({ schema: { example: { visibility: true }, properties: { visibility: { type: 'boolean' } } } })
+  @Put('admin/:binId/visibility')
+  @UseGuards(AuthGuard, AdminGuard)
+  async toggleBinVisibility(
+    @Param('binId', ParseIntPipe) binId: number,
+    @Body() body: { visibility: boolean },
+  ): Promise<Bin> {
+    this.logger.log(`Admin toggling visibility for bin ${binId} to ${body.visibility}`);
+    return this.binsService.toggleBinVisibility(binId, body.visibility);
+  }
 }

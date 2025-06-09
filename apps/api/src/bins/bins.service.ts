@@ -170,6 +170,24 @@ export class BinsService {
     }
   }
 
+  async toggleBinVisibility(binId: number, visibility: boolean): Promise<Bin> {
+    try {
+      const bin = await this.db.bin.update({
+        where: { id: Number(binId) },
+        data: { visibility },
+      });
+      this.logger.log(`Set visibility of bin ${binId} to ${visibility}`);
+      return bin;
+    } catch (error) {
+      if (error.code === 'P2025') {
+        this.logger.warn(`Bin with ID ${binId} not found for visibility toggle`);
+        throw new BinNotFoundException(binId);
+      }
+      this.logger.error(`Failed to toggle visibility for bin ${binId}`, error);
+      throw error;
+    }
+  }
+
   private validateCoordinates(latitude: number, longitude: number): void {
     if (
       latitude < -90 ||
