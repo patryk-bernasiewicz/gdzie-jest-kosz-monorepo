@@ -19,6 +19,7 @@ import { Bin } from "./Bin";
 import { Position } from "./types/Position";
 import AcceptBinDialog from "./components/AcceptBinDialog";
 import { useAcceptBin } from "./hooks/useAcceptBin";
+import { useToggleBinVisibility } from "./hooks/useToggleBinVisibility";
 
 // ‼️ TODO: refactor heavily!!! this is a mess now
 
@@ -49,6 +50,7 @@ const MapPage = () => {
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [acceptingBin, setAcceptingBin] = useState<Bin | null>(null);
   const acceptBinMutation = useAcceptBin();
+  const toggleVisibilityMutation = useToggleBinVisibility();
 
   const handleCenterChange = useCallback(
     (lat: number, lng: number) => {
@@ -99,6 +101,14 @@ const MapPage = () => {
   const handleCancelAcceptBin = () => {
     setAcceptDialogOpen(false);
     setAcceptingBin(null);
+  };
+
+  const handleToggleVisibility = async (bin: Bin) => {
+    await toggleVisibilityMutation.mutateAsync({
+      binId: bin.id,
+      visibility: !bin.visibility,
+    });
+    setSelectedBin(null);
   };
 
   const handleBinContextMenuChange = (visible: boolean) => {
@@ -178,6 +188,7 @@ const MapPage = () => {
             onDelete={handleDeleteBin}
             onEdit={handleEditBin}
             onAccept={handleAcceptBin}
+            onToggleVisibility={handleToggleVisibility}
             onVisibilityChange={handleBinContextMenuChange}
           />
         )}
