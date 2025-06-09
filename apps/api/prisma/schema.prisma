@@ -16,6 +16,7 @@ model Bin {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
   acceptedAt  DateTime?
+  visibility  Boolean   @default(true)
   createdById Int?
   createdBy   User?     @relation(fields: [createdById], references: [id])
 

@@ -7,4 +7,5 @@ export type Bin = {
   updatedAt: Date;
   deletedAt: Date | null;
   acceptedAt: Date | null;
+  visibility: boolean;
 };

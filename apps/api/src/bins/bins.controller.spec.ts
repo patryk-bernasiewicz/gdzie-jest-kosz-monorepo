@@ -51,6 +51,7 @@ describe('BinsController', () => {
       updateBinLocation: jest.fn(),
       acceptBin: jest.fn(),
       getBinById: jest.fn(),
+      toggleBinVisibility: jest.fn(),
     };
 
     authServiceMock = {
@@ -251,6 +252,36 @@ describe('BinsController', () => {
       await expect(controller.acceptBin(binId, acceptDto)).rejects.toThrow(
         new BinNotFoundException(binId),
       );
+    });
+  });
+
+  describe('toggleBinVisibility', () => {
+    it('should toggle visibility for existing bin', async () => {
+      const binId = 1;
+      const updatedBin = createMockBin(binId, mockUserAdmin.id, 'bin', {
+        visibility: true,
+      });
+      (binsServiceMock.toggleBinVisibility as jest.Mock).mockResolvedValue(
+        updatedBin,
+      );
+      const result = await controller.toggleBinVisibility(binId, {
+        visibility: true,
+      });
+      expect(result).toEqual(updatedBin);
+      expect(binsServiceMock.toggleBinVisibility).toHaveBeenCalledWith(
+        binId,
+        true,
+      );
+    });
+
+    it('should throw BinNotFoundException for missing bin', async () => {
+      const binId = 2;
+      (binsServiceMock.toggleBinVisibility as jest.Mock).mockRejectedValue(
+        new BinNotFoundException(binId),
+      );
+      await expect(
+        controller.toggleBinVisibility(binId, { visibility: false }),
+      ).rejects.toThrow(BinNotFoundException);
     });
   });
 });

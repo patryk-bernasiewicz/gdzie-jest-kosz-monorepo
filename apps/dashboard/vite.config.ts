@@ -11,7 +11,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@gjk/shared-utils": path.resolve(__dirname, "../../packages/shared-utils/src/index.ts"),
+      "@gjk/shared-utils": path.resolve(
+        __dirname,
+        "../../packages/shared-utils/src/index.ts",
+      ),
     },
   },
 });

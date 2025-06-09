@@ -90,7 +90,11 @@ export default [
   },
   /** @type {FlatConfig} */
   {
-    files: ['**/__tests__/**/*', '**/*.spec.{js,jsx,ts,tsx}', '**/*.test.{js,jsx,ts,tsx}'],
+    files: [
+      '**/__tests__/**/*',
+      '**/*.spec.{js,jsx,ts,tsx}',
+      '**/*.test.{js,jsx,ts,tsx}',
+    ],
     languageOptions: {
       /** @type {Record<string, 'writable' | 'readonly' | 'off'>} */
       globals: {

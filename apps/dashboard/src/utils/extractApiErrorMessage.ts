@@ -12,27 +12,27 @@ interface ErrorWithResponse {
 
 function isErrorWithMessage(obj: unknown): obj is ErrorWithMessage {
   return (
-    typeof obj === 'object' &&
+    typeof obj === "object" &&
     obj !== null &&
-    'message' in obj &&
-    typeof (obj as { message: unknown }).message === 'string'
+    "message" in obj &&
+    typeof (obj as { message: unknown }).message === "string"
   );
 }
 
 function isErrorWithData(obj: unknown): obj is ErrorWithData {
   return (
-    typeof obj === 'object' &&
+    typeof obj === "object" &&
     obj !== null &&
-    'data' in obj &&
+    "data" in obj &&
     isErrorWithMessage((obj as { data: unknown }).data)
   );
 }
 
 function isErrorWithResponse(obj: unknown): obj is ErrorWithResponse {
   return (
-    typeof obj === 'object' &&
+    typeof obj === "object" &&
     obj !== null &&
-    'response' in obj &&
+    "response" in obj &&
     isErrorWithData((obj as { response: unknown }).response)
   );
 }
