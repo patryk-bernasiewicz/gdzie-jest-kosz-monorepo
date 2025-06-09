@@ -30,6 +30,7 @@ export class BinsService {
             gte: longitude - NEARBY_BINS_DELTA_USER,
             lte: longitude + NEARBY_BINS_DELTA_USER,
           },
+          visibility: true,
           NOT: {
             acceptedAt: null,
           },

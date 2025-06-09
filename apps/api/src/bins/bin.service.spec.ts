@@ -62,6 +62,7 @@ describe('BinsService', () => {
         2.2 + NEARBY_BINS_DELTA_USER,
         10,
       );
+      expect(callArgs.where.visibility).toBe(true);
       expect(callArgs.where.NOT).toEqual({ acceptedAt: null });
       expect(result).toEqual(bins);
     });
