@@ -24,8 +24,12 @@ describe('ClerkService', () => {
   let service: ClerkService;
 
   beforeEach(async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ClerkService],
+      providers: [
+        ClerkService,
+        { provide: Logger, useValue: { error: jest.fn() } },
+      ],
     }).compile();
 
     service = module.get<ClerkService>(ClerkService);

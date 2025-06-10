@@ -125,6 +125,7 @@ export default [
       'scripts/reset-project.js',
       '**/__test__/**',
       '**/__tests__/**',
+      'jest.setup.js',
     ],
   },
 ];

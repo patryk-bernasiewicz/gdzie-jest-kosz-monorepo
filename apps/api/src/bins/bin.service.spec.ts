@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { BinsService } from './bins.service';
 import { DatabaseService } from 'src/database/database.service';
@@ -11,12 +10,14 @@ import {
   InvalidLocationException,
   BinNotFoundException,
 } from '../common/exceptions/bin.exceptions';
+import { Logger } from '@nestjs/common';
 
 describe('BinsService', () => {
   let service: BinsService;
   let db: { bin: any };
 
   beforeEach(async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     db = {
       bin: {
         findMany: jest.fn(),
@@ -26,7 +27,11 @@ describe('BinsService', () => {
       },
     };
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BinsService, { provide: DatabaseService, useValue: db }],
+      providers: [
+        BinsService,
+        { provide: DatabaseService, useValue: db },
+        { provide: Logger, useValue: { error: jest.fn() } },
+      ],
     }).compile();
     service = module.get(BinsService);
   });

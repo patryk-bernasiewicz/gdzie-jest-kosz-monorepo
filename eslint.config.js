@@ -24,6 +24,12 @@ export default [
       '*.bundle.*',
       '**/public/',
       '**/assets/',
+      'apps/mobile/scripts/',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/*.spec.js',
+      '**/*.spec.jsx',
+      'apps/mobile/jest.setup.js',
     ],
   },
   // Add any additional common rules here

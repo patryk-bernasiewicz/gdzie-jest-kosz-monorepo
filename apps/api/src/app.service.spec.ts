@@ -1,12 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppService } from './app.service';
+import { Logger } from '@nestjs/common';
 
 describe('AppService', () => {
   let service: AppService;
 
   beforeEach(async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AppService],
+      providers: [
+        AppService,
+        { provide: Logger, useValue: { error: jest.fn() } },
+      ],
     }).compile();
 
     service = module.get<AppService>(AppService);

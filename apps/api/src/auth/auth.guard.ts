@@ -3,11 +3,9 @@ import {
   CanActivate,
   ExecutionContext,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
 import {
   InvalidTokenException,

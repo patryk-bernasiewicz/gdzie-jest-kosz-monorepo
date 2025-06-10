@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { DatabaseService } from 'src/database/database.service';
 import { User } from '@prisma/client';
+import { Logger } from '@nestjs/common';
 
 describe('UserService', () => {
   let service: UserService;
-  let db: { user: any };
+  let db: { user: { upsert: jest.Mock } };
 
   beforeEach(async () => {
     db = {
@@ -14,7 +15,11 @@ describe('UserService', () => {
       },
     };
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, { provide: DatabaseService, useValue: db }],
+      providers: [
+        UserService,
+        { provide: DatabaseService, useValue: db },
+        { provide: Logger, useValue: { error: jest.fn() } },
+      ],
     }).compile();
     service = module.get(UserService);
   });

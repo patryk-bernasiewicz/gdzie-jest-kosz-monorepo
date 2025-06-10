@@ -7,6 +7,7 @@ import { GetNearbyBinsDto } from './dto/get-nearby-bins.dto';
 import { CreateBinDto } from './dto/create-bin.dto';
 import { AcceptBinDto } from './dto/accept-bin.dto';
 import { BinNotFoundException } from '../common/exceptions/bin.exceptions';
+import { Logger } from '@nestjs/common';
 
 const mockUserRegular: User = { id: 1, clerkId: 'clerkUser1', role: 'user' };
 const mockUserAdmin: User = { id: 2, clerkId: 'clerkAdmin1', role: 'admin' };
@@ -63,6 +64,7 @@ describe('BinsController', () => {
       providers: [
         { provide: BinsService, useValue: binsServiceMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: Logger, useValue: { error: jest.fn() } },
       ],
     }).compile();
 

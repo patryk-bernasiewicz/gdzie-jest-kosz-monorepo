@@ -14,8 +14,6 @@
     "lint": {
       "outputs": []
     },
-    "test": {
-      "outputs": ["coverage/**"]
-    }
+    "test": {}
   }
 }

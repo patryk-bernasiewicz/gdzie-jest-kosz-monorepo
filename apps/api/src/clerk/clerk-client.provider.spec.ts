@@ -1,4 +1,4 @@
-import { ClerkClientProvider } from './clerk-client.provider';
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 describe('ClerkClientProvider', () => {
   let configService: { get: jest.Mock };

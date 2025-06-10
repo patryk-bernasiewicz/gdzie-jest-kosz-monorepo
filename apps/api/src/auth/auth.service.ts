@@ -88,11 +88,11 @@ export class AuthService {
     }
   }
 
-  async getAuthenticatedUser(token: string): Promise<User | null> {
+  async getAuthenticatedUser(_token: string): Promise<User | null> {
     return null;
   }
 
-  async hasPermission(token: string, permission: string): Promise<boolean> {
+  async hasPermission(_token: string, _permission: string): Promise<boolean> {
     return false;
   }
 }
