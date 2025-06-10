@@ -1,7 +1,7 @@
 {
   "name": "@gjk/dashboard",
   "private": true,
-  "version": "DEV-0.0.1",
+  "version": "DEV-0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -39,7 +39,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Gdzie Jest Kosz - Backend API')
     .setDescription('API for Gdzie Jest Kosz')
-    .setVersion('DEV-0.0.1 (API v1)')
+    .setVersion('DEV-0.0.2 (API v1)')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
