@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default [
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   prettierRecommended,
   {
     ignores: [
@@ -14,6 +14,12 @@ export default [
       '**/web-build/',
       '**/coverage/',
       '**/node_modules/',
+      '**/.turbo/',
+      '**/generated/',
+      '**/prisma/generated/',
+      '**/.git/',
+      '**/tmp/',
+      '**/temp/',
       'yarn.lock',
       'package-lock.json',
       'pnpm-lock.yaml',
@@ -29,7 +35,14 @@ export default [
       '**/*.spec.tsx',
       '**/*.spec.js',
       '**/*.spec.jsx',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.test.js',
+      '**/*.test.jsx',
       'apps/mobile/jest.setup.js',
+      '**/__tests__/',
+      '**/test/',
+      '**/tests/',
     ],
   },
   // Add any additional common rules here
