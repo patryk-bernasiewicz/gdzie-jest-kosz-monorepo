@@ -90,6 +90,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^@prisma/client(|/.*)$": "<rootDir>/generated/client$1",
       "^src/(.*)": "<rootDir>/src/$1"
     }
   }
