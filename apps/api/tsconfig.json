@@ -23,5 +23,6 @@
       "@gjk/shared-utils": ["../../packages/shared-utils/dist"],
       "@prisma/client": ["./generated/client"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "generated", "eslint.config.mjs"]
 }

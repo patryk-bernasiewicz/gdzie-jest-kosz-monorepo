@@ -1,46 +1,61 @@
-# --- BUILDER STAGE ---
-FROM node:18-alpine AS builder
+# Build stage
+FROM node:20-alpine AS build
+RUN corepack enable
+WORKDIR /repo
 
-WORKDIR /usr/src/app
+# Copy package manager files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy app and package manifests
+COPY apps/api/package.json ./apps/api/
+COPY apps/dashboard/package.json ./apps/dashboard/
+COPY packages/shared-utils/package.json ./packages/shared-utils/
 
 # Install dependencies
-COPY package*.json ./
-COPY prisma ./prisma
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY tsconfig*.json nest-cli.json ./
-COPY src ./src
+# Copy the rest of the source code
+COPY . .
 
-# Generate Prisma client and build app
-RUN npx prisma generate
-RUN npm run build
+# Build the applications
+RUN pnpm build
 
-# --- RUNTIME STAGE ---
-FROM node:18-alpine AS runtime
+# Backend stage
+FROM node:20-alpine AS backend
+RUN corepack enable
+WORKDIR /api
 
-# Create app user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nestjs -u 1001
+# Create a non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-WORKDIR /usr/src/app
+# Copy built app and dependencies
+COPY --from=build /repo/apps/api/dist ./apps/api/dist
+COPY --from=build /repo/apps/api/node_modules ./apps/api/node_modules
+COPY --from=build /repo/node_modules ./node_modules
+COPY --from=build /repo/apps/api/generated ./apps/api/generated
+COPY --from=build /repo/apps/api/package.json ./apps/api/
+COPY --from=build /repo/package.json /repo/pnpm-lock.yaml /repo/pnpm-workspace.yaml ./
 
-# Copy package files
-COPY package*.json ./
+# Set ownership and user
+RUN chown -R appuser:appgroup /api
+USER appuser
 
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy built app and prisma from builder
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-
-# Change ownership to app user
-RUN chown -R nestjs:nodejs /usr/src/app
-USER nestjs
-
-ENV NODE_ENV=production
 EXPOSE 3220
+CMD ["node", "apps/api/dist/main.js"]
 
-CMD ["node", "dist/main"] 
+# Dashboard stage
+FROM nginx:alpine AS dashboard
+WORKDIR /dashboard
+
+# Create a non-root user
+RUN adduser -D -H -u 1001 -s /sbin/nologin webuser
+
+# Create app directory
+RUN mkdir -p /app/www
+
+# Copy built dashboard and nginx config
+COPY --from=build /repo/apps/dashboard/dist /app/www
+COPY apps/dashboard/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 3223
+CMD ["nginx", "-g", "daemon off;"]

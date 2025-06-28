@@ -15,4 +15,7 @@ cd apps/api
 pnpm prisma db push
 cd ../..
 
+echo "Starting services..."
 docker-compose -f docker-compose.prod.yml up -d --pull always
+
+echo "Deployment finished."
