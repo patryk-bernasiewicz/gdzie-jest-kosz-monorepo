@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../../lib/axios";
-import { Bin } from "../Bin";
-import { extractApiErrorMessage } from "../../../utils/extractApiErrorMessage";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../../lib/axios';
+import { Bin } from '../Bin';
+import { extractApiErrorMessage } from '../../../utils/extractApiErrorMessage';
 
 export const useAcceptBin = () => {
   const queryClient = useQueryClient();
@@ -17,11 +17,11 @@ export const useAcceptBin = () => {
         if (msg) {
           throw new Error(msg);
         }
-        throw new Error("Failed to accept bin");
+        throw new Error('Failed to accept bin');
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bins"] });
+      void queryClient.invalidateQueries({ queryKey: ['bins'] });
     },
   });
 };

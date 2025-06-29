@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import api from "../../../lib/axios";
-import { Bin } from "../Bin";
+import { useQuery } from '@tanstack/react-query';
+import api from '../../../lib/axios';
+import { Bin } from '../Bin';
 
 const fetchBins = async (latitude: number, longitude: number) => {
-  const { data } = await api.get<Bin[]>("/bins/admin", {
+  const { data } = await api.get<Bin[]>('/bins/admin', {
     params: { latitude, longitude },
   });
   return data;
@@ -17,7 +17,7 @@ export const useBins = (latitude: number, longitude: number) => {
   const roundedLng = roundCoord(longitude);
 
   const { data } = useQuery({
-    queryKey: ["bins", roundedLat, roundedLng],
+    queryKey: ['bins', roundedLat, roundedLng],
     queryFn: () => fetchBins(latitude, longitude),
     enabled: !!latitude && !!longitude,
     refetchInterval: 5 * 60 * 1000,

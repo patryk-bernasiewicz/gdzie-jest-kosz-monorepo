@@ -1,20 +1,20 @@
-import * as RadixTooltip from "@radix-ui/react-tooltip";
-import { ReactNode } from "react";
-import { cn } from "../utils/cn";
+import * as RadixTooltip from '@radix-ui/react-tooltip';
+import { ReactNode } from 'react';
+import { cn } from '../utils/cn';
 
 interface TooltipProps {
   content: ReactNode;
   children: ReactNode;
-  side?: "top" | "right" | "bottom" | "left";
-  align?: "start" | "center" | "end";
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  align?: 'start' | 'center' | 'end';
   delayDuration?: number;
 }
 
 const Tooltip = ({
   content,
   children,
-  side = "top",
-  align = "center",
+  side = 'top',
+  align = 'center',
   delayDuration = 200,
 }: TooltipProps) => (
   <RadixTooltip.Provider delayDuration={delayDuration}>
@@ -25,8 +25,8 @@ const Tooltip = ({
           side={side}
           align={align}
           className={cn(
-            "z-50 rounded bg-gray-900 px-3 py-1.5 text-xs text-white shadow-lg",
-            "data-[state=delayed-open]:animate-fade-in",
+            'z-50 rounded bg-gray-900 px-3 py-1.5 text-xs text-white shadow-lg',
+            'data-[state=delayed-open]:animate-fade-in',
           )}
         >
           {content}

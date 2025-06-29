@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../../lib/axios";
-import { AxiosError } from "axios";
-import { Bin } from "../Bin";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../../lib/axios';
+import { AxiosError } from 'axios';
+import { Bin } from '../Bin';
 
 type ToggleVisibilityParams = {
   binId: number;
@@ -25,11 +25,11 @@ export const useToggleBinVisibility = () => {
         if (err.response?.data?.message) {
           throw new Error(err.response.data.message);
         }
-        throw new Error("Failed to toggle bin visibility");
+        throw new Error('Failed to toggle bin visibility');
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bins"] });
+      void queryClient.invalidateQueries({ queryKey: ['bins'] });
     },
   });
 };

@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useGeolocation } from "./useGeolocation";
-import useMapLatLng from "../store/storedPosition.atom";
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useGeolocation } from './useGeolocation';
+import useMapLatLng from '../store/storedPosition.atom';
 
 export function useLatLngSearchParamsInitializer() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const latitudeParam = searchParams.get("latitude");
-  const longitudeParam = searchParams.get("longitude");
+  const latitudeParam = searchParams.get('latitude');
+  const longitudeParam = searchParams.get('longitude');
   const [lastMapPosition] = useMapLatLng(latitudeParam, longitudeParam);
   const geolocation = useGeolocation();
 
@@ -38,8 +38,8 @@ export function useLatLngSearchParamsInitializer() {
   ]);
 
   return {
-    latitude: parseFloat(latitudeParam || "0"),
-    longitude: parseFloat(longitudeParam || "0"),
+    latitude: parseFloat(latitudeParam || '0'),
+    longitude: parseFloat(longitudeParam || '0'),
     lastMapPosition,
   };
 }

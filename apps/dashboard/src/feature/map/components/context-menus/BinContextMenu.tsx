@@ -1,5 +1,5 @@
-import { Menu, Item, MenuProps } from "react-contexify";
-import { Bin } from "../../Bin";
+import { Menu, Item, MenuProps } from 'react-contexify';
+import { Bin } from '../../Bin';
 
 type BinContextMenuProps = {
   bins: Bin[];
@@ -9,7 +9,7 @@ type BinContextMenuProps = {
   onEdit?: (bin: Bin) => void;
   onAccept?: (bin: Bin) => void;
   onToggleVisibility?: (bin: Bin) => void;
-  onVisibilityChange?: MenuProps["onVisibilityChange"];
+  onVisibilityChange?: MenuProps['onVisibilityChange'];
 };
 
 const BinContextMenu = ({
@@ -34,7 +34,7 @@ const BinContextMenu = ({
         <Item onClick={() => onAccept?.(selectedBin)}>Accept user bin</Item>
       )}
       <Item onClick={() => onToggleVisibility?.(selectedBin)}>
-        {selectedBin.visibility ? "Hide bin" : "Show bin"}
+        {selectedBin.visibility ? 'Hide bin' : 'Show bin'}
       </Item>
     </Menu>
   );

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { Bin } from "../Bin";
-import { useUpdateBinLocation } from "./useUpdateBinLocation";
-import { Position } from "../types/Position";
+import { useCallback, useEffect, useState } from 'react';
+import { Bin } from '../Bin';
+import { useUpdateBinLocation } from './useUpdateBinLocation';
+import { Position } from '../types/Position';
 
 const OFFSET_VALUE = 0.000005;
 
@@ -29,7 +29,9 @@ const useEditBin = (): UseEditBinResult => {
   }, []);
 
   const handleConfirmEditBin = useCallback(() => {
-    if (!editedBin) return;
+    if (!editedBin) {
+      return;
+    }
     updateBinLocation({
       binId: editedBin.id,
       latitude: updatedBinPosition[0],
@@ -43,31 +45,41 @@ const useEditBin = (): UseEditBinResult => {
   }, []);
 
   useEffect(() => {
-    if (!editedBin) return;
+    if (!editedBin) {
+      return;
+    }
     const handleKeyDown = (event: KeyboardEvent) => {
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (event.key === "Escape") {
-        if (window.confirm("Are you sure you want to cancel?"))
+      if (event.key === 'Escape') {
+        if (window.confirm('Are you sure you want to cancel?')) {
           handleCancelEditBin();
+        }
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-        if (window.confirm("Are you sure you want to confirm?"))
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        if (window.confirm('Are you sure you want to confirm?')) {
           handleConfirmEditBin();
+        }
         return;
       }
       let lat = updatedBinPosition[0];
       let lng = updatedBinPosition[1];
-      if (event.key === "ArrowUp") lat += OFFSET_VALUE;
-      else if (event.key === "ArrowDown") lat -= OFFSET_VALUE;
-      else if (event.key === "ArrowLeft") lng -= OFFSET_VALUE;
-      else if (event.key === "ArrowRight") lng += OFFSET_VALUE;
-      else return;
+      if (event.key === 'ArrowUp') {
+        lat += OFFSET_VALUE;
+      } else if (event.key === 'ArrowDown') {
+        lat -= OFFSET_VALUE;
+      } else if (event.key === 'ArrowLeft') {
+        lng -= OFFSET_VALUE;
+      } else if (event.key === 'ArrowRight') {
+        lng += OFFSET_VALUE;
+      } else {
+        return;
+      }
       setUpdatedBinPosition([lat, lng]);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     editedBin,
     handleCancelEditBin,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 interface GeolocationData {
   latitude: number | null;
@@ -15,7 +15,7 @@ export function useGeolocation(): GeolocationData {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
+      setError('Geolocation is not supported by your browser.');
       setLoading(false);
       return;
     }

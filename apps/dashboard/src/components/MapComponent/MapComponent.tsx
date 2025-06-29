@@ -1,7 +1,7 @@
-import { MapContainer, TileLayer } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { cn } from "../../utils/cn";
-import MapEvents from "./MapEvents";
+import { MapContainer, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { cn } from '../../utils/cn';
+import MapEvents from './MapEvents';
 
 type MapComponentProps = {
   latitude: number;
@@ -30,7 +30,7 @@ const MapComponent = ({
       center={[latitude, longitude]}
       zoom={19}
       className={cn(
-        "z-0 h-full min-h-[400px] w-full rounded-lg shadow",
+        'z-0 h-full min-h-[400px] w-full rounded-lg shadow',
         className,
       )}
       scrollWheelZoom={true}

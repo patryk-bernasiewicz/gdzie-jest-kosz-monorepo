@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useSetAtom } from "jotai";
-import { clerkAccessTokenAtom } from "../store/clerkAccessToken.atom";
-import { useAuth } from "@clerk/clerk-react";
+import { useEffect } from 'react';
+import { useSetAtom } from 'jotai';
+import { clerkAccessTokenAtom } from '../store/clerkAccessToken.atom';
+import { useAuth } from '@clerk/clerk-react';
 
 const ACCESS_TOKEN_REFRESH_INTERVAL = 1000 * 60;
 
@@ -18,13 +18,13 @@ export const useClerkAccessToken = () => {
       if (isMounted) {
         setAccessToken(token ?? null);
         console.log(
-          "[useClerkAccessToken] Refreshed and updated access token in store:",
+          '[useClerkAccessToken] Refreshed and updated access token in store:',
           token,
         );
       }
     };
 
-    fetchToken();
+    void fetchToken();
     // eslint-disable-next-line prefer-const
     intervalId = setInterval(fetchToken, ACCESS_TOKEN_REFRESH_INTERVAL);
 

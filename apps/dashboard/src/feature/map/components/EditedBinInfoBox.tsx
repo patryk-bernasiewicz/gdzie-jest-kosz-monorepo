@@ -1,4 +1,4 @@
-import Button from "../../../components/Button";
+import Button from '../../../components/Button';
 
 type EditedBinInfoBoxProps = {
   onCancel: () => void;
@@ -9,7 +9,7 @@ const EditedBinInfoBox = ({ onCancel, onConfirm }: EditedBinInfoBoxProps) => {
   return (
     <div className="flex flex-col gap-4 rounded border border-blue-400 bg-blue-50 p-4 text-sm">
       <div>
-        Use <strong>arrow keys</strong> to move the bin around the map. Press{" "}
+        Use <strong>arrow keys</strong> to move the bin around the map. Press{' '}
         <strong>ctrl + enter</strong> to apply, or press <strong>esc</strong> to
         cancel.
       </div>

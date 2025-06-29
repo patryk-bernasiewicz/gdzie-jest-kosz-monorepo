@@ -1,24 +1,30 @@
-import { atom, useAtom } from "jotai";
-import { useEffect } from "react";
+import { atom, useAtom } from 'jotai';
+import { useEffect } from 'react';
 
 type MapPosition = {
   latitude: number | null;
   longitude: number | null;
 };
 
-const STORAGE_KEY = "map-latlng";
+const STORAGE_KEY = 'map-latlng';
 
 function getInitialPosition(): MapPosition {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return { latitude: null, longitude: null };
-    const { latitude, longitude } = JSON.parse(stored);
+    if (!stored) {
+      return { latitude: null, longitude: null };
+    }
+    const parsed = JSON.parse(stored) as {
+      latitude?: unknown;
+      longitude?: unknown;
+    };
+    const { latitude, longitude } = parsed;
     return {
-      latitude: typeof latitude === "number" ? latitude : null,
-      longitude: typeof longitude === "number" ? longitude : null,
+      latitude: typeof latitude === 'number' ? latitude : null,
+      longitude: typeof longitude === 'number' ? longitude : null,
     };
   } catch (err) {
-    console.error("Failed to read map lat/lng from storage:", err);
+    console.error('Failed to read map lat/lng from storage:', err);
     return { latitude: null, longitude: null };
   }
 }
@@ -27,8 +33,8 @@ const storedPositionAtom = atom<MapPosition>(getInitialPosition());
 
 storedPositionAtom.onMount = (setAtom) => {
   const handleStorage = () => setAtom(getInitialPosition());
-  window.addEventListener("storage", handleStorage);
-  return () => window.removeEventListener("storage", handleStorage);
+  window.addEventListener('storage', handleStorage);
+  return () => window.removeEventListener('storage', handleStorage);
 };
 
 function useStoredPosition(
@@ -39,9 +45,9 @@ function useStoredPosition(
 
   useEffect(() => {
     const latNum =
-      typeof latitude === "string" ? parseFloat(latitude) : latitude;
+      typeof latitude === 'string' ? parseFloat(latitude) : latitude;
     const lngNum =
-      typeof longitude === "string" ? parseFloat(longitude) : longitude;
+      typeof longitude === 'string' ? parseFloat(longitude) : longitude;
     if (
       latNum !== null &&
       lngNum !== null &&
@@ -55,7 +61,7 @@ function useStoredPosition(
           JSON.stringify({ latitude: latNum, longitude: lngNum }),
         );
       } catch (err) {
-        console.error("Failed to save map lat/lng to storage:", err);
+        console.error('Failed to save map lat/lng to storage:', err);
       }
     }
   }, [latitude, longitude, setMapLatLng]);
