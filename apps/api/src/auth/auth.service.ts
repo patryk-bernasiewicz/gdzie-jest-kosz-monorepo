@@ -72,10 +72,12 @@ export class AuthService {
       // Step 4: Return the local user object
       return dbUser;
     } catch (error) {
-      this.logger.warn(
-        `Authentication error in validateUser: ${error.message}`,
-        { stack: error.stack },
-      );
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.warn(`Authentication error in validateUser: ${message}`, {
+        stack,
+      });
       if (
         error instanceof InvalidTokenException ||
         error instanceof UserCreationException
@@ -83,16 +85,16 @@ export class AuthService {
         throw error;
       }
       throw new InvalidTokenException(
-        `Authentication failed due to an underlying error: ${error.message}`,
+        `Authentication failed due to an underlying error: ${message}`,
       );
     }
   }
 
-  async getAuthenticatedUser(_token: string): Promise<User | null> {
-    return null;
+  getAuthenticatedUser(_token: string): Promise<User | null> {
+    return Promise.resolve(null);
   }
 
-  async hasPermission(_token: string, _permission: string): Promise<boolean> {
-    return false;
+  hasPermission(_token: string, _permission: string): Promise<boolean> {
+    return Promise.resolve(false);
   }
 }

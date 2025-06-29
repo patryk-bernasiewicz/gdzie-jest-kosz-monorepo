@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { Bin } from '@prisma/client';
+import { Prisma, type Bin } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 import {
   BinNotFoundException,
@@ -180,7 +180,11 @@ export class BinsService {
       this.logger.log(`Set visibility of bin ${binId} to ${visibility}`);
       return bin;
     } catch (error) {
-      if (error.code === 'P2025') {
+      const code =
+        error instanceof Prisma.PrismaClientKnownRequestError
+          ? error.code
+          : undefined;
+      if (code === 'P2025') {
         this.logger.warn(
           `Bin with ID ${binId} not found for visibility toggle`,
         );

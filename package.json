@@ -11,8 +11,8 @@
     "dev:backend": "turbo run dev --filter=@gjk/backend",
     "start": "turbo run start --parallel",
     "test": "turbo run test --parallel",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
