@@ -17,7 +17,7 @@ const MAX_ZOOM = 19;
 
 export default function createLeafletHtml(
   latitude: number | undefined,
-  longitude: number | undefined
+  longitude: number | undefined,
 ): string {
   const html = /*html*/ `<!DOCTYPE html>
   <html>

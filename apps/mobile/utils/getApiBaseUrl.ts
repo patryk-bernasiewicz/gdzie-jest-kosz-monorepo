@@ -7,7 +7,7 @@ export function getApiBaseUrl() {
   }
   if (!prefix) {
     throw new Error(
-      'Missing EXPO_PUBLIC_BACKEND_API_PREFIX environment variable.'
+      'Missing EXPO_PUBLIC_BACKEND_API_PREFIX environment variable.',
     );
   }
 

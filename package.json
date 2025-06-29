@@ -50,8 +50,16 @@
     "node": ">=20.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+    "apps/api/**/*.{js,ts}": [
+      "pnpm --filter @gjk/backend lint:fix",
+      "prettier --write"
+    ],
+    "apps/dashboard/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --filter @gjk/dashboard lint:fix",
+      "prettier --write"
+    ],
+    "apps/mobile/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --filter @gjk/mobile lint:fix",
       "prettier --write"
     ]
   }

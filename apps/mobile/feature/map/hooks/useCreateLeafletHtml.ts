@@ -11,7 +11,7 @@ import createLeafletHtml from '@/feature/map/utils/createLeafletHtml';
  */
 export default function useCreateLeafletHtml(
   latitude?: number | null,
-  longitude?: number | null
+  longitude?: number | null,
 ): string | null {
   const [html, setHtml] = useState<string | null>(null);
 

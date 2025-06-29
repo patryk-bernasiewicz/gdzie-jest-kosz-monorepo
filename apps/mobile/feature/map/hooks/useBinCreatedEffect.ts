@@ -11,7 +11,7 @@ import WebView from 'react-native-webview';
 export default function useBinCreatedEffect(
   mapViewRef: RefObject<WebView | null>,
   isBinCreated: boolean | null,
-  callback?: () => void
+  callback?: () => void,
 ): void {
   useEffect(() => {
     if (!isBinCreated) {

@@ -1,6 +1,6 @@
 export default function calculateDistance(
   from: [number, number],
-  to: [number, number]
+  to: [number, number],
 ): number {
   const R = 6371e3;
   const fi1 = (from[0] * Math.PI) / 180;

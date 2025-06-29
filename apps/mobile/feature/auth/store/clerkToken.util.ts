@@ -31,7 +31,7 @@ export async function fetchAndSetClerkToken() {
       token =
         (await clerkInstance.session?.getToken({
           skipCache: true,
-        })) || null;
+        })) ?? null;
 
       if (token) {
         cachedToken = token;

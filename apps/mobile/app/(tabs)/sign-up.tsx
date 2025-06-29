@@ -1,5 +1,8 @@
-import { isClerkAPIResponseError, useSignUp } from '@clerk/clerk-expo';
-import { useSession } from '@clerk/clerk-expo';
+import {
+  isClerkAPIResponseError,
+  useSession,
+  useSignUp,
+} from '@clerk/clerk-expo';
 import { Link, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -31,7 +34,9 @@ export default function SignUpScreen() {
     consent_given: string | null;
   }>();
   useEffect(() => {
-    if (!isLoaded || !session) return;
+    if (!isLoaded || !session) {
+      return;
+    }
 
     (async () => {
       try {
@@ -45,7 +50,9 @@ export default function SignUpScreen() {
   }, [isLoaded, session, router]);
 
   const onSignUpPress = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
     setPending(true);
     try {
       await signUp.create({
@@ -57,18 +64,18 @@ export default function SignUpScreen() {
     } catch (err) {
       if (isClerkAPIResponseError(err)) {
         const emailError = err.errors.find(
-          ({ meta }) => meta?.paramName === 'email_address'
+          ({ meta }) => meta?.paramName === 'email_address',
         );
         const emailErrorText =
-          errorTranslations[emailError?.code || ''] ||
-          emailError?.message ||
+          errorTranslations[emailError?.code ?? ''] ??
+          emailError?.message ??
           null;
         const passwordError = err.errors.find(
-          ({ meta }) => meta?.paramName === 'password'
+          ({ meta }) => meta?.paramName === 'password',
         );
         const passwordErrorText =
-          errorTranslations[passwordError?.code || ''] ||
-          passwordError?.message ||
+          errorTranslations[passwordError?.code ?? ''] ??
+          passwordError?.message ??
           null;
         setErrors({
           email_address: emailErrorText,
@@ -89,7 +96,9 @@ export default function SignUpScreen() {
   };
 
   const onVerifyPress = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
     setPending(true);
     try {
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
@@ -100,16 +109,16 @@ export default function SignUpScreen() {
       } else {
         console.error(
           '[Verification Error]',
-          JSON.stringify(signUpAttempt, null, 2)
+          JSON.stringify(signUpAttempt, null, 2),
         );
         handleApiError(
           new Error(
-            'Weryfikacja nie powiodła się. Status: ' + signUpAttempt.status
+            'Weryfikacja nie powiodła się. Status: ' + signUpAttempt.status,
           ),
           {
             context: 'weryfikacji e-mail',
             defaultErrorTitle: 'Błąd weryfikacji',
-          }
+          },
         );
       }
     } catch (err) {

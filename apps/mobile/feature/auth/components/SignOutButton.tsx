@@ -11,7 +11,9 @@ export default function SignOutButton() {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    if (isPending) return;
+    if (isPending) {
+      return;
+    }
 
     setPending(true);
 

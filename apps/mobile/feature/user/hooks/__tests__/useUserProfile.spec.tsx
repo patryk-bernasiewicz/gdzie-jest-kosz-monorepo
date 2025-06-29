@@ -1,7 +1,7 @@
 import { useUser } from '@clerk/clerk-expo';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import api from '@/utils/api';
 
@@ -52,7 +52,7 @@ describe('useUserProfile', () => {
       () => useUserProfile({ refetchInterval: false }),
       {
         wrapper: wrapper as any,
-      }
+      },
     );
 
     await waitFor(
@@ -62,7 +62,7 @@ describe('useUserProfile', () => {
       },
       {
         timeout: 5000,
-      }
+      },
     );
 
     expect(api.get).toHaveBeenCalledWith('/user/me');

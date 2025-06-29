@@ -3,8 +3,7 @@ import * as LocationService from 'expo-location';
 import React from 'react';
 import Toast from 'react-native-toast-message';
 
-import useLocation from '../useLocation';
-import { useLocationOffsetStore } from '../useLocation';
+import useLocation, { useLocationOffsetStore } from '../useLocation';
 
 jest.mock('expo-location');
 jest.mock('react-native-toast-message', () => ({ show: jest.fn() }));
@@ -43,7 +42,7 @@ describe('useLocation', () => {
     (LocationService.watchPositionAsync as jest.Mock).mockImplementation(
       () => ({
         remove: jest.fn(),
-      })
+      }),
     );
   });
 
@@ -78,7 +77,7 @@ describe('useLocation', () => {
       expect.objectContaining({
         type: 'error',
         text1: 'Brak dostępu do lokalizacji.',
-      })
+      }),
     );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.location).toBeNull();
@@ -86,7 +85,7 @@ describe('useLocation', () => {
 
   it('should show error toast if location cannot be established', async () => {
     (LocationService.getCurrentPositionAsync as jest.Mock).mockRejectedValue(
-      new Error('fail')
+      new Error('fail'),
     );
     const { result } = renderHook(() => useLocation(), {
       wrapper: wrapperWithQuery as any,
@@ -94,7 +93,7 @@ describe('useLocation', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(Toast.show).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'error', text1: 'Błąd lokalizacji' })
+      expect.objectContaining({ type: 'error', text1: 'Błąd lokalizacji' }),
     );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.location).toBeNull();
@@ -112,7 +111,7 @@ describe('useLocation', () => {
       result.current.moveOffsetNorth();
     });
     await waitFor(() =>
-      expect(result.current.location).toEqual([1 + offsetMove, 2])
+      expect(result.current.location).toEqual([1 + offsetMove, 2]),
     );
 
     act(() => {
@@ -124,7 +123,7 @@ describe('useLocation', () => {
       result.current.moveOffsetEast();
     });
     await waitFor(() =>
-      expect(result.current.location).toEqual([1, 2 + offsetMove])
+      expect(result.current.location).toEqual([1, 2 + offsetMove]),
     );
 
     act(() => {

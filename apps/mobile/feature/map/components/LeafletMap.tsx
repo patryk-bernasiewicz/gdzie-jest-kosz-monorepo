@@ -70,7 +70,7 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
       setContextMenuPos(null);
       setSelectedPos(null);
       setMapSelectedBins([]);
-    }, [])
+    }, []),
   );
   useBinMarkedInvalidEffect(
     mapViewRef,
@@ -79,7 +79,7 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
       setContextMenuPos(null);
       setSelectedPos(null);
       setMapSelectedBins([]);
-    }, [])
+    }, []),
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,16 +90,20 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
   };
 
   const handleCreateBin = () => {
-    if (isCreatingBin || !selectedPos) return;
+    if (isCreatingBin || !selectedPos) {
+      return;
+    }
     mutateCreateBin(selectedPos);
   };
 
   const handleConfirmInvalidBin = useCallback(
     (binId: number) => {
-      if (isMarkingBinInvalid) return;
+      if (isMarkingBinInvalid) {
+        return;
+      }
       markInvalidBin(binId);
     },
-    [isMarkingBinInvalid, markInvalidBin]
+    [isMarkingBinInvalid, markInvalidBin],
   );
 
   const handleMarkInvalidBin = useCallback(
@@ -116,10 +120,10 @@ export default function LeafletMap({ latitude, longitude }: LeafletMapProps) {
             text: 'Nie',
             style: 'cancel',
           },
-        ]
+        ],
       );
     },
-    [handleConfirmInvalidBin]
+    [handleConfirmInvalidBin],
   );
 
   const handleWebViewMessage = (event: WebViewMessageEvent) => {

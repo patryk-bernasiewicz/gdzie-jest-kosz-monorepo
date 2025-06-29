@@ -20,7 +20,7 @@ export default function useUpsertUser(): UseMutationResult<
             body: JSON.stringify({
               sessionId,
             }),
-          }
+          },
         );
 
         if (!res.ok) {

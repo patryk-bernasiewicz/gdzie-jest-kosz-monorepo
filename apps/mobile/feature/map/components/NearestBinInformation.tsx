@@ -34,7 +34,7 @@ function getDistanceLabel(distance: number | null): string {
 
 function getDirectionLabel(
   distance: number | null | undefined,
-  direction: WorldDirection | null | undefined
+  direction: WorldDirection | null | undefined,
 ): string | null {
   if (distance && distance >= nextToYouTreshold && direction) {
     return worldDirectionToLabel[direction];
@@ -54,7 +54,7 @@ export default function NearestBinInformation({
   const distance = nearestBin?.distance ?? null;
   const directionLabel = useMemo(
     () => getDirectionLabel(distance, direction),
-    [distance, direction]
+    [distance, direction],
   );
   const distanceText = useMemo(() => getDistanceLabel(distance), [distance]);
 

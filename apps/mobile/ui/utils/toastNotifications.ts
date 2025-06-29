@@ -42,16 +42,16 @@ export function showInfoToast(title: string, message?: string) {
 
 export function handleApiError(
   error: unknown,
-  options?: HandleApiErrorOptions
+  options?: HandleApiErrorOptions,
 ) {
   console.error(
     '[API Error]',
     options?.context ? `Context: ${options.context}` : '',
-    error
+    error,
   );
 
-  let title = options?.defaultErrorTitle || 'Wystąpił błąd';
-  let message = options?.defaultErrorMessage || 'Spróbuj ponownie później.';
+  let title = options?.defaultErrorTitle ?? 'Wystąpił błąd';
+  let message = options?.defaultErrorMessage ?? 'Spróbuj ponownie później.';
 
   if (isClerkAPIResponseError(error)) {
     title = options?.context
@@ -59,7 +59,7 @@ export function handleApiError(
       : 'Błąd API Clerk';
     const firstError = Array.isArray(error.errors) && error.errors[0];
     if (firstError) {
-      message = firstError.longMessage || firstError.message || message;
+      message = firstError.longMessage ?? firstError.message ?? message;
       if (
         firstError.code === 'network_error' ||
         firstError.meta?.paramName ===
@@ -77,7 +77,7 @@ export function handleApiError(
     title = options?.context
       ? `Błąd ${options.context} (Clerk)`
       : 'Błąd działania Clerk';
-    message = error.message || message;
+    message = error.message ?? message;
     if (error.message?.toLowerCase().includes('network')) {
       title = 'Błąd sieci Clerk';
       message =

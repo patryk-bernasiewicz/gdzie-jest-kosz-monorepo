@@ -31,7 +31,7 @@ export default function useCreateBin() {
       } catch (error) {
         console.error(
           'Error creating bin:',
-          JSON.stringify(serializeAxiosError(error), null, 2)
+          JSON.stringify(serializeAxiosError(error), null, 2),
         );
         throw error;
       }
