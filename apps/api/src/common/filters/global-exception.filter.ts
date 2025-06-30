@@ -15,7 +15,7 @@ export interface ErrorResponse {
   path: string;
   message: string | string[];
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 @Catch()
@@ -25,12 +25,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest();
+    const request = ctx.getRequest<{ method: string; url: string }>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | string[] = 'Internal server error';
     let error = 'Internal Server Error';
-    let details: any = undefined;
+    let details: unknown = undefined;
     const isDev = process.env.NODE_ENV === 'development';
 
     // Handle HTTP exceptions (NestJS built-in exceptions)
@@ -40,9 +40,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
         // Default to a title-cased version of the HttpStatus key or exception.name
-        const statusKey = Object.keys(HttpStatus).find(
-          (key) => HttpStatus[key] === status,
-        );
+        const statusKey = Object.keys(HttpStatus).find((key) => {
+          const statusValue = HttpStatus[key as keyof typeof HttpStatus];
+          return typeof statusValue === 'number' && statusValue === status;
+        });
         if (statusKey) {
           error = statusKey
             .split('_')
@@ -58,9 +59,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         typeof exceptionResponse === 'object' &&
         exceptionResponse !== null
       ) {
-        const typedResponse = exceptionResponse as Record<string, any>; // Cast for type safety
-        message = typedResponse.message || JSON.stringify(exceptionResponse); // Fallback for non-standard objects
-        error = typedResponse.error || exception.name;
+        const typedResponse = exceptionResponse as Record<string, unknown>; // Cast for type safety
+        message =
+          typeof typedResponse.message === 'string' ||
+          Array.isArray(typedResponse.message)
+            ? typedResponse.message
+            : JSON.stringify(exceptionResponse); // Fallback for non-standard objects
+        error =
+          typeof typedResponse.error === 'string'
+            ? typedResponse.error
+            : exception.name;
         if (isDev && typedResponse.details) {
           details = typedResponse.details;
         }
@@ -103,14 +111,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     // Log the error
-    if (status >= 500) {
+    const messageStr = Array.isArray(message) ? message.join(', ') : message;
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
-        `${request.method} ${request.url} - ${status} - ${message}`,
-        exception instanceof Error ? exception.stack : exception,
+        `${request.method} ${request.url} - ${status} - ${messageStr}`,
+        exception instanceof Error ? exception.stack : String(exception),
       );
     } else {
       this.logger.warn(
-        `${request.method} ${request.url} - ${status} - ${message}`,
+        `${request.method} ${request.url} - ${status} - ${messageStr}`,
       );
     }
 
@@ -137,7 +146,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   ): string {
     switch (exception.code) {
       case 'P2002':
-        return `A record with this ${exception.meta?.target} already exists`;
+        return `A record with this ${String(exception.meta?.target)} already exists`;
       case 'P2025':
         return 'The requested record was not found';
       case 'P2003':

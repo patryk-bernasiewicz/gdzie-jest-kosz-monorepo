@@ -1,30 +1,30 @@
-import { useSearchParams } from "react-router-dom";
-import { useLatLngSearchParamsInitializer } from "./hooks/useLatLngSearchParamsInitializer";
-import MapComponent from "../../components/MapComponent/MapComponent";
-import { useBins } from "./hooks/useBins";
-import { useState, useCallback } from "react";
-import { useContextMenu } from "react-contexify";
-import "react-contexify/dist/ReactContexify.css";
-import { setSearchParamsWithLatLng } from "./utils/setSearchParamsWithLatLng";
-import ContextMenuMarker from "./ContextMenuMarker";
-import BinsMarkers from "./components/map-markers/BinMarkers";
-import { useCreateBin } from "./hooks/useCreateBin";
-import MapContextMenu from "./components/context-menus/MapContextMenu";
-import BinContextMenu from "./components/context-menus/BinContextMenu";
-import EditedBinMarker from "./components/map-markers/EditedBinMarker";
-import { cn } from "../../utils/cn";
-import EditedBinInfoBox from "./components/EditedBinInfoBox";
-import useEditBin from "./hooks/useEditBin";
-import { Bin } from "./Bin";
-import { Position } from "./types/Position";
-import AcceptBinDialog from "./components/AcceptBinDialog";
-import { useAcceptBin } from "./hooks/useAcceptBin";
-import { useToggleBinVisibility } from "./hooks/useToggleBinVisibility";
+import { useSearchParams } from 'react-router-dom';
+import { useLatLngSearchParamsInitializer } from './hooks/useLatLngSearchParamsInitializer';
+import MapComponent from '../../components/MapComponent/MapComponent';
+import { useBins } from './hooks/useBins';
+import { useState, useCallback } from 'react';
+import { useContextMenu } from 'react-contexify';
+import 'react-contexify/dist/ReactContexify.css';
+import { setSearchParamsWithLatLng } from './utils/setSearchParamsWithLatLng';
+import ContextMenuMarker from './ContextMenuMarker';
+import BinsMarkers from './components/map-markers/BinMarkers';
+import { useCreateBin } from './hooks/useCreateBin';
+import MapContextMenu from './components/context-menus/MapContextMenu';
+import BinContextMenu from './components/context-menus/BinContextMenu';
+import EditedBinMarker from './components/map-markers/EditedBinMarker';
+import { cn } from '../../utils/cn';
+import EditedBinInfoBox from './components/EditedBinInfoBox';
+import useEditBin from './hooks/useEditBin';
+import { Bin } from './Bin';
+import { Position } from './types/Position';
+import AcceptBinDialog from './components/AcceptBinDialog';
+import { useAcceptBin } from './hooks/useAcceptBin';
+import { useToggleBinVisibility } from './hooks/useToggleBinVisibility';
 
 // ‼️ TODO: refactor heavily!!! this is a mess now
 
-const MAP_CONTEXT_MENU_ID = "map-context-menu";
-const BIN_CONTEXT_MENU_ID = "bin-context-menu";
+const MAP_CONTEXT_MENU_ID = 'map-context-menu';
+const BIN_CONTEXT_MENU_ID = 'bin-context-menu';
 
 const MapPage = () => {
   const { latitude, longitude } = useLatLngSearchParamsInitializer();
@@ -68,7 +68,7 @@ const MapPage = () => {
   );
 
   const handleBinContextMenu = (binId: number, event: MouseEvent) => {
-    console.log("event", event);
+    console.log('event', event);
     const bin = bins.find((bin) => bin.id === binId);
 
     if (!bin) {
@@ -82,7 +82,7 @@ const MapPage = () => {
   const handleDeleteBin = (bin: Bin) => {
     // TODO: Implement delete logic
 
-    console.log("Delete bin", bin.id);
+    console.log('Delete bin', bin.id);
   };
 
   const handleAcceptBin = (bin: Bin) => {
@@ -90,12 +90,15 @@ const MapPage = () => {
     setAcceptDialogOpen(true);
   };
 
-  const handleConfirmAcceptBin = async () => {
-    if (!acceptingBin) return;
-    await acceptBinMutation.mutateAsync(acceptingBin.id);
-    setAcceptDialogOpen(false);
-    setAcceptingBin(null);
-    setSelectedBin(null);
+  const handleConfirmAcceptBin = () => {
+    if (!acceptingBin) {
+      return;
+    }
+    void acceptBinMutation.mutateAsync(acceptingBin.id).then(() => {
+      setAcceptDialogOpen(false);
+      setAcceptingBin(null);
+      setSelectedBin(null);
+    });
   };
 
   const handleCancelAcceptBin = () => {
@@ -103,12 +106,15 @@ const MapPage = () => {
     setAcceptingBin(null);
   };
 
-  const handleToggleVisibility = async (bin: Bin) => {
-    await toggleVisibilityMutation.mutateAsync({
-      binId: bin.id,
-      visibility: !bin.visibility,
-    });
-    setSelectedBin(null);
+  const handleToggleVisibility = (bin: Bin) => {
+    void toggleVisibilityMutation
+      .mutateAsync({
+        binId: bin.id,
+        visibility: !bin.visibility,
+      })
+      .then(() => {
+        setSelectedBin(null);
+      });
   };
 
   const handleBinContextMenuChange = (visible: boolean) => {
@@ -140,8 +146,8 @@ const MapPage = () => {
       </div>
       <div
         className={cn(
-          "grow",
-          isBinLocationUpdating && "pointer-events-none opacity-50",
+          'grow',
+          isBinLocationUpdating && 'pointer-events-none opacity-50',
         )}
       >
         <MapComponent
@@ -155,7 +161,7 @@ const MapPage = () => {
             <ContextMenuMarker
               position={contextMenuMarker}
               onClick={() => {
-                console.log("Context menu marker clicked:", contextMenuMarker);
+                console.log('Context menu marker clicked:', contextMenuMarker);
               }}
             />
           )}

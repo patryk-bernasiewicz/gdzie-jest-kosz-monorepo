@@ -9,9 +9,13 @@ export default function useBinsWithDistance(bins?: Bin[]) {
   const { location } = useLocation();
 
   const binsWithDistance = useMemo(() => {
-    if (!location || !location[0] || !location[1]) return null;
+    if (!location?.[0] || !location[1]) {
+      return null;
+    }
 
-    if (!bins || bins.length === 0) return [];
+    if (!bins || bins.length === 0) {
+      return [];
+    }
 
     const userLatitude = location[0];
     const userLongitude = location[1];
@@ -27,7 +31,7 @@ export default function useBinsWithDistance(bins?: Bin[]) {
         distance: isCloseEnough
           ? calculateDistance(
               [userLatitude, userLongitude],
-              [bin.latitude, bin.longitude]
+              [bin.latitude, bin.longitude],
             )
           : null,
       };

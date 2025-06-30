@@ -38,7 +38,9 @@ export default function SignInScreen() {
   }, [isLoaded, router, session]);
 
   const onSignInPress = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     setPending(true);
 

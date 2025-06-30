@@ -1,10 +1,10 @@
-import { ReactNode, useState } from "react";
-import { cn } from "../utils/cn";
-import { UserButton } from "@clerk/clerk-react";
-import { Link } from "react-router-dom";
-import { useClerkAccessToken } from "../hooks/useClerkAccessToken";
-import { useAtomValue } from "jotai";
-import { clerkAccessTokenAtom } from "../store/clerkAccessToken.atom";
+import { ReactNode, useState } from 'react';
+import { cn } from '../utils/cn';
+import { UserButton } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
+import { useClerkAccessToken } from '../hooks/useClerkAccessToken';
+import { useAtomValue } from 'jotai';
+import { clerkAccessTokenAtom } from '../store/clerkAccessToken.atom';
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,13 +17,13 @@ interface MenuItem {
 }
 
 const menuItemsBase: MenuItem[] = [
-  { label: "Home", icon: <span>🏠</span>, path: "/" },
-  { label: "Map", icon: <span>🗺️</span>, path: "/bins" },
+  { label: 'Home', icon: <span>🏠</span>, path: '/' },
+  { label: 'Map', icon: <span>🗺️</span>, path: '/bins' },
 ];
 
-const ICON_SIZE = "w-10 h-10";
-const COLLAPSED_WIDTH = "w-14";
-const EXPANDED_WIDTH = "w-56";
+const ICON_SIZE = 'w-10 h-10';
+const COLLAPSED_WIDTH = 'w-14';
+const EXPANDED_WIDTH = 'w-56';
 
 const SideMenu = ({ collapsed }: { collapsed: boolean }) => {
   return (
@@ -33,16 +33,16 @@ const SideMenu = ({ collapsed }: { collapsed: boolean }) => {
           key={item.label}
           to={item.path}
           className={cn(
-            "flex cursor-pointer items-center gap-2 overflow-hidden rounded px-2 py-1 hover:bg-gray-100",
+            'flex cursor-pointer items-center gap-2 overflow-hidden rounded px-2 py-1 hover:bg-gray-100',
           )}
         >
-          <span className={cn(ICON_SIZE, "flex items-center justify-center")}>
+          <span className={cn(ICON_SIZE, 'flex items-center justify-center')}>
             {item.icon}
           </span>
           <span
             className={cn(
-              "inline-block w-32 min-w-32 transition-opacity duration-200",
-              collapsed && "pointer-events-none opacity-0",
+              'inline-block w-32 min-w-32 transition-opacity duration-200',
+              collapsed && 'pointer-events-none opacity-0',
             )}
           >
             {item.label}
@@ -70,18 +70,18 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="flex min-h-screen bg-gray-50">
       <aside
         className={cn(
-          "flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-200",
+          'flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-200',
           collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
         )}
       >
         <button
           className={cn(
-            "flex cursor-pointer items-center justify-center truncate border-b border-gray-200 p-2 hover:bg-gray-100 focus:outline-none",
+            'flex cursor-pointer items-center justify-center truncate border-b border-gray-200 p-2 hover:bg-gray-100 focus:outline-none',
             EXPANDED_WIDTH,
             collapsed && COLLAPSED_WIDTH,
           )}
           onClick={() => setCollapsed((c) => !c)}
-          aria-label={collapsed ? "Expand menu" : "Collapse menu"}
+          aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
           type="button"
         >
           <span>{collapsed ? <>&#9654;</> : <>&#9664; Collapse</>}</span>

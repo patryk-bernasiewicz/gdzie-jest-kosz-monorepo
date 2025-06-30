@@ -11,7 +11,7 @@ import useBins from '@/feature/bins/hooks/useBins';
  */
 export default function useInjectBins(
   mapViewRef: RefObject<WebView | null>,
-  isHtmlReady?: boolean | null
+  isHtmlReady?: boolean | null,
 ): void {
   const {
     data: binsData,
@@ -20,13 +20,19 @@ export default function useInjectBins(
   } = useBins();
 
   const binsSnapshot = useMemo(() => {
-    if (!binsData) return null;
+    if (!binsData) {
+      return null;
+    }
     return JSON.stringify(Array.isArray(binsData) ? binsData : []);
   }, [binsData]);
 
   useEffect(() => {
-    if (isLoadingBins || binsError) return;
-    if (!mapViewRef.current || !isHtmlReady) return;
+    if (isLoadingBins || binsError) {
+      return;
+    }
+    if (!mapViewRef.current || !isHtmlReady) {
+      return;
+    }
     if (binsSnapshot) {
       const injectedJs = /*js*/ `
         if (window.updateBins) {

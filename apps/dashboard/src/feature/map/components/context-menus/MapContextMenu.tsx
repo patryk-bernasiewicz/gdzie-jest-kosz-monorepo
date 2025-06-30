@@ -1,11 +1,11 @@
-import { Menu, Item, MenuProps } from "react-contexify";
-import { Position } from "../../types/Position";
+import { Menu, Item, MenuProps } from 'react-contexify';
+import { Position } from '../../types/Position';
 
 type MapContextMenuProps = {
   contextMenuMarker: Position | null;
   onAddBin: (lat: number, lng: number) => void;
   menuId: string;
-  onVisibilityChange?: MenuProps["onVisibilityChange"];
+  onVisibilityChange?: MenuProps['onVisibilityChange'];
 };
 
 const MapContextMenu = ({
@@ -25,13 +25,13 @@ const MapContextMenu = ({
         if (contextMenuMarker) {
           onAddBin(contextMenuMarker[0], contextMenuMarker[1]);
         } else {
-          console.error("No contextMenuMarker set when trying to add bin");
+          console.error('No contextMenuMarker set when trying to add bin');
         }
       }}
     >
       Add bin here
     </Item>
-    <Item onClick={() => alert("Another action")}>Another action</Item>
+    <Item onClick={() => alert('Another action')}>Another action</Item>
   </Menu>
 );
 

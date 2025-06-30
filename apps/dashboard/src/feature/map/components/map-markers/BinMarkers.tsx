@@ -1,44 +1,44 @@
-import { Marker } from "react-leaflet";
-import { useContextMenu } from "react-contexify";
-import { Bin } from "../../Bin";
-import L from "leaflet";
+import { Marker } from 'react-leaflet';
+import { useContextMenu } from 'react-contexify';
+import { Bin } from '../../Bin';
+import L from 'leaflet';
 
-const BIN_CONTEXT_MENU_ID = "bin-context-menu";
+const BIN_CONTEXT_MENU_ID = 'bin-context-menu';
 
 const binIcon = L.icon({
-  iconUrl: "/bin-icon.svg",
+  iconUrl: '/bin-icon.svg',
   iconSize: [32, 32],
   iconAnchor: [16, 16],
 });
 
 const unacceptedBinIcon = L.icon({
-  iconUrl: "/bin-unaccepted-icon.svg",
+  iconUrl: '/bin-unaccepted-icon.svg',
   iconSize: [32, 32],
   iconAnchor: [16, 16],
 });
 
 const selectedBinIcon = L.icon({
-  iconUrl: "/bin-icon.svg",
+  iconUrl: '/bin-icon.svg',
   iconSize: [48, 48],
   iconAnchor: [24, 24],
-  className: "hue-rotate-90 drop-shadow-[0_0_8px_theme(colors.green.500)]",
+  className: 'hue-rotate-90 drop-shadow-[0_0_8px_theme(colors.green.500)]',
 });
 
 const selectedHiddenBinIcon = L.icon({
-  iconUrl: "/bin-hidden-icon.svg",
+  iconUrl: '/bin-hidden-icon.svg',
   iconSize: [48, 48],
   iconAnchor: [24, 24],
-  className: "hue-rotate-90 drop-shadow-[0_0_8px_theme(colors.green.500)]",
+  className: 'hue-rotate-90 drop-shadow-[0_0_8px_theme(colors.green.500)]',
 });
 
 const editedBinIcon = L.icon({
-  iconUrl: "/bin-icon.svg",
+  iconUrl: '/bin-icon.svg',
   iconSize: [32, 32],
   iconAnchor: [16, 16],
 });
 
 const hiddenBinIcon = L.icon({
-  iconUrl: "/bin-hidden-icon.svg",
+  iconUrl: '/bin-hidden-icon.svg',
   iconSize: [32, 32],
   iconAnchor: [16, 16],
 });

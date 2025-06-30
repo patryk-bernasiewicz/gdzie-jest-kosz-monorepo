@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import path from "path";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,9 +11,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@gjk/shared-utils": path.resolve(
+      '@gjk/shared-utils': path.resolve(
         __dirname,
-        "../../packages/shared-utils/src/index.ts",
+        '../../packages/shared-utils/src/index.ts',
       ),
     },
   },

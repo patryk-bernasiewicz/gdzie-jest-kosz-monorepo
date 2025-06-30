@@ -1,5 +1,5 @@
-import { Bin } from "../Bin";
-import AcceptDialog from "../../../components/AcceptDialog";
+import { Bin } from '../Bin';
+import AcceptDialog from '../../../components/AcceptDialog';
 
 type AcceptBinDialogProps = {
   open: boolean;
@@ -14,7 +14,9 @@ const AcceptBinDialog = ({
   onConfirm,
   onCancel,
 }: AcceptBinDialogProps) => {
-  if (!open || !bin) return null;
+  if (!open || !bin) {
+    return null;
+  }
   return (
     <AcceptDialog
       open={open}

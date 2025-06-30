@@ -11,7 +11,7 @@ import WebView from 'react-native-webview';
 export default function useInjectMapPosition(
   mapViewRef: RefObject<WebView | null>,
   latitude?: number | null,
-  longitude?: number | null
+  longitude?: number | null,
 ): void {
   useEffect(() => {
     if (!mapViewRef.current || !latitude || !longitude) {

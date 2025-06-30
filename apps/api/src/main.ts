@@ -9,8 +9,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  const clerkPublishableKey = configService.get('CLERK_PUBLISHABLE_KEY');
-  const clerkSecretKey = configService.get('CLERK_SECRET_KEY');
+  const clerkPublishableKey = configService.get<string>(
+    'CLERK_PUBLISHABLE_KEY',
+  );
+  const clerkSecretKey = configService.get<string>('CLERK_SECRET_KEY');
   if (!clerkPublishableKey || !clerkSecretKey) {
     throw new Error(
       'Clerk environment variables missing: CLERK_PUBLISHABLE_KEY and/or CLERK_SECRET_KEY must be set.',
@@ -39,7 +41,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Gdzie Jest Kosz - Backend API')
     .setDescription('API for Gdzie Jest Kosz')
-    .setVersion('DEV-0.0.1 (API v1)')
+    .setVersion('DEV-0.0.2 (API v1)')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -50,4 +52,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3220, '0.0.0.0');
 }
-bootstrap();
+void bootstrap();

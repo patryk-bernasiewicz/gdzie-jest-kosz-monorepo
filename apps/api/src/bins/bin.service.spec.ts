@@ -475,7 +475,10 @@ describe('BinsService', () => {
 
     it('should throw BinNotFoundException when bin does not exist', async () => {
       const binId = 2;
-      const error = { code: 'P2025' };
+      const error = new Prisma.PrismaClientKnownRequestError(
+        'Record not found',
+        { code: 'P2025', clientVersion: '1.0.0' },
+      );
       db.bin.update = jest.fn().mockRejectedValue(error);
       await expect(service.toggleBinVisibility(binId, false)).rejects.toThrow(
         BinNotFoundException,

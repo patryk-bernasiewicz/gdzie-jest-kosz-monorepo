@@ -11,7 +11,7 @@ import { serializeAxiosError } from '@/utils/serializeAxiosError';
 import { User } from '../types';
 
 export default function useUserProfile(
-  options?: Partial<UseQueryOptions<User>>
+  options?: Partial<UseQueryOptions<User>>,
 ): UseQueryResult<User> {
   const { user } = useUser();
 
@@ -24,7 +24,7 @@ export default function useUserProfile(
       } catch (error) {
         console.error(
           'Error fetching user profile:',
-          JSON.stringify(serializeAxiosError(error), null, 2)
+          JSON.stringify(serializeAxiosError(error), null, 2),
         );
         throw error;
       }

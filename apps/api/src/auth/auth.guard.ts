@@ -54,16 +54,16 @@ export class AuthGuard implements CanActivate {
         throw new InvalidTokenException('Token validation failed.');
       }
     } catch (error) {
-      this.logger.warn(`AuthGuard: Authentication failed - ${error.message}`);
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+      this.logger.warn(`AuthGuard: Authentication failed - ${message}`);
       if (
         error instanceof MissingTokenException ||
         error instanceof InvalidTokenException
       ) {
         throw error;
       }
-      throw new InvalidTokenException(
-        error.message || 'Authentication failed due to an unexpected error.',
-      );
+      throw new InvalidTokenException(message);
     }
   }
 }

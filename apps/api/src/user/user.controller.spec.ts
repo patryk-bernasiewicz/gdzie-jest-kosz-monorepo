@@ -35,7 +35,7 @@ describe('UserController', () => {
   });
 
   describe('Authenticate and Upsert', () => {
-    it('should return the current user', async () => {
+    it('should return the current user', () => {
       const mockUser: User = {
         id: 1,
         clerkId: 'test-clerk-id',
@@ -49,7 +49,7 @@ describe('UserController', () => {
 
       // In a unit test of the controller method, we assume the guard/decorator
       // has already done its job and provided the user.
-      const result = await controller.authenticateAndUpsert(mockUser);
+      const result = controller.authenticateAndUpsert(mockUser);
       expect(result).toEqual(mockUser);
     });
   });

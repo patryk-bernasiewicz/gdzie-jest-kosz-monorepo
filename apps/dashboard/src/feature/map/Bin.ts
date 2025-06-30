@@ -1,6 +1,6 @@
 export type Bin = {
   id: number;
-  type: "bin";
+  type: 'bin';
   latitude: string;
   longitude: string;
   createdAt: Date;

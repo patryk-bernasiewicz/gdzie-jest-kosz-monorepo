@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
+import React from 'react';
 
 import useUpsertUser from '../useUpsertUser';
 
@@ -56,7 +57,7 @@ describe('useUpsertUser', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sessionId: 'session-123' }),
-        })
+        }),
       );
     });
   });

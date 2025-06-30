@@ -1,5 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import api from "../../../lib/axios";
+import { useMutation } from '@tanstack/react-query';
+import api from '../../../lib/axios';
+import { extractApiErrorMessage } from '../../../utils/extractApiErrorMessage';
 
 type CreateBinParams = {
   latitude: number;
@@ -17,21 +18,17 @@ export const useCreateBin = () => {
   return useMutation<CreateBinResponse, Error, CreateBinParams>({
     mutationFn: async ({ latitude, longitude }) => {
       try {
-        const { data } = await api.post<CreateBinResponse>("bins/admin", {
+        const { data } = await api.post<CreateBinResponse>('bins/admin', {
           latitude,
           longitude,
         });
         return data;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          throw new Error(error.response.data.message);
+      } catch (error: unknown) {
+        const msg = extractApiErrorMessage(error);
+        if (msg) {
+          throw new Error(msg);
         }
-        throw new Error("Failed to create bin");
+        throw new Error('Failed to create bin');
       }
     },
   });
