@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter @gjk/backend lint)",
+      "Bash(pnpm --filter @gjk/dashboard exec prettier --write src/)",
+      "Bash(pnpm --filter @gjk/mobile exec prettier --write feature/ ui/ utils/)",
+      "Bash(npx prettier:*)",
+      "Bash(pnpm --filter @gjk/backend exec prettier --write src/)"
+    ],
+    "deny": []
+  }
+}

@@ -1,6 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ClerkService } from './clerk.service';
+// We need to import the mocked client to access its mocked methods for assertions/reset
+import clerkClient from '@clerk/clerk-sdk-node';
 import { Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { ClerkService } from './clerk.service';
+
 // We don't need to import clerkClient here anymore as it's fully mocked.
 
 // Mock the clerkClient and its methods directly within the factory
@@ -13,9 +17,6 @@ jest.mock('@clerk/clerk-sdk-node', () => ({
     },
   },
 }));
-
-// We need to import the mocked client to access its mocked methods for assertions/reset
-import clerkClient from '@clerk/clerk-sdk-node';
 
 // Suppress logger output for tests
 Logger.overrideLogger(false);

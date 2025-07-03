@@ -1,13 +1,14 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Bin, Prisma, User } from '@prisma/client';
+
+import { AuthService } from '../auth/auth.service';
+import { BinNotFoundException } from '../common/exceptions/bin.exceptions';
 import { BinsController } from './bins.controller';
 import { BinsService } from './bins.service';
-import { AuthService } from '../auth/auth.service';
-import { Bin, User, Prisma } from '@prisma/client';
-import { GetNearbyBinsDto } from './dto/get-nearby-bins.dto';
-import { CreateBinDto } from './dto/create-bin.dto';
 import { AcceptBinDto } from './dto/accept-bin.dto';
-import { BinNotFoundException } from '../common/exceptions/bin.exceptions';
-import { Logger } from '@nestjs/common';
+import { CreateBinDto } from './dto/create-bin.dto';
+import { GetNearbyBinsDto } from './dto/get-nearby-bins.dto';
 
 const mockUserRegular: User = { id: 1, clerkId: 'clerkUser1', role: 'user' };
 const mockUserAdmin: User = { id: 2, clerkId: 'clerkAdmin1', role: 'admin' };

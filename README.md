@@ -36,14 +36,12 @@ A `.husky/pre-commit` hook has been added, which automatically runs all tests (`
 
 ### Eslint
 
-- The project uses ESLint flat config (`eslint.config.js`).
-- File and folder ignores are now managed in the `ignores` array within this config.
-- Patterns for test files, setup scripts, and build outputs have been added.
-- The legacy `.eslintignore` file is no longer used or needed.
+- The project uses separate ESLint configs for every application.
 
 ### Prettier
 
-- Prettier ensures consistency in code style. Ensure you're using "Format on save" option when editing code to keep it consistent all of the time. Any edited file will still get formatted automatically before commiting. 
+- A unified Prettier configuration is maintained at the root of the repository to ensure consistent formatting across all projects.
+- Prettier ensures consistency in code style. Ensure you're using "Format on save" option when editing code to keep it consistent all of the time. Any edited file will still get formatted automatically before commiting.
 
 ### Test Case Reliability
 

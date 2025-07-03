@@ -1,9 +1,49 @@
-**/node_modules
-**/dist
+# Dependencies
+node_modules/
 
-**/*.yaml
-**/*.yml
-**/*.json
-**/*.lock
-**/*.md
-**/*.txt
+# Build outputs
+dist/
+build/
+coverage/
+web-build/
+
+# Expo
+.expo/
+.expo-shared/
+
+# Generated files
+generated/
+prisma/generated/
+
+# Logs
+*.log
+
+# Lock files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Git and CI
+.git/
+.github/
+
+# Public assets
+public/
+
+# Turbo
+.turbo/
+
+# Environment files
+.env*
+
+# SSL certificates
+ssl/
+
+# Temporary files
+tmp/
+
+# Config files that shouldn't be formatted
+babel.config.js
+metro.config.js
+jest.config.js
+vite.config.ts.timestamp-*

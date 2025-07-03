@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
+import { User } from '@prisma/client';
+
 // import { ClerkService } from '../clerk/clerk.service'; // No longer needed if AuthService is fully mocked
 // import { UserService } from './user.service'; // No longer needed if AuthService is fully mocked
 import { AuthService } from '../auth/auth.service';
-import { User } from '@prisma/client';
+import { UserController } from './user.controller';
 
 describe('UserController', () => {
   let controller: UserController;

@@ -1,14 +1,15 @@
 import {
-  GlobalExceptionFilter,
-  ErrorResponse,
-} from './global-exception.filter';
-import {
+  ArgumentsHost,
   HttpException,
   HttpStatus,
   Logger,
-  ArgumentsHost,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
+import {
+  ErrorResponse,
+  GlobalExceptionFilter,
+} from './global-exception.filter';
 
 // Suppress logger output for tests
 Logger.overrideLogger(false);

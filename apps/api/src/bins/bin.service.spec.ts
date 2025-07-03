@@ -1,16 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BinsService } from './bins.service';
-import { DatabaseService } from 'src/database/database.service';
-import { Bin, Prisma } from '@prisma/client';
-import {
-  NEARBY_BINS_DELTA_USER,
-  NEARBY_BINS_DELTA_ADMIN,
-} from './bins.constants';
-import {
-  InvalidLocationException,
-  BinNotFoundException,
-} from '../common/exceptions/bin.exceptions';
 import { Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Bin, Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
+
+import {
+  BinNotFoundException,
+  InvalidLocationException,
+} from '../common/exceptions/bin.exceptions';
+import {
+  NEARBY_BINS_DELTA_ADMIN,
+  NEARBY_BINS_DELTA_USER,
+} from './bins.constants';
+import { BinsService } from './bins.service';
 
 describe('BinsService', () => {
   let service: BinsService;
