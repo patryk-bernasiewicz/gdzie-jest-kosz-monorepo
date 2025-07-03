@@ -5,6 +5,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2022",
     "sourceMap": true,
@@ -19,7 +20,9 @@
     "noFallthroughCasesInSwitch": false,
     "preserveWatchOutput": true,
     "paths": {
-      "@gjk/shared-utils": ["../../packages/shared-utils/dist"]
+      "@gjk/shared-utils": ["../../packages/shared-utils/dist"],
+      "@prisma/client": ["./generated/client"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "generated", "eslint.config.mjs"]
 }

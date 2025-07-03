@@ -4,6 +4,7 @@ process.env.CLERK_SECRET_KEY = 'test-secret-key';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { Server } from 'http';
 import { AppModule } from '../src/app.module';
 import { DatabaseService } from '../src/database/database.service';
 import { ClerkService } from '../src/clerk/clerk.service';
@@ -58,7 +59,7 @@ describe('Bins E2E (mocked DB & Clerk)', () => {
   });
 
   it('GET /bins returns bins from mock DB', async () => {
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as Server)
       .get('/bins')
       .query({ latitude: 50.0, longitude: 20.0 })
       .expect(200);

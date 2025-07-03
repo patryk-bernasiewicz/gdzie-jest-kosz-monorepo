@@ -1,4 +1,4 @@
-import L from "leaflet";
+import L, { LeafletEvent } from "leaflet";
 import { Marker } from "react-leaflet";
 import { Position } from "../../types/Position";
 
@@ -25,10 +25,10 @@ const EditedBinMarker = ({
       draggable
       eventHandlers={{
         dragend: onMarkerDragged
-          ? (event) => {
-              const marker = event.target;
-              const { lat, lng } = marker.getLatLng();
-              onMarkerDragged([lat, lng]);
+          ? (event: LeafletEvent) => {
+              const marker = event.target as L.Marker;
+              const latLng = marker.getLatLng();
+              onMarkerDragged([latLng.lat, latLng.lng]);
             }
           : undefined,
       }}

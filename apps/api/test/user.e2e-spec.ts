@@ -6,6 +6,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { ClerkService } from '../src/clerk/clerk.service';
+import { Server } from 'http';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -31,7 +32,7 @@ describe('UserController (e2e)', () => {
 
   it('should upsert and return user with valid Clerk token', async () => {
     const validToken = 'valid_token';
-    const response = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer() as Server)
       .get('/user/me')
       .set('Authorization', `Bearer ${validToken}`)
       .expect(200);
@@ -39,6 +40,8 @@ describe('UserController (e2e)', () => {
   });
 
   it('should return 403 for missing token', async () => {
-    await request(app.getHttpServer()).get('/user/me').expect(403);
+    await request(app.getHttpServer() as Server)
+      .get('/user/me')
+      .expect(403);
   });
 });

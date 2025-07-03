@@ -90,12 +90,15 @@ const MapPage = () => {
     setAcceptDialogOpen(true);
   };
 
-  const handleConfirmAcceptBin = async () => {
-    if (!acceptingBin) return;
-    await acceptBinMutation.mutateAsync(acceptingBin.id);
-    setAcceptDialogOpen(false);
-    setAcceptingBin(null);
-    setSelectedBin(null);
+  const handleConfirmAcceptBin = () => {
+    if (!acceptingBin) {
+      return;
+    }
+    void acceptBinMutation.mutateAsync(acceptingBin.id).then(() => {
+      setAcceptDialogOpen(false);
+      setAcceptingBin(null);
+      setSelectedBin(null);
+    });
   };
 
   const handleCancelAcceptBin = () => {
@@ -103,12 +106,15 @@ const MapPage = () => {
     setAcceptingBin(null);
   };
 
-  const handleToggleVisibility = async (bin: Bin) => {
-    await toggleVisibilityMutation.mutateAsync({
-      binId: bin.id,
-      visibility: !bin.visibility,
-    });
-    setSelectedBin(null);
+  const handleToggleVisibility = (bin: Bin) => {
+    void toggleVisibilityMutation
+      .mutateAsync({
+        binId: bin.id,
+        visibility: !bin.visibility,
+      })
+      .then(() => {
+        setSelectedBin(null);
+      });
   };
 
   const handleBinContextMenuChange = (visible: boolean) => {

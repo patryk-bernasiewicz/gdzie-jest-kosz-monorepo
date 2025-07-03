@@ -4,3 +4,10 @@
 .turbo/tmp
 .turbo/tmp/*
 .turbo/tmp/*/*
+**/.env
+!**/.env.example
+**/.env.prod
+!**/.env.prod.example
+**/generated
+ssl
+tmp/

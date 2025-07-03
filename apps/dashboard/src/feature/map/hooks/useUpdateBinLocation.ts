@@ -32,7 +32,7 @@ export const useUpdateBinLocation = () => {
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["bins"] });
+        void queryClient.invalidateQueries({ queryKey: ["bins"] });
       },
     },
   );

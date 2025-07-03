@@ -11,8 +11,14 @@ const STORAGE_KEY = "map-latlng";
 function getInitialPosition(): MapPosition {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return { latitude: null, longitude: null };
-    const { latitude, longitude } = JSON.parse(stored);
+    if (!stored) {
+      return { latitude: null, longitude: null };
+    }
+    const parsed = JSON.parse(stored) as {
+      latitude?: unknown;
+      longitude?: unknown;
+    };
+    const { latitude, longitude } = parsed;
     return {
       latitude: typeof latitude === "number" ? latitude : null,
       longitude: typeof longitude === "number" ? longitude : null,

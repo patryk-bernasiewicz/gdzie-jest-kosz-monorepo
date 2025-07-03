@@ -29,7 +29,7 @@ export const useToggleBinVisibility = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bins"] });
+      void queryClient.invalidateQueries({ queryKey: ["bins"] });
     },
   });
 };

@@ -76,7 +76,7 @@ export default function useLocation(): UseLocationReturnType {
           console.log('Permission to access location was denied');
           showErrorToast(
             'Brak dostępu do lokalizacji.',
-            'Proszę sprawdzić ustawienia aplikacji i udzielić uprawnień do lokalizacji.'
+            'Proszę sprawdzić ustawienia aplikacji i udzielić uprawnień do lokalizacji.',
           );
           setLoading(false);
           return;
@@ -88,7 +88,7 @@ export default function useLocation(): UseLocationReturnType {
           (newLocation) => {
             const { latitude, longitude } = newLocation.coords;
             setLocation([latitude, longitude]);
-          }
+          },
         );
 
         const { latitude, longitude } = location.coords;

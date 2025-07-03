@@ -19,7 +19,7 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
   console.warn(
-    'Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY. App may not work correctly.'
+    'Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY. App may not work correctly.',
   );
 }
 
@@ -58,7 +58,7 @@ export default function RootLayout() {
   return (
     <ClerkProvider
       tokenCache={tokenCache}
-      publishableKey={publishableKey || 'temp_key_for_dev'}
+      publishableKey={publishableKey ?? 'temp_key_for_dev'}
       localization={plPL}
     >
       <QueryClientProvider client={queryClient}>

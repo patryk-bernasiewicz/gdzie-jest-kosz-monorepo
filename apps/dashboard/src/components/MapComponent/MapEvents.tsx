@@ -16,11 +16,15 @@ const MapEvents = ({
     moveend: (e: LeafletEvent) => {
       const map = e.target as LeafletMap;
       const center = map.getCenter();
-      if (onCenterChange) onCenterChange(center.lat, center.lng);
+      if (onCenterChange) {
+        onCenterChange(center.lat, center.lng);
+      }
     },
     zoomend: (e: LeafletEvent) => {
       const map = e.target as LeafletMap;
-      if (onZoomChange) onZoomChange(map.getZoom());
+      if (onZoomChange) {
+        onZoomChange(map.getZoom());
+      }
     },
     contextmenu: (e) => {
       if (onContextMenu) {

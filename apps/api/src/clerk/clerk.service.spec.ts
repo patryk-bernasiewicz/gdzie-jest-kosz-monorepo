@@ -73,7 +73,9 @@ describe('ClerkService', () => {
 
       const result = await service.getSession(sid);
 
-      expect(clerkClient.sessions.getSession).toHaveBeenCalledWith(sid);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const getSessionMock = clerkClient.sessions.getSession as jest.Mock;
+      expect(getSessionMock).toHaveBeenCalledWith(sid);
       expect(result).toEqual(expectedResult);
     });
 
@@ -82,7 +84,9 @@ describe('ClerkService', () => {
       const error = new Error('Session retrieval failed');
       (clerkClient.sessions.getSession as jest.Mock).mockRejectedValue(error);
 
-      await expect(service.getSession(sid)).rejects.toThrow(error);
+      await expect(service.getSession(sid)).rejects.toThrow(
+        'Session retrieval failed',
+      );
     });
   });
 });

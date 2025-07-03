@@ -21,8 +21,8 @@ describe('DatabaseService', () => {
   });
 
   it('should call $connect on onModuleInit', async () => {
-    service.$connect = jest.fn();
+    const connectSpy = jest.spyOn(service, '$connect').mockImplementation();
     await service.onModuleInit();
-    expect(service.$connect).toHaveBeenCalled();
+    expect(connectSpy).toHaveBeenCalled();
   });
 });

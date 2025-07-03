@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
+import React from 'react';
 
 import useLocation from '../../../map/hooks/useLocation';
 import { Bin } from '../../types';

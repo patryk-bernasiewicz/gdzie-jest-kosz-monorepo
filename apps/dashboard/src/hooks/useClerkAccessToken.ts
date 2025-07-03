@@ -24,7 +24,7 @@ export const useClerkAccessToken = () => {
       }
     };
 
-    fetchToken();
+    void fetchToken();
     // eslint-disable-next-line prefer-const
     intervalId = setInterval(fetchToken, ACCESS_TOKEN_REFRESH_INTERVAL);
 

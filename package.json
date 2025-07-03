@@ -11,8 +11,8 @@
     "dev:backend": "turbo run dev --filter=@gjk/backend",
     "start": "turbo run start --parallel",
     "test": "turbo run test --parallel",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
@@ -50,8 +50,16 @@
     "node": ">=20.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+    "apps/api/**/*.{js,ts}": [
+      "pnpm --filter @gjk/backend lint:fix",
+      "prettier --write"
+    ],
+    "apps/dashboard/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --filter @gjk/dashboard lint:fix",
+      "prettier --write"
+    ],
+    "apps/mobile/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --filter @gjk/mobile lint:fix",
       "prettier --write"
     ]
   }

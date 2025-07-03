@@ -23,7 +23,9 @@ const AcceptDialog = ({
   cancelLabel = "Cancel",
   children,
 }: AcceptDialogProps) => {
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="min-w-[320px] rounded-lg bg-white p-6 shadow-xl">

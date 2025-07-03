@@ -19,7 +19,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'User found' })
   @Get('me')
   @UseGuards(AuthGuard)
-  async authenticateAndUpsert(@CurrentUser() user: User): Promise<User> {
+  authenticateAndUpsert(@CurrentUser() user: User): User {
     this.logger.log('GET /user/me called');
     return user;
   }

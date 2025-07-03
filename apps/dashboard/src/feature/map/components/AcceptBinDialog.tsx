@@ -14,7 +14,9 @@ const AcceptBinDialog = ({
   onConfirm,
   onCancel,
 }: AcceptBinDialogProps) => {
-  if (!open || !bin) return null;
+  if (!open || !bin) {
+    return null;
+  }
   return (
     <AcceptDialog
       open={open}

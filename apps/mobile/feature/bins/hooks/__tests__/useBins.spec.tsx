@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import api from '@/utils/api';
 
@@ -100,7 +100,7 @@ describe('useBins', () => {
       ]);
     });
     expect(mockedApi.get).toHaveBeenCalledWith(
-      expect.stringContaining(`/bins/?latitude=52.1&longitude=21`)
+      expect.stringContaining(`/bins/?latitude=52.1&longitude=21`),
     );
   });
 
@@ -108,7 +108,7 @@ describe('useBins', () => {
     mockUseLocation({ location: [52.1, 21.0] });
 
     mockedApi.get.mockRejectedValueOnce(
-      new Error('Network response was not ok')
+      new Error('Network response was not ok'),
     );
 
     const { result } = renderHook(() => useBins(), { wrapper });
@@ -118,10 +118,10 @@ describe('useBins', () => {
         expect(result.current.isError).toBe(true);
         expect(result.current.error).toBeInstanceOf(Error);
         expect((result.current.error as Error).message).toBe(
-          'Network response was not ok'
+          'Network response was not ok',
         );
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   });
 

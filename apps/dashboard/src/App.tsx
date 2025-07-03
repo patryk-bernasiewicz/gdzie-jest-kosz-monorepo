@@ -13,7 +13,7 @@ import Outside from "./components/Outside";
 const HomePage = lazy(() => import("./feature/home/page"));
 const BinsPage = lazy(() => import("./feature/map/page"));
 
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
 const queryClient = new QueryClient();
 
 function App() {

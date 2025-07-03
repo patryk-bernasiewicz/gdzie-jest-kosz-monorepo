@@ -19,7 +19,7 @@ export function serializeAxiosError(error: unknown) {
   }
   // Fallback for non-Axios errors
   return {
-    message: (error as any)?.message || String(error),
+    message: (error as any)?.message ?? String(error),
     stack: (error as any)?.stack,
     isAxiosError: false,
   };
