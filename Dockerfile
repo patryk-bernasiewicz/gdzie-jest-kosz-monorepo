@@ -35,6 +35,8 @@ WORKDIR /api
 
 ARG CLERK_PUBLISHABLE_KEY
 ENV CLERK_PUBLISHABLE_KEY=${CLERK_PUBLISHABLE_KEY}
+ARG ALLOWED_ORIGINS
+ENV ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -46,7 +48,9 @@ COPY --from=build /repo/apps/api/prisma ./apps/api/prisma
 COPY --from=build /repo/apps/api/dist ./apps/api/dist
 COPY --from=build /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /repo/node_modules ./node_modules
-COPY --from=build /repo/apps/api/generated ./apps/api/generated
+
+# Generate Prisma client in production container
+RUN cd apps/api && pnpm prisma generate
 
 # Set ownership and user
 RUN chown -R appuser:appgroup /api

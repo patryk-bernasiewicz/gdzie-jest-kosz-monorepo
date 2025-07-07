@@ -13,6 +13,11 @@ set -a
 source .env.prod
 set +a
 
+# Read the app version from package.json and export it as APP_VERSION
+APP_VERSION=$(node -p "require('./package.json').version")
+export APP_VERSION
+echo "App version from package.json: $APP_VERSION"
+
 cd apps/api
 pnpm prisma db push
 cd ../..

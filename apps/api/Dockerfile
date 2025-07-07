@@ -17,6 +17,9 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the source code
 COPY . .
 
+# Generate Prisma client before building
+RUN cd apps/api && pnpm prisma:generate
+
 # Build the applications
 RUN pnpm build
 
@@ -32,9 +35,12 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY --from=build /repo/apps/api/dist ./apps/api/dist
 COPY --from=build /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /repo/node_modules ./node_modules
-COPY --from=build /repo/apps/api/generated ./apps/api/generated
 COPY --from=build /repo/apps/api/package.json ./apps/api/
 COPY --from=build /repo/package.json /repo/pnpm-lock.yaml /repo/pnpm-workspace.yaml ./
+
+# Copy prisma schema and generate client
+COPY --from=build /repo/apps/api/prisma ./apps/api/prisma
+RUN cd apps/api && npx prisma generate
 
 # Set ownership and user
 RUN chown -R appuser:appgroup /api
