@@ -14,7 +14,7 @@ export class AppController {
   }
 
   @Get('health')
-  healthcheck(): string {
+  async healthcheck(): Promise<string> {
     this.logger.log('GET /health called');
     return this.appService.getHealth();
   }

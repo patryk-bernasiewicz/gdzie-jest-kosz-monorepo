@@ -20,9 +20,8 @@
     "noFallthroughCasesInSwitch": false,
     "preserveWatchOutput": true,
     "paths": {
-      "@gjk/shared-utils": ["../../packages/shared-utils/dist"],
-      "@prisma/client": ["./generated/client"]
+      "@gjk/shared-utils": ["../../packages/shared-utils/dist"]
     }
   },
-  "exclude": ["node_modules", "dist", "generated", "eslint.config.mjs"]
+  "exclude": ["node_modules", "dist", "eslint.config.mjs"]
 }

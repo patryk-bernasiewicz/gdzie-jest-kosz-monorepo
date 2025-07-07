@@ -1,0 +1,359 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Test-Driven Development (TDD) Requirements
+
+**MANDATORY**: All new features and bug fixes MUST follow strict Test-Driven Development practices. No exceptions.
+
+## TDD Workflow (Red-Green-Refactor)
+
+### 1. RED - Write a Failing Test First
+- Write the minimum test that describes the desired behavior
+- Test MUST fail initially (proves the test is valid)
+- Focus on the interface/API design, not implementation
+- Use descriptive test names that explain expected behavior
+
+### 2. GREEN - Write Minimum Code to Pass
+- Write only enough code to make the test pass
+- Resist the urge to write more than necessary
+- Code quality is secondary at this stage
+- Focus on making the test pass, not on perfect implementation
+
+### 3. REFACTOR - Improve Code Quality
+- Improve code structure while keeping tests green
+- Extract functions, improve naming, remove duplication
+- Refactor both production code AND test code
+- Ensure all tests still pass after refactoring
+
+## Testing Strategy by Application
+
+### Backend (NestJS + Prisma)
+**Testing Stack**: Jest + @nestjs/testing + Supertest + Prisma Client Mock
+
+**Integration Tests (HTTP Endpoints) - TOP PRIORITY**:
+```typescript
+describe('POST /api/v1/bins', () => {
+  it('should create bin and return 201 with location header', async () => {
+    // Arrange
+    const createBinDto = { latitude: 52.5, longitude: 13.4, description: 'Test bin' };
+    
+    // Act
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/bins')
+      .send(createBinDto)
+      .expect(201);
+    
+    // Assert
+    expect(response.body).toMatchObject({
+      id: expect.any(Number),
+      ...createBinDto
+    });
+    expect(response.headers.location).toBeDefined();
+  });
+  
+  it('should return 400 for invalid coordinates', async () => {
+    // Arrange
+    const invalidDto = { latitude: 91, longitude: 181, description: 'Invalid' };
+    
+    // Act & Assert
+    await request(app.getHttpServer())
+      .post('/api/v1/bins')
+      .send(invalidDto)
+      .expect(400);
+  });
+});
+```
+
+**Unit Tests (Controllers & Services) - SECONDARY PRIORITY**:
+```typescript
+// Focus on critical business logic only
+describe('BinsService.createBin', () => {
+  it('should create a new bin with valid coordinates', async () => {
+    // Arrange
+    const createBinDto = { latitude: 52.5, longitude: 13.4, description: 'Test bin' };
+    const expectedBin = { id: 1, ...createBinDto, createdAt: new Date() };
+    
+    // Act
+    const result = await service.createBin(createBinDto);
+    
+    // Assert
+    expect(result).toEqual(expectedBin);
+    expect(prisma.bin.create).toHaveBeenCalledWith({
+      data: createBinDto
+    });
+  });
+});
+```
+
+### Dashboard (React + Vite)
+**Testing Stack**: Vitest + React Testing Library + MSW
+
+**Integration Tests (User Flows) - TOP PRIORITY**:
+```typescript
+describe('Bin Management Flow', () => {
+  it('should allow user to create, edit, and delete a bin', async () => {
+    // Arrange
+    server.use(
+      http.post('/api/v1/bins', () => HttpResponse.json({ id: 1, latitude: 52.5, longitude: 13.4 })),
+      http.put('/api/v1/bins/1', () => HttpResponse.json({ id: 1, latitude: 52.6, longitude: 13.4 })),
+      http.delete('/api/v1/bins/1', () => HttpResponse.json({}))
+    );
+    
+    // Act & Assert - Full user flow
+    render(<BinManagementPage />);
+    
+    // Create bin
+    await user.click(screen.getByRole('button', { name: /add bin/i }));
+    await user.type(screen.getByLabelText(/latitude/i), '52.5');
+    await user.type(screen.getByLabelText(/longitude/i), '13.4');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    
+    // Edit bin
+    await user.click(screen.getByRole('button', { name: /edit bin/i }));
+    await user.clear(screen.getByLabelText(/latitude/i));
+    await user.type(screen.getByLabelText(/latitude/i), '52.6');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    
+    // Delete bin
+    await user.click(screen.getByRole('button', { name: /delete bin/i }));
+    await user.click(screen.getByRole('button', { name: /confirm/i }));
+    
+    expect(screen.queryByText(/bin 1/i)).not.toBeInTheDocument();
+  });
+});
+```
+
+**Component Tests - SECONDARY PRIORITY**:
+```typescript
+describe('BinEditForm', () => {
+  it('should update bin location when coordinates are changed', async () => {
+    // Arrange
+    const mockBin = { id: 1, latitude: 52.5, longitude: 13.4, description: 'Test' };
+    const onUpdate = vi.fn();
+    
+    // Act
+    render(<BinEditForm bin={mockBin} onUpdate={onUpdate} />);
+    
+    const latInput = screen.getByLabelText(/latitude/i);
+    await user.type(latInput, '52.6');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    
+    // Assert
+    expect(onUpdate).toHaveBeenCalledWith({
+      ...mockBin,
+      latitude: 52.6
+    });
+  });
+});
+```
+
+### Mobile (React Native + Expo)
+**Testing Stack**: Jest + React Native Testing Library + MSW
+
+**Integration Tests (User Flows) - TOP PRIORITY**:
+```typescript
+describe('Bin Discovery Flow', () => {
+  it('should allow user to find nearby bins and report new ones', async () => {
+    // Arrange
+    const mockBins = [{ id: 1, latitude: 52.5, longitude: 13.4, description: 'Nearby bin' }];
+    server.use(
+      http.get('/api/v1/bins', () => HttpResponse.json(mockBins)),
+      http.post('/api/v1/bins', () => HttpResponse.json({ id: 2, latitude: 52.51, longitude: 13.41 }))
+    );
+    
+    // Act & Assert - Full user flow
+    render(<MapScreen />);
+    
+    // Find nearby bins
+    await waitFor(() => {
+      expect(screen.getByText('Nearby bin')).toBeVisible();
+    });
+    
+    // Report new bin
+    fireEvent.press(screen.getByTestId('map-long-press'));
+    fireEvent.press(screen.getByText('Report Bin'));
+    
+    const descInput = screen.getByPlaceholderText(/description/i);
+    fireEvent.changeText(descInput, 'New bin location');
+    fireEvent.press(screen.getByText('Submit'));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Bin reported successfully')).toBeVisible();
+    });
+  });
+});
+```
+
+## Testing Rules and Requirements
+
+### Testing Priority Hierarchy
+1. **Integration Tests (TOP PRIORITY)** - Test complete user flows and API endpoints
+2. **E2E Tests (FUTURE)** - Test entire application workflows
+3. **Unit Tests (SECONDARY)** - Test critical business logic and utilities
+
+### Mandatory Testing Coverage
+- **Integration Tests**: 100% coverage of API endpoints and critical user flows
+- **Unit Tests**: 60% coverage minimum, focus on business logic and utilities
+- **Component Tests**: All React components with primary user interactions
+- **Hook Tests**: All custom hooks with comprehensive scenarios
+- **Error Scenarios**: Every error condition MUST be tested
+
+### Test Structure Requirements
+- Use descriptive test names that explain the behavior being tested
+- Follow AAA pattern (Arrange, Act, Assert) consistently
+- Group related tests using `describe` blocks
+- Use `beforeEach`/`afterEach` for test setup/teardown
+- One assertion per test (prefer multiple focused tests over complex ones)
+
+### Mocking Strategy
+- **External Dependencies**: Always mock external APIs, database calls, file system operations
+- **Time-Based Logic**: Mock `Date.now()`, `setTimeout`, `setInterval`
+- **Random Values**: Mock `Math.random()` for predictable tests
+- **React Query**: Use MSW for API mocking in React Query tests
+- **Prisma**: Use Prisma Client Mock for database operations
+
+### Test Data Management
+- Create test data factories for consistent test objects
+- Use realistic test data that matches production scenarios
+- Avoid hardcoded IDs - use dynamic values or constants
+- Create helper functions for common test scenarios
+
+## Code Examples
+
+### Good Test Factory Pattern
+```typescript
+// test-utils/factories.ts
+export const createTestBin = (overrides?: Partial<Bin>): Bin => ({
+  id: Math.floor(Math.random() * 1000),
+  latitude: 52.5200 + (Math.random() - 0.5) * 0.01,
+  longitude: 13.4050 + (Math.random() - 0.5) * 0.01,
+  description: 'Test bin',
+  isActive: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides
+});
+```
+
+### Good Error Testing Pattern
+```typescript
+describe('GET /api/v1/bins/nearby', () => {
+  it('should return 400 for invalid coordinates', async () => {
+    // Arrange
+    const invalidQuery = { latitude: 91, longitude: 181 };
+    
+    // Act & Assert
+    await request(app.getHttpServer())
+      .get('/api/v1/bins/nearby')
+      .query(invalidQuery)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.message).toContain('Invalid coordinates');
+      });
+  });
+  
+  it('should return 503 when database is unavailable', async () => {
+    // Arrange
+    prisma.bin.findMany.mockRejectedValue(new Error('Database connection failed'));
+    
+    // Act & Assert
+    await request(app.getHttpServer())
+      .get('/api/v1/bins/nearby')
+      .query({ latitude: 52.5, longitude: 13.4 })
+      .expect(503);
+  });
+});
+```
+
+## TDD Enforcement
+
+### Development Process
+1. **NO CODE** without tests first
+2. **NO COMMITS** without passing tests
+3. **NO PULL REQUESTS** without comprehensive test coverage
+4. **NO DEPLOYMENTS** without full test suite passing
+
+### Pre-commit Hooks
+- All tests must pass before commit
+- Test coverage must meet minimum thresholds
+- Linting must pass for test files
+
+### Code Review Requirements
+- Reviewers MUST verify TDD was followed
+- Test quality is as important as production code quality
+- Tests must be reviewed for completeness and correctness
+
+## Performance Testing Guidelines
+
+### Load Testing (Backend)
+- Test API endpoints under expected load
+- Verify database query performance
+- Test concurrent user scenarios
+
+### Component Performance (Frontend)
+- Test rendering performance with large datasets
+- Verify memory usage doesn't grow unbounded
+- Test smooth animations and interactions
+
+## Accessibility Testing
+
+### Required Accessibility Tests
+- Screen reader compatibility
+- Keyboard navigation
+- Color contrast and visual accessibility
+- Touch target sizes (mobile)
+
+```typescript
+describe('BinsList accessibility', () => {
+  it('should be navigable with keyboard', async () => {
+    render(<BinsList bins={mockBins} />);
+    
+    const firstItem = screen.getByRole('button', { name: /bin 1/i });
+    firstItem.focus();
+    
+    fireEvent.keyDown(firstItem, { key: 'ArrowDown' });
+    
+    expect(screen.getByRole('button', { name: /bin 2/i })).toHaveFocus();
+  });
+});
+```
+
+## Testing Anti-Patterns to Avoid
+
+### DON'T:
+- Write tests after implementation
+- Test implementation details instead of behavior
+- Use shallow rendering in React tests
+- Mock too many internal dependencies
+- Write tests that depend on external services
+- Skip testing error conditions
+- Use `any` types in test code
+- Write tests that test the framework itself
+
+### DO:
+- Write tests before implementation
+- Test user-facing behavior and API contracts
+- Use realistic test data
+- Mock external dependencies properly
+- Test both success and failure scenarios
+- Keep tests fast and independent
+- Use proper TypeScript types in tests
+- Focus on testing your code, not libraries
+
+## Test Maintenance
+
+### Regular Test Maintenance
+- Remove obsolete tests when features are removed
+- Update tests when requirements change
+- Refactor tests to maintain readability
+- Keep test dependencies up to date
+
+### Test Documentation
+- Document complex test scenarios
+- Explain non-obvious test setups
+- Keep test comments focused on WHY, not WHAT
+- Document test utilities and helpers
+
+**Remember: Integration tests are the cornerstone of our testing strategy. They provide the highest confidence in system behavior and catch the most critical bugs. Unit tests supplement integration tests by providing detailed coverage of business logic.**
