@@ -2,7 +2,7 @@
   "expo": {
     "name": "gdzie-jest-kosz",
     "slug": "gdzie-jest-kosz",
-    "version": "DEV-0.0.1",
+    "version": "DEV-0.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
