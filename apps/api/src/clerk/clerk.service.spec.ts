@@ -18,9 +18,6 @@ jest.mock('@clerk/clerk-sdk-node', () => ({
   },
 }));
 
-// Suppress logger output for tests
-Logger.overrideLogger(false);
-
 describe('ClerkService', () => {
   let service: ClerkService;
 
