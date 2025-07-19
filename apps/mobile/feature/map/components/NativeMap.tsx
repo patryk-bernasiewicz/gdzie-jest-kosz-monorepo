@@ -2,12 +2,13 @@ import * as Haptics from 'expo-haptics';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Alert,
+  Platform,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
 
 import TokenDebug from '@/feature/auth/components/debug/TokenDebug';
 import useBins from '@/feature/bins/hooks/useBins';
@@ -17,6 +18,7 @@ import useMarkInvalidBin from '@/feature/bins/hooks/useMarkInvalidBin';
 import useNearestBin from '@/feature/bins/hooks/useNearestBin';
 import { Bin } from '@/feature/bins/types';
 import DebugOnly from '@/ui/components/debug/DebugOnly';
+import { useColorScheme } from '@/ui/hooks/useColorScheme';
 
 import MapContextMenu from './MapContextMenu';
 import NearestBinInformation from './NearestBinInformation';
@@ -38,6 +40,14 @@ export default function NativeMap({
   // All hooks must be declared at the top level to maintain order
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPressing = useRef(false);
+
+  const colorScheme = useColorScheme();
+
+  // Dynamic tile URL based on theme - OpenFreeMap (MIT license, commercial friendly)
+  const tileUrl =
+    colorScheme === 'dark'
+      ? 'https://tiles.openfreemap.org/styles/dark/{z}/{x}/{y}.png'
+      : 'https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png';
 
   const bins = useBins();
   const binsWithDistance = useBinsWithDistance(bins.data);
@@ -209,7 +219,14 @@ export default function NativeMap({
           zoomEnabled={false}
           rotateEnabled={false}
           pitchEnabled={false}
+          mapType={Platform.OS === 'android' ? 'none' : 'mutedStandard'}
         >
+          <UrlTile
+            urlTemplate={tileUrl}
+            shouldReplaceMapContent={Platform.OS === 'android'}
+            maximumZ={19}
+            flipY={false}
+          />
           {binsWithDistance?.map((bin) => {
             const isNearest = nearestBin?.id === bin.id;
             return (
