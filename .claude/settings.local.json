@@ -5,7 +5,11 @@
       "Bash(pnpm --filter @gjk/dashboard exec prettier --write src/)",
       "Bash(pnpm --filter @gjk/mobile exec prettier --write feature/ ui/ utils/)",
       "Bash(npx prettier:*)",
-      "Bash(pnpm --filter @gjk/backend exec prettier --write src/)"
+      "Bash(pnpm --filter @gjk/backend exec prettier --write src/)",
+      "Bash(rm:*)",
+      "Bash(npm run lint)",
+      "Bash(pnpm lint:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

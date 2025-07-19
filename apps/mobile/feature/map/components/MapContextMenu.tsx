@@ -1,10 +1,5 @@
 import { Fragment, useMemo } from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
 import Text from '@/ui/components/Text';
 import getColor from '@/ui/utils/getColor';
@@ -43,34 +38,33 @@ export default function MapContextMenu({
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={(event) => {
-        event.persist();
+    <View
+      style={[
+        {
+          ...styles.contextMenu,
+          top: menuPosY,
+          left: menuPosX,
+        },
+        disabled && styles.contextMenuDisabled,
+      ]}
+      onStartShouldSetResponder={() => true}
+      onResponderGrant={() => {
+        // Prevent the background overlay from closing the menu when interacting with it
+        return false;
       }}
     >
-      <View
-        style={[
-          {
-            ...styles.contextMenu,
-            top: menuPosY,
-            left: menuPosX,
-          },
-          disabled && styles.contextMenuDisabled,
-        ]}
-      >
-        <Text onPress={onCreateBin} disabled={disabled}>
-          Tu jest kosz!
-        </Text>
-        {selectedBinIds?.map((binId) => (
-          <Fragment key={binId}>
-            <View style={styles.separator} />
-            <Text onPress={() => onMarkInvalidBin(binId)}>
-              Kosz ID: {binId} - nieaktualny?
-            </Text>
-          </Fragment>
-        ))}
-      </View>
-    </TouchableWithoutFeedback>
+      <Text onPress={onCreateBin} disabled={disabled}>
+        Tu jest kosz!
+      </Text>
+      {selectedBinIds?.map((binId) => (
+        <Fragment key={binId}>
+          <View style={styles.separator} />
+          <Text onPress={() => onMarkInvalidBin(binId)}>
+            Kosz ID: {binId} - nieaktualny?
+          </Text>
+        </Fragment>
+      ))}
+    </View>
   );
 }
 
@@ -82,6 +76,7 @@ const styles = StyleSheet.create({
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     borderRadius: 5,
     width: 150,
+    zIndex: 2,
   },
   contextMenuDisabled: {
     backgroundColor: getColor('backgroundDim'),

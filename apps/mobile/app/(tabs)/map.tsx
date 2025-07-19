@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import LeafletMap from '@/feature/map/components/LeafletMap';
+import NativeMap from '@/feature/map/components/NativeMap';
 import useLocation from '@/feature/map/hooks/useLocation';
 import getColor from '@/ui/utils/getColor';
 
@@ -10,7 +10,7 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.map}>
-        <LeafletMap latitude={location?.[0]} longitude={location?.[1]} />
+        <NativeMap latitude={location?.[0]} longitude={location?.[1]} />
       </View>
     </View>
   );
