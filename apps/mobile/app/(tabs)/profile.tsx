@@ -50,6 +50,12 @@ export default function ProfileScreen() {
           </Link>
         </View>
       </SignedOut>
+
+      <View style={styles.attributionWrapper}>
+        <Text style={styles.attribution}>
+          OpenFreeMap © OpenMapTiles © OpenStreetMap contributors
+        </Text>
+      </View>
     </View>
   );
 }
@@ -93,5 +99,18 @@ const styles = StyleSheet.create({
   },
   signUpWrapper: {
     marginBottom: 8,
+  },
+  attributionWrapper: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    alignItems: 'center',
+  },
+  attribution: {
+    fontSize: 10,
+    color: getColor('textDim'),
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });
